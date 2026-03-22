@@ -275,6 +275,7 @@ async def generate_batch(
     concurrency: int = 2,
     retry_failed: bool = True,
     max_retries: int = 2,
+    progress_every: int = 10,
 ):
     """Generate responses for a batch of prompts with controlled concurrency."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -319,7 +320,7 @@ async def generate_batch(
                 f.flush()
             completed += 1
             pct = completed / len(remaining) * 100
-            if completed % 10 == 0:
+            if completed % progress_every == 0 or completed == len(remaining):
                 log.info(
                     f"Progress: {completed}/{len(remaining)} ({pct:.1f}%) completed, {len(failed_ids)} failed"
                 )
@@ -422,6 +423,7 @@ async def main_async(args):
         prompts=prompts,
         output_path=args.output.resolve(),
         concurrency=args.concurrency,
+        progress_every=args.progress_every,
     )
 
 
@@ -457,6 +459,12 @@ def main():
         type=float,
         default=None,
         help="Override temperature for all prompts (ignores YAML/teacher defaults)",
+    )
+    parser.add_argument(
+        "--progress-every",
+        type=int,
+        default=10,
+        help="Log progress every N completions (default: 10, use 1 for benchmarks)",
     )
     args = parser.parse_args()
 

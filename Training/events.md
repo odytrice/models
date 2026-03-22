@@ -248,12 +248,113 @@ Failure breakdown:
 
 ---
 
-## Pending: Round 2
+## Session 3: Verification Fixes & Teacher Benchmark
 
-Second pass generation is ready to run:
-```
-cd pipeline\scripts
-run_generation_pass2.bat
-```
+### F# Verification Fixes (3 fixes, +375 samples recovered)
 
-Issues above should be addressed before/during round 2 to avoid repeating the same problems.
+Investigated root causes of low pass rates by analyzing failed/skipped samples from round 1.
+
+**Root causes identified:**
+- **Truncated responses (155 fsharp_core, 147 dotnet_aspnet)**: Teacher hit max_tokens, code fence opened but never closed. Regex required closing fence, so valid code was discarded.
+- **Empty responses (34 fsharp_core, 200 dotnet_aspnet)**: Teacher returned no content at all. Kimi especially bad for ASP.NET/F# topics.
+- **namespace/module in .fsx (92 fsharp_core)**: Teachers generated `namespace X` or `module X` declarations which are invalid in F# script files (.fsx). Needed routing through project build (.fs) instead.
+- **Multi-block concatenation conflicts (16 fsharp_core)**: Multiple code blocks with conflicting module declarations were concatenated, causing compile errors.
+
+**Fix 1: Handle truncated responses**
+- Added fallback regex for unclosed fenced blocks (opening tag with no closing tag)
+- Extracts everything after the opening fence to end-of-string
+
+**Fix 2: Route namespace/module code through project build**
+- Added `needs_project_for_structure()` function that detects `namespace X` or top-level `module X` declarations
+- Routes these through `verify_with_project` (as .fs files) instead of `verify_with_fsi` (as .fsx)
+
+**Fix 3: Smarter multi-block handling**
+- When multiple code blocks have conflicting top-level declarations (`namespace`, `module`, `open`), use only the largest block instead of concatenating all blocks
+
+**Re-verification results:**
+
+| Domain | Before | After | Change |
+|--------|--------|-------|--------|
+| fsharp_core | 150 (20.0%) | 323 (43.1%) | +173 (+115%) |
+| fsharp_libraries | 780 (81.1%) | 840 (87.3%) | +60 (+8%) |
+| cross_domain | 289 (90.0%) | 289 (90.0%) | Same |
+| dotnet_aspnet | 100 (22.2%) | 242 (53.8%) | +142 (+142%) |
+| **Total** | **1,319** | **1,694** | **+375 (+28%)** |
+
+### Re-formatted Dataset (Post Verification Fixes)
+
+| Domain | Samples | % of Total |
+|--------|---------|------------|
+| general_coding | 2,950 | 41.8% |
+| fsharp_libraries | 840 | 11.9% |
+| dotnet_aspnet | 692 | 9.8% |
+| svelte_typescript | 676 | 9.6% |
+| cross_domain | 610 | 8.6% |
+| docker_kubernetes | 414 | 5.9% |
+| fsharp_core | 326 | 4.6% |
+| agentic_swe | 279 | 4.0% |
+| long_context | 267 | 3.8% |
+| **Total** | **7,054** | |
+
+- Train: 6,702 / Val: 352
+- All samples still in stage1 (0-16K tokens)
+
+### Round 2 Infrastructure Built
+
+- Added `--temperature` CLI override to `generate_data.py`
+- Added `--suffix` and `--temperature` flags to `run_generation.py`
+- Created `run_generation_pass2.bat` -- runs same prompts at temperature 0.9, outputs to `*_t2.jsonl`
+
+### F# Teacher Benchmark (In Progress)
+
+Before running round 2, decided to benchmark all 3 teachers on F# to determine optimal teacher assignments.
+
+**Approach:**
+- Extracted 549 prompts that DeepSeek failed on (427 fsharp_core + 122 fsharp_libraries)
+- Running the same prompts through Kimi and MiniMax for a 3-way comparison
+- Created `pipeline/scripts/extract_failed.py` to extract failed prompts from verification results
+- Created `pipeline/scripts/run_benchmark.py` with status dashboard and comparison table
+- 4 benchmark YAML files: fsharp_core_kimi, fsharp_core_minimax, fsharp_libraries_kimi, fsharp_libraries_minimax
+
+**Preliminary evidence (from round 1 data):**
+- Kimi produces higher quality F# code (~90-97% pass rate when it generates code)
+- But Kimi frequently returns empty/prose-only responses for .NET/F# topics
+- DeepSeek almost always generates code but at lower quality (43-87% pass rate)
+- MiniMax has no F# data yet -- benchmark will provide first evidence
+
+**Also added:**
+- `--progress-every` flag to `generate_data.py` (default 10, benchmark uses 1 for per-sample progress)
+- ETA display to benchmark status dashboard
+
+**Estimated benchmark runtime:** ~4 hours (2 teachers in parallel, 549 prompts each)
+
+---
+
+## Remaining Issues
+
+### 1. general_coding proportion still too high (41.8%)
+- OpenCodeInstruct at 2,500 samples dominates the mix
+- Plan: downsample to ~500 after benchmark completes
+
+### 2. fsharp_core still underrepresented (4.6% vs 15% target)
+- Benchmark results will determine which teacher to use for round 2
+- May also need more seed prompts
+
+### 3. No long-context samples
+- All samples fit in stage1 (0-16K)
+- Teachers not generating long enough responses
+
+### 4. dotnet_aspnet still has high skip rate (202/450 = 45%)
+- Empty responses from Kimi -- generation problem, not extraction
+- Round 2 may improve with higher temperature encouraging more output
+
+---
+
+## Pending Actions (in order)
+
+1. **Complete F# teacher benchmark** (~4 hours running)
+2. **Analyze benchmark results** -- determine best teacher per domain for round 2
+3. **Downsample OpenCodeInstruct** from 2,500 to ~500
+4. **Run round 2** with optimal teacher assignments and temp 0.9
+5. **Re-verify and reformat** combined round 1 + round 2 data
+6. **Train** on cloud GPU (4-stage progressive LoRA)
