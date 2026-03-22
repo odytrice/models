@@ -61,6 +61,8 @@ NUGET_INDICATORS = [
     "open FsUnit",
     "open Microsoft.AspNetCore",
     "open Microsoft.Extensions",
+    "open Xunit",
+    "open System.Reactive",
 ]
 
 
@@ -103,8 +105,11 @@ def extract_fsharp_code(response: str) -> str:
     """Extract F# code blocks from a markdown response.
 
     Returns concatenated code from all ```fsharp or ```f# blocks.
-    If no fenced blocks found, returns the raw response (assumes it's all code).
+    Falls back to extracting truncated (unclosed) fenced blocks.
+    If no fenced blocks found at all, returns empty string.
     """
+    # Pattern 1: Complete fenced blocks with language tag
+    # Pattern 2: Complete fenced blocks without language tag
     patterns = [
         r"```(?:fsharp|f#)\s*\n(.*?)```",
         r"```\s*\n(.*?)```",  # fallback: unfenced code blocks
@@ -117,9 +122,41 @@ def extract_fsharp_code(response: str) -> str:
             blocks.extend(matches)
             break
 
+    # Fallback: handle truncated responses where the closing ``` is missing
+    # (teacher hit max_tokens and output was cut off mid-code)
     if not blocks:
-        # No code blocks found -- return empty (don't assume whole response is code)
+        truncated_patterns = [
+            r"```(?:fsharp|f#)\s*\n(.*)",  # greedy to end-of-string
+            r"```\s*\n(.*)",
+        ]
+        for pattern in truncated_patterns:
+            match = re.search(pattern, response, re.DOTALL)
+            if match:
+                code = match.group(1).strip()
+                if code:
+                    blocks.append(code)
+                break
+
+    if not blocks:
         return ""
+
+    # If multiple blocks, check for conflicting module/namespace declarations
+    # that would cause compile errors when concatenated
+    if len(blocks) > 1:
+        has_conflict = False
+        decl_count = 0
+        for block in blocks:
+            first_line = block.strip().split("\n")[0].strip()
+            if (
+                first_line.startswith("namespace ")
+                or first_line.startswith("module ")
+                or first_line.startswith("open ")
+            ):
+                decl_count += 1
+        # If multiple blocks have top-level declarations, use only the largest
+        # block (likely the main implementation) to avoid conflicts
+        if decl_count > 1:
+            blocks = [max(blocks, key=len)]
 
     return "\n\n".join(block.strip() for block in blocks)
 
@@ -274,6 +311,25 @@ def verify_with_project(
         PROGRAM_FS.write_text(original_content, encoding="utf-8")
 
 
+def needs_project_for_structure(code: str) -> bool:
+    """Check if code uses namespace/module declarations that require .fs (not .fsx).
+
+    F# script files (.fsx) don't support top-level namespace or module declarations.
+    These need to go through the project build path as .fs files.
+    """
+    first_line = code.strip().split("\n")[0].strip()
+
+    # Top-level namespace declaration
+    if first_line.startswith("namespace "):
+        return True
+
+    # Top-level module declaration (e.g., "module MyModule" but NOT "module X =")
+    if re.match(r"^module\s+\S+\s*$", first_line):
+        return True
+
+    return False
+
+
 def verify_sample(sample: Sample) -> VerifyResult:
     """Verify a single F# code sample through the appropriate pipeline."""
     if not sample.code.strip():
@@ -281,7 +337,9 @@ def verify_sample(sample: Sample) -> VerifyResult:
 
     execute = sample.has_tests or has_test_assertions(sample.code)
 
-    if sample.needs_project_build():
+    # Route through project build if code uses NuGet packages OR
+    # namespace/module declarations (which are invalid in .fsx files)
+    if sample.needs_project_build() or needs_project_for_structure(sample.code):
         return verify_with_project(sample.code, execute=execute)
     else:
         return verify_with_fsi(sample.code, execute=execute)
