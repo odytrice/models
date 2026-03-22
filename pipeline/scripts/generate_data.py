@@ -412,6 +412,12 @@ async def main_async(args):
     if doc_lookup:
         doc_lookup.close()
 
+    # Apply temperature override if specified via CLI
+    if args.temperature is not None:
+        for prompt in prompts:
+            prompt.temperature = args.temperature
+        log.info(f"Temperature override: {args.temperature}")
+
     await generate_batch(
         prompts=prompts,
         output_path=args.output.resolve(),
@@ -445,6 +451,12 @@ def main():
         "--with-docs",
         action="store_true",
         help="Fetch docs via doc_lookup for prompts with context_query field",
+    )
+    parser.add_argument(
+        "--temperature",
+        type=float,
+        default=None,
+        help="Override temperature for all prompts (ignores YAML/teacher defaults)",
     )
     args = parser.parse_args()
 

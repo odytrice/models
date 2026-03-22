@@ -4,12 +4,17 @@ Parallel Training Data Generation Runner
 Runs all 3 teachers (DeepSeek, Kimi, MiniMax) concurrently as background
 processes, showing a live status dashboard instead of per-line logs.
 
+Supports multiple passes with different temperatures via --suffix and --temperature.
+
 Usage:
     python run_generation.py                    # Generate with status dashboard
     python run_generation.py --verify           # Generate + verify + format
     python run_generation.py --concurrency 8    # Custom concurrency per teacher
     python run_generation.py --verbose          # Show per-line logs instead of dashboard
     python run_generation.py --status           # Just print status and exit
+
+    # Second pass at higher temperature:
+    python run_generation.py --suffix _t2 --temperature 0.9 --verify
 """
 
 import argparse
@@ -101,16 +106,19 @@ def get_totals() -> dict:
     return totals
 
 
-def print_status(totals: dict, start_time: float = None):
+def print_status(totals: dict, suffix: str = "", start_time: float = None):
     """Print the status dashboard."""
     now = datetime.now()
     os.system("cls" if os.name == "nt" else "clear")
 
+    label = f" (pass 2, temp override)" if suffix else ""
     print(f"{'=' * 65}")
-    print(f"  GENERATION STATUS -- {now.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"  GENERATION STATUS{label} -- {now.strftime('%Y-%m-%d %H:%M:%S')}")
     if start_time:
         elapsed = timedelta(seconds=time.monotonic() - start_time)
         print(f"  Running for {str(elapsed).split('.')[0]}")
+    if suffix:
+        print(f"  Output suffix: {suffix}")
     print(f"{'=' * 65}\n")
 
     grand_done = 0
@@ -123,7 +131,7 @@ def print_status(totals: dict, start_time: float = None):
 
         domains_info = []
         for yaml_stem, output_name in files:
-            raw_path = RAW_DIR / f"{output_name}.jsonl"
+            raw_path = RAW_DIR / f"{output_name}{suffix}.jsonl"
             total = totals[output_name]["total"]
             done = count_lines(raw_path)
             teacher_done += done
@@ -187,7 +195,32 @@ def print_status(totals: dict, start_time: float = None):
     print(f"\n{'=' * 65}")
 
 
-async def run_generate_quiet(config: Path, output: Path, concurrency: int, label: str):
+def build_generate_cmd(
+    config: Path, output: Path, concurrency: int, temperature: float = None
+) -> list:
+    """Build the generate_data.py subprocess command."""
+    cmd = [
+        sys.executable,
+        str(SCRIPT_DIR / "generate_data.py"),
+        "--config",
+        str(config),
+        "--output",
+        str(output),
+        "--concurrency",
+        str(concurrency),
+    ]
+    if temperature is not None:
+        cmd.extend(["--temperature", str(temperature)])
+    return cmd
+
+
+async def run_generate_quiet(
+    config: Path,
+    output: Path,
+    concurrency: int,
+    label: str,
+    temperature: float = None,
+):
     """Run generate_data.py as a background subprocess (suppressed output)."""
     output.parent.mkdir(parents=True, exist_ok=True)
 
@@ -198,15 +231,9 @@ async def run_generate_quiet(config: Path, output: Path, concurrency: int, label
     if remaining <= 0:
         return
 
+    cmd = build_generate_cmd(config, output, concurrency, temperature)
     proc = await asyncio.create_subprocess_exec(
-        sys.executable,
-        str(SCRIPT_DIR / "generate_data.py"),
-        "--config",
-        str(config),
-        "--output",
-        str(output),
-        "--concurrency",
-        str(concurrency),
+        *cmd,
         stdout=asyncio.subprocess.DEVNULL,
         stderr=asyncio.subprocess.DEVNULL,
         cwd=str(SCRIPT_DIR),
@@ -216,7 +243,11 @@ async def run_generate_quiet(config: Path, output: Path, concurrency: int, label
 
 
 async def run_generate_verbose(
-    config: Path, output: Path, concurrency: int, label: str
+    config: Path,
+    output: Path,
+    concurrency: int,
+    label: str,
+    temperature: float = None,
 ):
     """Run generate_data.py with live per-line output."""
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -231,15 +262,9 @@ async def run_generate_verbose(
 
     print(f"[{label}] Starting: {remaining} remaining of {total} ({existing} done)")
 
+    cmd = build_generate_cmd(config, output, concurrency, temperature)
     proc = await asyncio.create_subprocess_exec(
-        sys.executable,
-        str(SCRIPT_DIR / "generate_data.py"),
-        "--config",
-        str(config),
-        "--output",
-        str(output),
-        "--concurrency",
-        str(concurrency),
+        *cmd,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.STDOUT,
         cwd=str(SCRIPT_DIR),
@@ -253,56 +278,104 @@ async def run_generate_verbose(
     await proc.wait()
 
 
-async def run_teacher(teacher: str, files: list, concurrency: int, verbose: bool):
+async def run_teacher(
+    teacher: str,
+    files: list,
+    concurrency: int,
+    verbose: bool,
+    suffix: str = "",
+    temperature: float = None,
+):
     """Run all files for a single teacher sequentially."""
     run_fn = run_generate_verbose if verbose else run_generate_quiet
 
     for yaml_stem, output_name in files:
         config = EXPANDED_DIR / f"{yaml_stem}.yaml"
-        output = RAW_DIR / f"{output_name}.jsonl"
-        await run_fn(config, output, concurrency, f"{teacher[:4]}:{output_name}")
+        output = RAW_DIR / f"{output_name}{suffix}.jsonl"
+        await run_fn(
+            config,
+            output,
+            concurrency,
+            f"{teacher[:4]}:{output_name}",
+            temperature=temperature,
+        )
 
 
-async def status_loop(totals: dict, start_time: float, check_interval: int = 15):
+async def status_loop(
+    totals: dict, start_time: float, suffix: str = "", check_interval: int = 15
+):
     """Periodically refresh the status dashboard."""
     grand_total = sum(t["total"] for t in totals.values())
 
     while True:
-        print_status(totals, start_time)
+        print_status(totals, suffix=suffix, start_time=start_time)
         print(
             f"  Refreshing every {check_interval}s (generation running in background)"
         )
 
         # Check if all done
-        grand_done = sum(count_lines(RAW_DIR / f"{name}.jsonl") for name in ALL_OUTPUTS)
+        grand_done = sum(
+            count_lines(RAW_DIR / f"{name}{suffix}.jsonl") for name in ALL_OUTPUTS
+        )
         if grand_done >= grand_total:
             break
 
         await asyncio.sleep(check_interval)
 
 
-async def generate_all(concurrency: int, verbose: bool):
+async def generate_all(
+    concurrency: int, verbose: bool, suffix: str = "", temperature: float = None
+):
     """Run all 3 teachers in parallel."""
     totals = get_totals()
     start_time = time.monotonic()
 
+    teacher_args = dict(suffix=suffix, temperature=temperature)
+
     if verbose:
-        # Verbose mode: stream per-line logs
         await asyncio.gather(
-            run_teacher("DeepSeek", TEACHERS["DeepSeek"], concurrency, verbose=True),
-            run_teacher("Kimi", TEACHERS["Kimi"], concurrency, verbose=True),
-            run_teacher("MiniMax", TEACHERS["MiniMax"], concurrency, verbose=True),
+            run_teacher(
+                "DeepSeek",
+                TEACHERS["DeepSeek"],
+                concurrency,
+                verbose=True,
+                **teacher_args,
+            ),
+            run_teacher(
+                "Kimi", TEACHERS["Kimi"], concurrency, verbose=True, **teacher_args
+            ),
+            run_teacher(
+                "MiniMax",
+                TEACHERS["MiniMax"],
+                concurrency,
+                verbose=True,
+                **teacher_args,
+            ),
         )
     else:
-        # Dashboard mode: run generators in background, show status
         gen_task = asyncio.gather(
-            run_teacher("DeepSeek", TEACHERS["DeepSeek"], concurrency, verbose=False),
-            run_teacher("Kimi", TEACHERS["Kimi"], concurrency, verbose=False),
-            run_teacher("MiniMax", TEACHERS["MiniMax"], concurrency, verbose=False),
+            run_teacher(
+                "DeepSeek",
+                TEACHERS["DeepSeek"],
+                concurrency,
+                verbose=False,
+                **teacher_args,
+            ),
+            run_teacher(
+                "Kimi", TEACHERS["Kimi"], concurrency, verbose=False, **teacher_args
+            ),
+            run_teacher(
+                "MiniMax",
+                TEACHERS["MiniMax"],
+                concurrency,
+                verbose=False,
+                **teacher_args,
+            ),
         )
-        status_task = asyncio.create_task(status_loop(totals, start_time))
+        status_task = asyncio.create_task(
+            status_loop(totals, start_time, suffix=suffix)
+        )
 
-        # Wait for generation to finish, then cancel status loop
         await gen_task
         status_task.cancel()
         try:
@@ -310,11 +383,10 @@ async def generate_all(concurrency: int, verbose: bool):
         except asyncio.CancelledError:
             pass
 
-        # Final status
-        print_status(totals, start_time)
+        print_status(totals, suffix=suffix, start_time=start_time)
 
 
-def run_verify():
+def run_verify(suffix: str = ""):
     """Run F# verification on applicable domains."""
     print("\n" + "=" * 60)
     print("  F# VERIFICATION")
@@ -323,15 +395,15 @@ def run_verify():
     VERIFIED_DIR.mkdir(parents=True, exist_ok=True)
 
     for output_name in ALL_OUTPUTS:
-        raw_path = RAW_DIR / f"{output_name}.jsonl"
-        verified_path = VERIFIED_DIR / f"{output_name}.jsonl"
+        raw_path = RAW_DIR / f"{output_name}{suffix}.jsonl"
+        verified_path = VERIFIED_DIR / f"{output_name}{suffix}.jsonl"
 
         if not raw_path.exists():
-            print(f"  {output_name}: raw file missing, skipping")
+            print(f"  {output_name}{suffix}: raw file missing, skipping")
             continue
 
         if output_name in FSHARP_DOMAINS:
-            print(f"  {output_name}: verifying F# samples...")
+            print(f"  {output_name}{suffix}: verifying F# samples...")
             result = subprocess.run(
                 [
                     sys.executable,
@@ -344,9 +416,9 @@ def run_verify():
                 cwd=str(SCRIPT_DIR),
             )
             if result.returncode != 0:
-                print(f"  {output_name}: verification had errors")
+                print(f"  {output_name}{suffix}: verification had errors")
         else:
-            print(f"  {output_name}: copying (no F# verification needed)")
+            print(f"  {output_name}{suffix}: copying (no F# verification needed)")
             shutil.copy2(raw_path, verified_path)
 
 
@@ -395,17 +467,36 @@ def main():
         action="store_true",
         help="Just print current progress and exit",
     )
+    parser.add_argument(
+        "--suffix",
+        type=str,
+        default="",
+        help="Suffix for output files (e.g., '_t2' for second pass)",
+    )
+    parser.add_argument(
+        "--temperature",
+        type=float,
+        default=None,
+        help="Override temperature for all prompts",
+    )
     args = parser.parse_args()
 
     if args.status:
         totals = get_totals()
-        print_status(totals)
+        print_status(totals, suffix=args.suffix)
         return
 
-    asyncio.run(generate_all(args.concurrency, args.verbose))
+    asyncio.run(
+        generate_all(
+            args.concurrency,
+            args.verbose,
+            suffix=args.suffix,
+            temperature=args.temperature,
+        )
+    )
 
     if args.verify:
-        run_verify()
+        run_verify(suffix=args.suffix)
         run_format()
 
     print("\nDone! Run with --verify to also verify F# and format the dataset.")
