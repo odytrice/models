@@ -2,9 +2,10 @@
 Dataset Formatting Pipeline
 
 Converts verified JSONL samples into HuggingFace datasets format for training.
-Supports two output formats:
+Supports three output formats:
   1. ChatML (for Qwen3.5 native chat template)
-  2. ShareGPT (for Axolotl compatibility)
+  2. Mistral (for Devstral Small 2 / Mistral instruct models)
+  3. ShareGPT (for Axolotl compatibility)
 
 Also handles:
   - Splitting into context-length buckets (for progressive training stages)
@@ -14,7 +15,9 @@ Also handles:
 
 Usage:
   python format_dataset.py --input data/verified/ --output data/formatted/ --format chatml
+  python format_dataset.py --input data/verified/ --output data/formatted/ --format mistral
   python format_dataset.py --input data/verified/ --output data/formatted/ --format sharegpt --split-by-length
+  python format_dataset.py --input data/verified/ --output data/formatted/ --format all --split-by-length
 """
 
 import argparse
@@ -142,6 +145,36 @@ def to_chatml(sample: dict) -> dict:
     }
 
 
+def to_mistral(sample: dict) -> dict:
+    """Convert a sample to Mistral instruct format (Devstral Small 2 / Mistral models).
+
+    Uses the Mistral v7 Tekken tokenizer format with [INST] tags.
+    Unsloth recognizes this as chat_template="mistral".
+
+    Format:
+    {"messages": [
+        {"role": "user", "content": "..."},
+        {"role": "assistant", "content": "..."}
+    ]}
+
+    Note: The messages structure is the same as ChatML, but Unsloth applies
+    the correct Mistral special tokens ([INST], [/INST], etc.) when
+    chat_template="mistral" is set during training. We use the messages
+    format here so both ChatML and Mistral can be loaded the same way,
+    with the template applied at training time by the tokenizer.
+    """
+    messages = [
+        {"role": "user", "content": sample["instruction"]},
+        {"role": "assistant", "content": sample["response"]},
+    ]
+    return {
+        "messages": messages,
+        "id": sample.get("id", ""),
+        "domain": sample.get("domain", ""),
+        "teacher": sample.get("teacher", ""),
+    }
+
+
 def to_sharegpt(sample: dict) -> dict:
     """Convert a sample to ShareGPT format (Axolotl compatible).
 
@@ -211,6 +244,41 @@ def save_jsonl(samples: list[dict], output_path: Path):
     log.info(f"Saved {len(samples)} samples to {output_path}")
 
 
+CONVERTERS = {
+    "chatml": to_chatml,
+    "mistral": to_mistral,
+    "sharegpt": to_sharegpt,
+}
+
+
+def format_single(
+    samples: list[dict],
+    output_dir: Path,
+    fmt: str,
+    split_by_ctx_length: bool = False,
+    val_ratio: float = 0.05,
+):
+    """Format and save samples in a single format."""
+    converter = CONVERTERS[fmt]
+    formatted = [converter(s) for s in samples]
+
+    if split_by_ctx_length:
+        buckets = split_by_length(formatted)
+        for stage, bucket_samples in buckets.items():
+            if not bucket_samples:
+                continue
+            train, val = train_val_split(bucket_samples, val_ratio)
+            save_jsonl(train, output_dir / f"{stage}_train.jsonl")
+            if val:
+                save_jsonl(val, output_dir / f"{stage}_val.jsonl")
+    else:
+        train, val = train_val_split(formatted, val_ratio)
+        save_jsonl(train, output_dir / "train.jsonl")
+        save_jsonl(val, output_dir / "val.jsonl")
+
+    return len(formatted)
+
+
 def format_dataset(
     input_dir: Path,
     output_dir: Path,
@@ -225,10 +293,6 @@ def format_dataset(
         log.warning("No samples found. Nothing to format.")
         return
 
-    # Convert format
-    converter = to_chatml if fmt == "chatml" else to_sharegpt
-    formatted = [converter(s) for s in samples]
-
     # Log domain distribution
     domain_counts = defaultdict(int)
     for s in samples:
@@ -237,28 +301,29 @@ def format_dataset(
     for domain, count in sorted(domain_counts.items()):
         log.info(f"  {domain}: {count} ({count / len(samples) * 100:.1f}%)")
 
-    if split_by_ctx_length:
-        # Split into length buckets, then train/val within each
-        buckets = split_by_length(formatted)
-        for stage, bucket_samples in buckets.items():
-            if not bucket_samples:
-                continue
-            train, val = train_val_split(bucket_samples, val_ratio)
-            save_jsonl(train, output_dir / f"{stage}_train.jsonl")
-            if val:
-                save_jsonl(val, output_dir / f"{stage}_val.jsonl")
-    else:
-        # Single train/val split
-        train, val = train_val_split(formatted, val_ratio)
-        save_jsonl(train, output_dir / "train.jsonl")
-        save_jsonl(val, output_dir / "val.jsonl")
+    if fmt == "all":
+        # Format for all supported formats (each in its own subdirectory)
+        formats = ["chatml", "mistral"]
+        for f in formats:
+            fmt_dir = output_dir / f
+            log.info(f"\nFormatting: {f} -> {fmt_dir}")
+            count = format_single(samples, fmt_dir, f, split_by_ctx_length, val_ratio)
 
-    log.info("=" * 60)
-    log.info("FORMATTING SUMMARY")
-    log.info(f"  Format:  {fmt}")
-    log.info(f"  Total:   {len(formatted)} samples")
-    log.info(f"  Output:  {output_dir}")
-    log.info("=" * 60)
+        log.info("=" * 60)
+        log.info("FORMATTING SUMMARY")
+        log.info(f"  Formats: {', '.join(formats)}")
+        log.info(f"  Total:   {len(samples)} samples (per format)")
+        log.info(f"  Output:  {output_dir}")
+        log.info("=" * 60)
+    else:
+        count = format_single(samples, output_dir, fmt, split_by_ctx_length, val_ratio)
+
+        log.info("=" * 60)
+        log.info("FORMATTING SUMMARY")
+        log.info(f"  Format:  {fmt}")
+        log.info(f"  Total:   {count} samples")
+        log.info(f"  Output:  {output_dir}")
+        log.info("=" * 60)
 
 
 def main():
@@ -277,9 +342,9 @@ def main():
     )
     parser.add_argument(
         "--format",
-        choices=["chatml", "sharegpt"],
+        choices=["chatml", "mistral", "sharegpt", "all"],
         default="chatml",
-        help="Output format",
+        help="Output format: chatml (Qwen), mistral (Devstral), sharegpt (Axolotl), or all (chatml + mistral in subdirs)",
     )
     parser.add_argument(
         "--split-by-length",
