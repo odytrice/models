@@ -156,3 +156,56 @@ prompts:
       4. Handle migration failures gracefully
       5. Show a Kubernetes Job manifest that runs migrations before deployment
       Include the migration classes, DI setup, and deployment strategy.
+
+  # --- Curriculum Gap Fills (Round 3) ---
+
+  - id: dotnet_0016
+    instruction: |
+      Implement gRPC services in F# ASP.NET Core:
+      1. Define a .proto file for a product catalog service (GetProduct, ListProducts, CreateProduct, StreamPriceUpdates)
+      2. Implement the server-side gRPC service in F# -- map between protobuf types and F# domain types
+      3. Write a typed gRPC client in F# that calls the service
+      4. Server-streaming RPC: StreamPriceUpdates sends real-time price changes
+      5. Error handling: map gRPC status codes to/from F# Result types
+      6. Host gRPC alongside Giraffe REST on the same Kestrel instance
+
+  - id: dotnet_0017
+    instruction: |
+      Set up a .NET Aspire application with F# services:
+      1. AppHost project orchestrating an F# Giraffe API, PostgreSQL, Redis, and RabbitMQ
+      2. Service discovery: the API finds PostgreSQL and Redis via Aspire's connection string management
+      3. F# ServiceDefaults project with OpenTelemetry traces/metrics, health checks, and HTTP resilience
+      4. Dashboard: view distributed traces, logs, and metrics across services
+      5. Integration testing with Aspire's DistributedApplicationTestingBuilder
+      6. Show how Aspire replaces manual Docker Compose for local development
+
+  - id: dotnet_0018
+    instruction: |
+      Implement distributed caching in F# ASP.NET Core with Redis:
+      1. Configure IDistributedCache with StackExchange.Redis in DI
+      2. Build a typed cache wrapper: Cache<'T> that serializes F# types (records, DUs) with System.Text.Json
+      3. Cache-aside pattern: check cache, fetch from DB if miss, populate cache
+      4. Cache stampede prevention using SemaphoreSlim (only one caller fetches on miss)
+      5. Event-driven cache invalidation: invalidate cache when data is mutated
+      6. TTL strategies: different expiration for different data types (user profile = 5min, product catalog = 1hr)
+
+  - id: dotnet_0019
+    instruction: |
+      Implement resilience patterns in F# using Microsoft.Extensions.Resilience (Polly v8):
+      1. Retry with exponential backoff and jitter for HTTP calls to external APIs
+      2. Circuit breaker: open after 5 failures in 30 seconds, half-open after 1 minute
+      3. Timeout: cancel requests that take longer than 10 seconds
+      4. Hedging: send parallel requests to multiple endpoints, take first response
+      5. Combine strategies into a ResiliencePipeline and register in DI
+      6. F#-friendly wrapper that returns Result<'T, ResilienceError> instead of throwing
+      7. Configure via IOptions so resilience settings can be changed without redeploying
+
+  - id: dotnet_0020
+    instruction: |
+      Implement API versioning in F# ASP.NET Core with Giraffe:
+      1. URL path versioning: /api/v1/products and /api/v2/products with different response shapes
+      2. Header-based versioning: read api-version from request headers
+      3. Version-specific Giraffe route trees composed at startup
+      4. DTO evolution: V1.Product and V2.Product types with a mapping function between them
+      5. Deprecation: add Sunset and Deprecation headers to V1 responses
+      6. Document both versions in OpenAPI/Swagger

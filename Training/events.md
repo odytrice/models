@@ -642,14 +642,82 @@ Round 2 re-run is in progress to complete the remaining 1,398 prompts. With the 
 
 ---
 
+## Curriculum Gap Analysis and Round 3 Seeds
+
+### Analysis
+Conducted a thorough review of the F# training curriculum against comprehensive checklists covering core language features, libraries, modern .NET patterns, and real-world architecture patterns.
+
+### Findings
+- **Well-covered**: ~40 topics (DUs, pattern matching, CEs, Giraffe, FsToolkit, Akka.NET, linq2db, etc.)
+- **Partially covered**: ~11 topics (need more depth)
+- **Completely missing**: ~25+ topics (significant gaps)
+
+### Critical Gaps Identified
+1. **FsCheck** (property-based testing) -- zero prompts, signature F# testing library
+2. **Expecto** test framework -- zero prompts, major F# test framework
+3. **gRPC with F#** -- zero prompts, primary service-to-service pattern in modern .NET
+4. **SRTP / inline functions** -- zero prompts, separates intermediate from advanced F#
+5. **.NET Aspire** -- zero prompts, newest .NET distributed app framework
+
+### New Seeds Added (20 total)
+
+**fsharp_core.yaml** (+6 seeds, now 31 total):
+- `0026`: SRTP and inline functions (member constraints, duck typing, generic math)
+- `0027`: Signature files (.fsi) for API design and encapsulation
+- `0028`: Object expressions for inline interface implementation
+- `0029`: Functional Ports & Adapters (Hexagonal) architecture
+- `0030`: CQRS without Event Sourcing
+- `0031`: FParsec parser combinators
+
+**fsharp_libraries.yaml** (+9 seeds, now 41 total):
+- `0033`: FsCheck property-based testing (generators, shrinking, model-based testing)
+- `0034`: Expecto test framework (testList, testAsync, FsCheck integration, benchmarks)
+- `0035`: Argu CLI argument parsing (subcommands, env var fallback)
+- `0036`: Dapper.FSharp data access (type-safe queries, joins, transactions)
+- `0037`: Farmer Azure IaC (Web App, SQL, Service Bus, Storage)
+- `0038`: Transactional outbox pattern (linq2db + Kafka)
+- `0039`: RabbitMQ consumer/producer (exchanges, DLX, hosted service)
+- `0040`: ETL data pipeline (CsvProvider, validation, Npgsql COPY, AsyncSeq)
+- `0041`: Bolero (Blazor + F#) with Elmish MVU
+
+**dotnet_aspnet.yaml** (+5 seeds, now 20 total):
+- `0016`: gRPC services in F# (proto files, streaming, Giraffe coexistence)
+- `0017`: .NET Aspire with F# services (orchestration, service discovery, testing)
+- `0018`: Distributed caching with Redis (typed wrapper, cache-aside, stampede prevention)
+- `0019`: Polly v8 resilience patterns (retry, circuit breaker, hedging, F#-friendly wrappers)
+- `0020`: API versioning (URL path, header-based, DTO evolution, deprecation)
+
+### Round 3 Config
+- Created `configs/rounds/round3.yaml`
+- Suffix: `_r3`, Temperature: 0.7
+- Teachers: MiniMax (F# core + libraries), GLM-5 (.NET/ASP.NET)
+- Created `pipeline/scripts/expand_new_seeds.py` to expand only the 20 new seeds
+- Expected: ~600 expanded prompts -> ~400-500 verified samples
+
+### Total seed count after round 3 additions
+| File | Before | After | New |
+|------|--------|-------|-----|
+| fsharp_core | 25 | 31 | +6 |
+| fsharp_libraries | 32 | 41 | +9 |
+| dotnet_aspnet | 15 | 20 | +5 |
+| **Total** | **72** | **92** | **+20** |
+
+(Other files unchanged: svelte_typescript 24, docker_kubernetes 16, agentic_swe 16, cross_domain 12, long_context 10, general_coding 15)
+
+Grand total seeds: 185 (was 165)
+
+---
+
 ## Pending Actions
 
 1. **Complete round 2 generation** (1,398 remaining prompts, ~2-3 hours)
 2. **Run dedup again** after round 2 completes (safety check)
-3. **Re-verify and reformat** combined data
-4. **Train Student 1** (Qwen3.5-27B) on cloud GPU -- stage1 LoRA
-5. **Evaluate Student 1** on F#, Svelte, TypeScript, Docker, K8s tasks
-6. **Train Student 2** (Devstral Small 2 24B) on same data with Mistral format
-7. **Evaluate and compare** both students
-8. **Export** to GGUF (Q4_K_M, Q5_K_M, Q8_0) and GPTQ for local inference
-9. **Push dataset and models** to HuggingFace
+3. **Expand round 3 seeds** (`python expand_new_seeds.py --variations 30 --concurrency 3`)
+4. **Generate round 3 data** (`python run_generation.py --round-config ../../configs/rounds/round3.yaml --verify`)
+5. **Re-verify and reformat** combined data from all rounds
+6. **Train Student 1** (Qwen3.5-27B) on cloud GPU -- stage1 LoRA
+7. **Evaluate Student 1** on F#, Svelte, TypeScript, Docker, K8s tasks
+8. **Train Student 2** (Devstral Small 2 24B) on same data with Mistral format
+9. **Evaluate and compare** both students
+10. **Export** to GGUF (Q4_K_M, Q5_K_M, Q8_0) and GPTQ for local inference
+11. **Push dataset and models** to HuggingFace

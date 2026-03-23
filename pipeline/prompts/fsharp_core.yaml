@@ -236,3 +236,65 @@ prompts:
       3. A tree traversal function converted to CPS to make it tail-recursive
       4. Using `Seq.unfold` as an alternative to recursion for generating sequences
       Explain how the F# compiler optimizes tail calls and when `rec` is required.
+
+  # --- Curriculum Gap Fills (Round 3) ---
+
+  - id: fsharp_core_0026
+    instruction: |
+      Demonstrate Statically Resolved Type Parameters (SRTP) in F#:
+      1. An inline function with ^T member constraints that calls a .Serialize() method on any type that has one
+      2. Duck typing: a generic `prettyPrint` function that works on any type with a ToString and a Name property
+      3. Operator overloading with SRTP for a custom Vector2D type (addition, scalar multiplication)
+      4. Using .NET generic math interfaces (INumber<T>) with inline functions
+      5. Show when to use SRTP vs interfaces vs plain generics, with trade-offs
+      6. Demonstrate the performance difference between inline and non-inline
+
+  - id: fsharp_core_0027
+    instruction: |
+      Demonstrate F# signature files (.fsi) for API design and encapsulation:
+      1. Create a module `Inventory` with internal helper functions and public API functions
+      2. Write an .fsi signature file that hides implementation details (internal helpers, private types)
+      3. Expose an opaque type (abstract type) where the implementation is hidden but the type name is public
+      4. Show how signature files control what appears in IntelliSense
+      5. Demonstrate a signature mismatch error and how to fix it
+      6. Explain when to use signature files vs access modifiers (internal/private)
+
+  - id: fsharp_core_0028
+    instruction: |
+      Demonstrate F# object expressions for inline interface implementation:
+      1. Implement IDisposable inline for a resource wrapper
+      2. Create a mock ILogger<T> for unit testing without a mocking framework
+      3. Implement IComparable<T> and IEquatable<T> for a custom type using object expressions
+      4. Create a mock IRepository<T> with in-memory state for integration testing
+      5. Implement multiple interfaces in a single object expression
+      6. Compare object expressions vs class types vs functions -- when to use each
+
+  - id: fsharp_core_0029
+    instruction: |
+      Structure an F# application using functional Ports & Adapters (Hexagonal) architecture:
+      1. Pure domain module: types, validation functions, and business logic with zero dependencies
+      2. Define "ports" as function type aliases (e.g., type SaveOrder = Order -> Async<Result<unit, PersistenceError>>)
+      3. Implement "adapters": a PostgreSQL adapter and an in-memory adapter for the same port
+      4. Composition root that wires adapters to ports using partial application (no DI container)
+      5. Show how this compares to C#-style interface-based dependency injection
+      6. Demonstrate testing by swapping the adapter to the in-memory implementation
+
+  - id: fsharp_core_0030
+    instruction: |
+      Implement CQRS (Command Query Responsibility Segregation) in F# without Event Sourcing:
+      1. Command types modeled as a DU (CreateOrder, UpdateOrderStatus, CancelOrder)
+      2. Command handler: validates command, applies business rules, writes to DB via port
+      3. Query types as a separate DU (GetOrderById, ListOrdersByCustomer, GetOrderSummary)
+      4. Query handler: reads from optimized read model (denormalized views)
+      5. F#-style mediator using DU pattern matching for dispatch (not MediatR)
+      6. Show the write model (domain types) vs read model (DTO types) separation
+
+  - id: fsharp_core_0031
+    instruction: |
+      Build a parser for a mini configuration language using FParsec:
+      1. Grammar: key = value pairs, sections [section_name], comments (# ...), nested sections
+      2. Value types: strings (quoted), integers, booleans, arrays ([1, 2, 3])
+      3. Use FParsec combinators: pstring, pint32, many, sepBy, between, choice, attempt
+      4. Define an AST as F# discriminated unions
+      5. Handle error recovery with custom error messages
+      6. Write a pretty-printer that converts the AST back to the config format (round-trip)

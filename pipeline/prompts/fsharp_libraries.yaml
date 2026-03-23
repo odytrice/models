@@ -327,3 +327,98 @@ prompts:
       4. Implement a Giraffe webhook handler with signature verification
       5. Map Stripe events to F# domain events using pattern matching
       Show the full flow from checkout to payment confirmation.
+
+  # --- Curriculum Gap Fills (Round 3) ---
+
+  - id: fsharp_lib_0033
+    instruction: |
+      Write property-based tests using FsCheck with xUnit integration in F#:
+      1. Custom generators for F# records and discriminated unions (using Gen.map, Gen.apply, Arb.from)
+      2. Shrinking: implement a custom Arbitrary with a shrinker for a complex type
+      3. Properties: commutativity of addition, round-trip JSON serialization, list reverse-reverse identity
+      4. Conditional properties using ==> (implication) operator
+      5. Model-based/stateful testing with FsCheck.Experimental for a queue implementation
+      6. Configure max tests, verbosity, and replay seeds for reproducibility
+
+  - id: fsharp_lib_0034
+    instruction: |
+      Write a comprehensive test suite using the Expecto test framework in F#:
+      1. testList and testCase composition to organize a hierarchical test suite
+      2. testAsync and testTask for async test cases
+      3. Expect module assertions: Expect.equal, Expect.isOk, Expect.wantSome, Expect.throws
+      4. Focused tests (ftestCase) and pending tests (ptestCase) for development workflow
+      5. FsCheck integration via Expecto.FsCheck (testProperty)
+      6. Performance tests using Expecto.BenchmarkDotNet
+      7. Custom test configuration: parallel execution, timeout, filters by name
+
+  - id: fsharp_lib_0035
+    instruction: |
+      Build an F# CLI application using Argu for argument parsing:
+      1. Define argument types as DUs with Argu attributes ([<MainCommand>], [<Mandatory>], [<AltCommandLine>])
+      2. Implement subcommands: `init`, `build`, `deploy` -- each with their own argument DU
+      3. Environment variable fallback using [<EnvironmentVariable>] attribute
+      4. Custom help text and usage formatting
+      5. Parse results and dispatch to handler functions using pattern matching
+      6. Error handling: show how Argu formats parse errors
+
+  - id: fsharp_lib_0036
+    instruction: |
+      Write data access code using Dapper.FSharp with PostgreSQL:
+      1. Define F# record types mapped to database tables
+      2. Type-safe select, insert, update, delete queries using Dapper.FSharp query builders
+      3. Joins between tables (inner join, left join) with F# anonymous records
+      4. Aggregation queries: GROUP BY, COUNT, SUM with typed results
+      5. Transactions: wrap multiple operations in a transaction
+      6. Compare Dapper.FSharp with linq2db -- when to prefer each approach
+
+  - id: fsharp_lib_0037
+    instruction: |
+      Define Azure infrastructure using Farmer in F#:
+      1. Web App with Application Insights and an App Service Plan (B1 tier)
+      2. Azure SQL database with connection string automatically injected into the Web App
+      3. Azure Service Bus queue with dead-letter configuration and max delivery count
+      4. Storage Account with a blob container and CORS rules
+      5. Generate an ARM template and show how to deploy it from an F# script
+      6. Compose multiple resources using Farmer's builder pattern (arm { ... })
+
+  - id: fsharp_lib_0038
+    instruction: |
+      Implement the transactional outbox pattern in F#:
+      1. Define an OutboxMessage type: Id, AggregateId, EventType, Payload (JSON), CreatedAt, ProcessedAt
+      2. Save domain events to an OutboxMessages table in the same database transaction as the aggregate state change (using linq2db)
+      3. BackgroundService that polls the outbox table for unprocessed messages
+      4. Publish outbox messages to Kafka using Confluent.Kafka producer
+      5. Idempotent consumer: deduplicate by message ID using a ProcessedMessages table
+      6. Show the full flow: command -> state change + outbox insert (same txn) -> poll -> Kafka -> consumer
+
+  - id: fsharp_lib_0039
+    instruction: |
+      Build a RabbitMQ consumer and producer in F# using RabbitMQ.Client:
+      1. Connection and channel setup with proper IDisposable handling
+      2. Declare exchange (topic), queue, and binding with routing keys
+      3. Publish messages: serialize F# DU events to JSON, set message properties (correlation ID, content type)
+      4. Consumer: BasicConsume with manual ack/nack, prefetch count configuration
+      5. Dead-letter exchange: configure DLX for failed messages, inspect dead-lettered messages
+      6. ASP.NET Core integration: IHostedService consumer that processes messages in the background
+      Compare the programming model with the Kafka approach.
+
+  - id: fsharp_lib_0040
+    instruction: |
+      Build a data processing ETL pipeline in F#:
+      1. Read CSV data using FSharp.Data CsvProvider with type-safe column access
+      2. Validate each row using Result and railway-oriented programming (collect all errors, don't stop at first)
+      3. Enrich valid records by joining with database lookups using linq2db
+      4. Transform: normalize addresses, parse dates, compute derived fields
+      5. Batch write to PostgreSQL using Npgsql's efficient COPY protocol
+      6. Generate a summary report: total rows, valid/invalid counts, error breakdown by category
+      7. Use AsyncSeq for streaming large files without loading all rows into memory
+
+  - id: fsharp_lib_0041
+    instruction: |
+      Build a Blazor WebAssembly application using Bolero (F# on Blazor):
+      1. Elmish model-view-update: define Model record, Message DU, and update function
+      2. View function using Bolero's type-safe HTML DSL (div, button, input, forEach)
+      3. Client-side routing with Bolero's router and page DU
+      4. Call an F# Giraffe API from the Bolero client using Remoting
+      5. Component state management with Elmish subscriptions
+      6. Compare the Bolero/Elmish approach vs Svelte 5 runes for the same feature (a todo list)
