@@ -1,11 +1,13 @@
 """
 Extract failed/skipped prompts from F# verification results
-and create benchmark YAML files for Kimi and MiniMax comparison.
+and create benchmark YAML files for teacher comparison.
 
 Usage:
-    python extract_failed.py
+    python extract_failed.py                    # All teachers (kimi, minimax, glm5)
+    python extract_failed.py --teachers glm5    # GLM-5 only
 """
 
+import argparse
 import json
 import yaml
 import logging
@@ -80,10 +82,21 @@ def create_benchmark_yaml(
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Extract failed prompts for benchmark")
+    parser.add_argument(
+        "--teachers",
+        nargs="+",
+        default=["kimi", "minimax", "glm5"],
+        help="Teachers to create benchmark YAMLs for (default: kimi minimax glm5)",
+    )
+    args = parser.parse_args()
+
     log.info("=" * 60)
     log.info("EXTRACTING FAILED PROMPTS FOR BENCHMARK")
+    log.info(f"Teachers: {args.teachers}")
     log.info("=" * 60)
 
+    # Domain configs: name, verified path, expanded yaml path
     domains = [
         {
             "name": "fsharp_core",
@@ -95,24 +108,36 @@ def main():
             "verified": VERIFIED_DIR / "fsharp_libraries.jsonl",
             "expanded": EXPANDED_DIR / "fsharp_libraries_expanded.yaml",
         },
+        {
+            "name": "dotnet_aspnet",
+            "verified": VERIFIED_DIR / "dotnet_aspnet.jsonl",
+            "expanded": EXPANDED_DIR / "dotnet_aspnet_expanded_kimi.yaml",
+        },
     ]
 
-    teachers = ["kimi", "minimax"]
     total_prompts = 0
 
     for domain in domains:
+        if not domain["verified"].exists():
+            log.warning(f"Verified file not found: {domain['verified']}, skipping")
+            continue
+
         log.info(f"\nDomain: {domain['name']}")
 
         # Extract failed IDs
         failed_ids = extract_failed_ids(domain["verified"])
         log.info(f"  Failed/skipped: {len(failed_ids)} samples")
 
+        if not failed_ids:
+            log.info(f"  No failures, skipping")
+            continue
+
         # Load original expanded prompts
         expanded = load_expanded_yaml(domain["expanded"])
         log.info(f"  Original prompts loaded: {len(expanded['prompts'])}")
 
-        # Create benchmark YAMLs for each teacher
-        for teacher in teachers:
+        # Create benchmark YAMLs for each requested teacher
+        for teacher in args.teachers:
             output = BENCHMARK_DIR / f"{domain['name']}_{teacher}.yaml"
             count = create_benchmark_yaml(
                 failed_ids, expanded, teacher, domain["name"], output
@@ -121,9 +146,8 @@ def main():
 
     log.info(f"\n{'=' * 60}")
     log.info(f"BENCHMARK FILES CREATED")
-    log.info(
-        f"  Total prompts: {total_prompts} ({total_prompts // 2} unique x 2 teachers)"
-    )
+    log.info(f"  Total prompts: {total_prompts}")
+    log.info(f"  Teachers: {args.teachers}")
     log.info(f"  Output: {BENCHMARK_DIR}")
     log.info(f"{'=' * 60}")
 

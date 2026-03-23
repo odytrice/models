@@ -350,11 +350,110 @@ Before running round 2, decided to benchmark all 3 teachers on F# to determine o
 
 ---
 
+## GLM-5 Added as Teacher
+
+### Research and Selection
+- Researched latest coding LLMs (Qwen3.5-397B, DeepSeek V3.2, Qwen3-Coder-Next, Devstral 2, GLM-4.7-Flash, GLM-5)
+- Selected **GLM-5** (744B total, 40B active, MoE) from Z.ai as DeepSeek's replacement
+- Key stats: 77.8% SWE-bench Verified, 73.3% SWE-bench Multilingual (both highest among our teachers)
+- Available on Ollama: `glm-5:cloud`, MIT license
+- Pulled successfully
+
+### GLM-5 Benchmark Results
+
+Ran GLM-5 on:
+- 63 fsharp_core prompts (ones both Kimi AND MiniMax failed on)
+- 47 fsharp_libraries prompts (same)
+- 208 dotnet_aspnet prompts (all that Kimi failed on)
+
+**Results:**
+
+| Domain | GLM-5 Passed | GLM-5 Pass Rate | vs MiniMax | vs Kimi |
+|--------|-------------|-----------------|------------|---------|
+| fsharp_core (63 remaining) | 149/427* | 70.6%* | MiniMax better (76.6%) | GLM-5 better |
+| fsharp_libraries (47 remaining) | 7/122* | 14.9%* | MiniMax better (56.6%) | GLM-5 worse |
+| dotnet_aspnet (208 prompts) | 202/208 | **97.1%** | N/A | **Massively better** |
+
+*Note: GLM-5 ran on all 427/122 prompts for fsharp_core/libraries (not just the 63/47 remaining). The pass rates are on the full failed set.
+
+**dotnet_aspnet was the standout: GLM-5 achieved 97.1% (202/208) on prompts Kimi scored 0% on.** This recovered 202 samples that were completely lost.
+
+### Combined Best-of-All-Teachers (After Merging Benchmark Data)
+
+| Domain | Original Only | Combined (all teachers) | Rate |
+|--------|--------------|------------------------|------|
+| fsharp_core | 323/750 (43.1%) | **702/750 (93.6%)** | +379 |
+| fsharp_libraries | 840/962 (87.3%) | **922/962 (95.8%)** | +82 |
+| dotnet_aspnet | 242/450 (53.8%) | **444/450 (98.7%)** | +202 |
+
+**663 new verified samples recovered** from benchmark data, merged into main verified files.
+
+### Format Script Fix
+- Discovered `format_dataset.py` was including non-passing samples from dotnet_aspnet and cross_domain
+- Fixed loader to check `verify_result.status == "pass"` for all samples that have a verify_result
+- Added `seen_ids` deduplication to prevent double-counting from `_passing.jsonl` and main `.jsonl` files
+
+### Final Formatted Dataset (Post-Benchmark Merge)
+
+| Domain | Samples | % of Total |
+|--------|---------|------------|
+| general_coding | 2,950 | 42.5% |
+| fsharp_libraries | 922 | 13.3% |
+| fsharp_core | 705 | 10.1% |
+| svelte_typescript | 676 | 9.7% |
+| dotnet_aspnet | 444 | 6.4% |
+| docker_kubernetes | 414 | 6.0% |
+| cross_domain | 289 | 4.2% |
+| agentic_swe | 279 | 4.0% |
+| long_context | 267 | 3.8% |
+| **Total** | **6,946** | |
+
+- Train: 6,599 / Val: 347
+- All samples in stage1 (0-16K tokens)
+
+### Devstral Small 2 Added as Second Student Model
+- Added `devstral-small-2:24b` (Mistral) as a secondary student alongside Qwen3.5-27B
+- 24B dense, 256K context, 65.8% SWE-bench Verified, purpose-built for agentic coding
+- Same training data can be used for both models with minimal config changes
+- Updated `Training/00-overview.md` and `Training/01-teacher-models.md`
+
+### DeepSeek V3.2 Retired
+- Removed from active teacher assignments
+- Replaced by MiniMax (F# domains) and GLM-5 (.NET/general domains)
+- Still documented for reference since it generated round 1 data
+
+### Final Teacher Assignments for Round 2
+
+| Teacher | Domains |
+|---------|---------|
+| **MiniMax M2.7** | fsharp_core, fsharp_libraries |
+| **Kimi K2.5** | svelte_typescript, cross_domain, long_context |
+| **GLM-5** | dotnet_aspnet, docker_kubernetes, agentic_swe, general_coding |
+
+---
+
+## Remaining Issues
+
+### 1. general_coding proportion still too high (42.5%)
+- OpenCodeInstruct at 2,500 samples dominates the mix
+- Plan: downsample to ~500
+
+### 2. fsharp_core still below target (10.1% vs 15% target)
+- Improved from 4.6% to 10.1% thanks to benchmark merge
+- Round 2 with MiniMax should push this higher
+
+### 3. No long-context samples
+- All samples fit in stage1 (0-16K)
+- Teachers not generating long enough responses
+
+---
+
 ## Pending Actions (in order)
 
-1. **Complete F# teacher benchmark** (~4 hours running)
-2. **Analyze benchmark results** -- determine best teacher per domain for round 2
-3. **Downsample OpenCodeInstruct** from 2,500 to ~500
-4. **Run round 2** with optimal teacher assignments and temp 0.9
-5. **Re-verify and reformat** combined round 1 + round 2 data
+1. **Downsample OpenCodeInstruct** from 2,500 to ~500
+2. **Update round 2 scripts** with new teacher assignments (MiniMax, Kimi, GLM-5)
+3. **Run round 2** with temp 0.9
+4. **Re-verify and reformat** combined round 1 + round 2 data
+5. **Train Student 1** (Qwen3.5-27B) on cloud GPU (4-stage progressive LoRA)
+6. **Train Student 2** (Devstral Small 2 24B) on same data
 6. **Train** on cloud GPU (4-stage progressive LoRA)

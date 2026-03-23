@@ -72,6 +72,7 @@ def estimate_tokens(text: str) -> int:
 def load_verified_samples(input_dir: Path) -> list[dict]:
     """Load all passing samples from verified JSONL files."""
     samples = []
+    seen_ids = set()
     for jsonl_file in sorted(input_dir.glob("*_passing.jsonl")):
         log.info(f"Loading {jsonl_file.name}...")
         with open(jsonl_file, "r", encoding="utf-8") as f:
@@ -81,18 +82,13 @@ def load_verified_samples(input_dir: Path) -> list[dict]:
                     continue
                 try:
                     sample = json.loads(line)
-                    if sample.get("verify_result", {}).get(
-                        "status"
-                    ) == "pass" or sample.get("domain") not in (
-                        "fsharp_core",
-                        "fsharp_libraries",
-                    ):
-                        # F# samples must pass verification; others are included as-is
+                    if sample.get("verify_result", {}).get("status") == "pass":
                         samples.append(sample)
+                        seen_ids.add(sample.get("id"))
                 except json.JSONDecodeError:
                     continue
 
-    # Also load non-verified domain files (svelte, docker, etc.)
+    # Load all JSONL files (including non-verified domains and merged benchmark data)
     for jsonl_file in sorted(input_dir.glob("*.jsonl")):
         if "_passing" in jsonl_file.name or "_verified" in jsonl_file.name:
             continue
@@ -104,10 +100,19 @@ def load_verified_samples(input_dir: Path) -> list[dict]:
                     continue
                 try:
                     sample = json.loads(line)
-                    # Skip F# samples that should go through verification
-                    if sample.get("domain", "").startswith("fsharp"):
+                    sid = sample.get("id", "")
+                    # Skip if already loaded from _passing file
+                    if sid in seen_ids:
                         continue
-                    samples.append(sample)
+                    # If sample has verify_result, only include if passed
+                    if "verify_result" in sample:
+                        if sample["verify_result"].get("status") == "pass":
+                            samples.append(sample)
+                            seen_ids.add(sid)
+                    else:
+                        # No verification result = non-F# domain, include as-is
+                        samples.append(sample)
+                        seen_ids.add(sid)
                 except json.JSONDecodeError:
                     continue
 

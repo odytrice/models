@@ -64,54 +64,78 @@
 
 ---
 
-## 3. DeepSeek V3.2 (DeepSeek) -- The Corpus Giant
+## 3. GLM-5 (Z.ai) -- The Multilingual Powerhouse
 
-- **Source**: `deepseek-ai/DeepSeek-V3.2` ([HuggingFace](https://huggingface.co/deepseek-ai/DeepSeek-V3.2))
-- **Released**: December 1, 2025 (most battle-tested of the three)
-- **Architecture**: MoE -- 685B total, 37B active per token
-- **Context**: 128K tokens
-- **License**: Full MIT (most permissive)
-- **Access**: Ollama cloud (`ollama run deepseek-v3.2:cloud`), DeepSeek API, or self-hosted via vLLM/SGLang
-- **Variants**: V3.2-Speciale (96.0% AIME, IMO gold medal)
+- **Source**: `zai-org/GLM-5` ([HuggingFace](https://huggingface.co/zai-org/GLM-5))
+- **Released**: February 2026
+- **Architecture**: MoE -- 744B total, 40B active per token
+- **Context**: 198K tokens (via DeepSeek Sparse Attention)
+- **License**: MIT
+- **Access**: Ollama cloud (`ollama run glm-5:cloud`)
+- **Thinking mode**: Yes
 
 **Strengths:**
-- Largest training corpus -- 685B params trained on the most diverse code data; highest probability of F# exposure among all open models
-- Full MIT license -- no restrictions whatsoever, most permissive of the three
-- Strong on statically-typed languages -- best Java results in Multi-SWE-bench (22.66% MagentLess), which is the best proxy for F#/C#
-- "Thinking in Tool-Use" architecture -- retains chain-of-thought across tool calls, good for generating agentic training data
-- DeepSeek Sparse Attention -- 3x faster long-context processing
-- Speciale variant achieves 96.0% AIME, IMO 2025 gold medal for math reasoning
-- Self-hostable -- open weights on HuggingFace, can run via vLLM/SGLang
-- Proven and battle-tested -- released Dec 2025, extensive community validation over 4 months
+- Highest SWE-bench Verified among teachers -- 77.8% (beats K2.5's 76.8%, M2.7's SWE-Pro 56.2%)
+- **Best SWE-bench Multilingual -- 73.3%** -- critical for F# and non-mainstream languages
+- Strongest Terminal-Bench 2.0 -- 56.2%, excellent for Docker/K8s/system tasks
+- Excellent reasoning -- AIME 2026 I: 92.7%, GPQA-Diamond: 86.0%
+- Strong agentic capabilities -- BrowseComp 62.0
+- MIT license -- fully permissive
+- Thinking mode for complex reasoning tasks
 
 **Weaknesses:**
-- Shorter context -- 128K tokens, half of K2.5's 256K. Cannot generate training samples at 200K+ context
-- Weaker SWE-bench -- 67.8-73.1% Verified, significantly behind M2.7 and K2.5
-- Lower Terminal-Bench -- 46.4%, worst of the three teachers on system-level tasks
-- Older model -- Dec 2025 release, surpassed by both K2.5 (Jan 2026) and M2.7 (Mar 2026) on most benchmarks
-- No multimodal -- text-only
-- Heavy to self-host -- 685B params requires significant GPU resources
-- No agent team capability -- single-agent only, no native multi-agent coordination
+- Cloud-only on Ollama -- 744B is too large for local inference
+- Supports only English and Chinese -- not a broad multilingual model for natural language
+- Relatively new (1 month) -- less community validation than DeepSeek V3.2
+- 198K context -- slightly shorter than K2.5's 256K
+- No multimodal (text-only)
 
-**Best used for**: F#, Akka.NET, .NET/ASP.NET Core, statically-typed language patterns, reasoning-heavy training data
+**Best used for**: .NET/ASP.NET Core, Docker/K8s, agentic tasks, general coding -- replaces DeepSeek V3.2 with superior benchmarks
+
+---
+
+## 4. DeepSeek V3.2 (DeepSeek) -- Retired from Active Use
+
+> **Note:** DeepSeek V3.2 was the original F# teacher but was replaced after benchmarking showed inferior F# code quality (43.1% pass rate on fsharp_core) compared to MiniMax (76.6%) and GLM-5 (pending benchmark). Retained here for reference.
+
+- **Source**: `deepseek-ai/DeepSeek-V3.2` ([HuggingFace](https://huggingface.co/deepseek-ai/DeepSeek-V3.2))
+- **Released**: December 1, 2025
+- **Architecture**: MoE -- 685B total, 37B active per token
+- **Context**: 128K tokens
+- **License**: Full MIT
+- **Access**: Ollama cloud (`ollama run deepseek-v3.2:cloud`)
+
+**Why replaced:**
+- F# verification pass rate of 43.1% on fsharp_core (vs MiniMax's 76.6%)
+- 128K context -- shortest of all teachers
+- Surpassed by GLM-5 on SWE-bench Verified (73.1% vs 77.8%) and Multilingual (70.2% vs 73.3%)
+- Still generated training data for round 1 (fsharp_core, fsharp_libraries) -- those samples are included in the dataset
 
 ---
 
 ## Teacher Comparison Matrix
 
-| Dimension | Kimi K2.5 | MiniMax M2.7 | DeepSeek V3.2 |
-|-----------|-----------|--------------|---------------|
-| **Overall intelligence** | **Best** | Good | Good |
-| **SWE (real-world coding)** | Good (76.8%) | **Best** (SWE-Pro 56.2%) | Weakest (67-73%) |
-| **System/DevOps** | Good (50.8%) | **Best** (57.0%) | Weakest (46.4%) |
-| **Math/reasoning** | **Best** (AIME 96.1%) | Moderate | Strong (Speciale 96.0%) |
-| **Instruction following** | **Best** (IFEval 94%) | Good (97% skill adherence) | Good |
-| **Long context** | **Best** (256K native) | Good (200K) | Weakest (128K) |
-| **F# suitability** | Medium | Medium | **Best** (largest corpus) |
-| **Frontend/Svelte/TS** | **Best** | Good | Good |
-| **Docker/K8s** | Good | **Best** | Weakest |
-| **Agentic tasks** | Good | **Best** | Good |
-| **License** | Modified MIT | Cloud-only (no weights) | **Full MIT** |
-| **Availability** | Ollama cloud + API | Ollama cloud + API | Ollama cloud + API + open weights |
-| **Cost control** | Ollama subscription | Ollama subscription | Ollama subscription |
-| **Maturity** | 2 months | **3 days** | 4 months (most proven) |
+| Dimension | Kimi K2.5 | MiniMax M2.7 | GLM-5 | DeepSeek V3.2 (retired) |
+|-----------|-----------|--------------|-------|------------------------|
+| **Overall intelligence** | **Best** | Good | Strong | Good |
+| **SWE-bench Verified** | Good (76.8%) | Good (SWE-Pro 56.2%) | **Best (77.8%)** | Weakest (73.1%) |
+| **SWE-bench Multilingual** | Good (73.0%) | Good (76.5%) | **Best (73.3%)** | Good (70.2%) |
+| **System/DevOps** | Good (50.8%) | **Best** (57.0%) | Strong (56.2%) | Weakest (46.4%) |
+| **Math/reasoning** | **Best** (AIME 96.1%) | Moderate | Strong (AIME 92.7%) | Strong (Speciale 96.0%) |
+| **Instruction following** | **Best** (IFEval 94%) | Good (97% skill adherence) | Good | Good |
+| **Long context** | **Best** (256K native) | Good (200K) | Good (198K) | Weakest (128K) |
+| **F# pass rate (benchmarked)** | 34.9% | **76.6%** | TBD | 43.1% (original) |
+| **Frontend/Svelte/TS** | **Best** | Good | Good | Good |
+| **Docker/K8s** | Good | **Best** | Strong | Weakest |
+| **Agentic tasks** | Good | **Best** | Strong | Good |
+| **License** | Modified MIT | Cloud-only | **MIT** | **MIT** |
+| **Availability** | Ollama cloud | Ollama cloud | Ollama cloud | Ollama cloud + open weights |
+| **Skip rate (empty responses)** | High (41-61%) | **Near zero** | TBD | Low |
+
+### Current Teacher Assignments (Round 2)
+
+| Teacher | Domains | Rationale |
+|---------|---------|-----------|
+| **MiniMax M2.7** | fsharp_core, fsharp_libraries | 76.6% F# pass rate (best), near-zero skip rate |
+| **Kimi K2.5** | svelte_typescript, cross_domain, long_context | Best frontend/TS, longest context (256K) |
+| **GLM-5** | dotnet_aspnet, docker_kubernetes, agentic_swe, general_coding | Best SWE-bench scores, replaces DeepSeek |

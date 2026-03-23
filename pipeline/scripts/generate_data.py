@@ -44,6 +44,7 @@ TEACHERS = {
     "kimi": "kimi-k2.5:cloud",
     "minimax": "minimax-m2.7:cloud",
     "deepseek": "deepseek-v3.2:cloud",
+    "glm5": "glm-5:cloud",
 }
 
 # Default generation parameters per teacher
@@ -62,6 +63,11 @@ TEACHER_DEFAULTS = {
         "temperature": 0.6,
         "top_p": 0.9,
         "num_predict": 8192,
+    },
+    "glm5": {
+        "temperature": 0.7,  # Same as SWE-bench eval defaults
+        "top_p": 0.95,
+        "num_predict": 16384,
     },
 }
 
