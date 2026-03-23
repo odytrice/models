@@ -564,6 +564,65 @@ Pass rate: 59.6% overall (dominated by F# compiler verification filtering out ba
 
 ---
 
+## Duplicate Generation Bug Found and Fixed
+
+### Discovery
+Investigating why round 2 had inflated sample counts (e.g., fsharp_libraries_t2 had 1,412 entries for 962 prompts). Turns out **all** round 2 files had duplicates:
+
+| File | Total | Unique | Extras |
+|------|-------|--------|--------|
+| fsharp_libraries_t2 | 1,412 | 838 | 574 |
+| fsharp_core_t2 | 651 | 530 | 121 |
+| general_coding_t2 | 451 | 333 | 118 |
+| svelte_typescript_t2 | 571 | 469 | 102 |
+| docker_kubernetes_t2 | 291 | 234 | 57 |
+| dotnet_aspnet_t2 | 377 | 322 | 55 |
+| cross_domain_t2 | 278 | 225 | 53 |
+| agentic_swe_t2 | 158 | 138 | 20 |
+| long_context_t2 | 76 | 71 | 5 |
+| **Total** | **4,265** | **3,160** | **1,105** |
+
+### Root Cause
+In `generate_data.py`, the `existing_ids` set was loaded once at startup from the output file. When concurrent tasks for the same prompt ID completed near-simultaneously, both passed the "not in existing_ids" check before either wrote to disk, resulting in duplicate entries. The higher temperature (0.9) in round 2 made this worse due to faster token generation.
+
+### Fix Applied
+1. **`generate_data.py`**: Added a `completed_ids` set checked under the asyncio write lock. Before writing, the lock-holder checks if the ID was already written by another concurrent task during this run. Prevents future duplicates.
+
+2. **`dedup_round2.py`**: New script to clean existing duplicate files. For each prompt ID with multiple responses:
+   - F# domains: prefers the response that passes verification, then picks the longer one
+   - Non-F# domains: picks the longer response (more training signal)
+   - Supports `--dry-run` for preview
+
+### Dedup Results (fsharp_libraries_t2 detail)
+- 444 IDs: both responses passed verification -- kept the longer one
+- 83 IDs: one passed, one failed -- kept the passing one
+- 47 IDs: neither passed -- kept the longer one (excluded by format_dataset anyway)
+
+### Impact
+- Removed 1,105 duplicate entries from raw files
+- Removed 1,105 duplicate entries from verified files
+- Actual unique round 2 samples: 3,160 (was inflated to 4,265)
+- Formatted dataset unchanged at 6,855 (format_dataset already deduplicated via `seen_ids`)
+
+### Round 2 Completion Status (Post-Dedup)
+
+| Domain | Unique Generated | Target | Remaining |
+|--------|-----------------|--------|-----------|
+| fsharp_core_t2 | 535 | 750 | 215 |
+| fsharp_libraries_t2 | 838 | 962 | 124 |
+| svelte_typescript_t2 | 472 | 676 | 204 |
+| cross_domain_t2 | 225 | 321 | 96 |
+| long_context_t2 | 71 | 267 | 196 |
+| dotnet_aspnet_t2 | 325 | 450 | 125 |
+| docker_kubernetes_t2 | 234 | 414 | 180 |
+| agentic_swe_t2 | 138 | 279 | 141 |
+| general_coding_t2 | 333 | 450 | 117 |
+| **Total** | **3,171** | **4,569** | **1,398** |
+
+Round 2 re-run is in progress to complete the remaining 1,398 prompts. With the duplicate fix applied, the re-run will not produce duplicates.
+
+---
+
 ## Remaining Issues
 
 ### 1. No long-context samples
@@ -576,13 +635,21 @@ Pass rate: 59.6% overall (dominated by F# compiler verification filtering out ba
 - Intentionally high -- F# is severely underrepresented in base model pre-training
 - Can be rebalanced if evaluation shows overfitting on F# library patterns
 
+### 3. Round 2 incomplete (1,398 prompts remaining)
+- Re-run in progress with duplicate fix applied
+- Expected to add ~1,200-1,300 verified samples after F# filtering
+- Projected final total: ~7,500-7,600 samples
+
 ---
 
 ## Pending Actions
 
-1. **Train Student 1** (Qwen3.5-27B) on cloud GPU -- 4-stage progressive LoRA (though only stage1 has data currently)
-2. **Evaluate Student 1** on F#, Svelte, TypeScript, Docker, K8s tasks
-3. **Train Student 2** (Devstral Small 2 24B) on same data with Mistral format
-4. **Evaluate and compare** both students
-5. **Export** to GGUF (Q4_K_M, Q5_K_M, Q8_0) and GPTQ for local inference
-6. **Push dataset and models** to HuggingFace
+1. **Complete round 2 generation** (1,398 remaining prompts, ~2-3 hours)
+2. **Run dedup again** after round 2 completes (safety check)
+3. **Re-verify and reformat** combined data
+4. **Train Student 1** (Qwen3.5-27B) on cloud GPU -- stage1 LoRA
+5. **Evaluate Student 1** on F#, Svelte, TypeScript, Docker, K8s tasks
+6. **Train Student 2** (Devstral Small 2 24B) on same data with Mistral format
+7. **Evaluate and compare** both students
+8. **Export** to GGUF (Q4_K_M, Q5_K_M, Q8_0) and GPTQ for local inference
+9. **Push dataset and models** to HuggingFace
