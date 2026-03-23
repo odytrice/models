@@ -1,20 +1,18 @@
 """
-Parallel Training Data Generation Runner
+Parallel Training Data Generation Runner (Config-Driven)
 
-Runs all 3 teachers (DeepSeek, Kimi, MiniMax) concurrently as background
-processes, showing a live status dashboard instead of per-line logs.
-
-Supports multiple passes with different temperatures via --suffix and --temperature.
+Runs teachers concurrently as background processes, showing a live status
+dashboard. Teacher assignments, suffix, temperature, and concurrency are
+loaded from a round config YAML.
 
 Usage:
-    python run_generation.py                    # Generate with status dashboard
-    python run_generation.py --verify           # Generate + verify + format
-    python run_generation.py --concurrency 8    # Custom concurrency per teacher
-    python run_generation.py --verbose          # Show per-line logs instead of dashboard
-    python run_generation.py --status           # Just print status and exit
+    python run_generation.py --round-config ../../configs/rounds/round1.yaml
+    python run_generation.py --round-config ../../configs/rounds/round2.yaml --verify
+    python run_generation.py --round-config ../../configs/rounds/round2.yaml --status
+    python run_generation.py --round-config ../../configs/rounds/round2.yaml --verbose
 
-    # Second pass at higher temperature:
-    python run_generation.py --suffix _t2 --temperature 0.9 --verify
+    # Override config values via CLI:
+    python run_generation.py --round-config ../../configs/rounds/round2.yaml --concurrency 5 --temperature 0.85
 """
 
 import argparse
@@ -28,44 +26,13 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
+import yaml
+
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = SCRIPT_DIR.parent.parent
 RAW_DIR = PROJECT_DIR / "data" / "raw"
 VERIFIED_DIR = PROJECT_DIR / "data" / "verified"
 EXPANDED_DIR = SCRIPT_DIR.parent / "prompts" / "expanded"
-
-# Teacher -> list of (expanded_yaml_stem, output_name)
-# Redistributed: dotnet_aspnet -> Kimi, general_coding -> MiniMax
-TEACHERS = {
-    "DeepSeek": [
-        ("fsharp_core_expanded", "fsharp_core"),
-        ("fsharp_libraries_expanded", "fsharp_libraries"),
-    ],
-    "Kimi": [
-        ("svelte_typescript_expanded", "svelte_typescript"),
-        ("cross_domain_expanded", "cross_domain"),
-        ("long_context_expanded", "long_context"),
-        ("dotnet_aspnet_expanded_kimi", "dotnet_aspnet"),
-    ],
-    "MiniMax": [
-        ("docker_kubernetes_expanded", "docker_kubernetes"),
-        ("agentic_swe_expanded", "agentic_swe"),
-        ("general_coding_expanded_minimax", "general_coding"),
-    ],
-}
-
-# All output names across all teachers (for status/verify)
-ALL_OUTPUTS = [
-    "fsharp_core",
-    "fsharp_libraries",
-    "svelte_typescript",
-    "cross_domain",
-    "long_context",
-    "dotnet_aspnet",
-    "docker_kubernetes",
-    "agentic_swe",
-    "general_coding",
-]
 
 # Files that need F# verification
 FSHARP_DOMAINS = {"fsharp_core", "fsharp_libraries", "dotnet_aspnet", "cross_domain"}
@@ -85,35 +52,57 @@ def count_lines(path: Path) -> int:
 
 
 def count_prompts(yaml_path: Path) -> int:
-    """Count prompts in an expanded YAML without loading full file."""
-    import yaml
-
     with open(yaml_path, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f)
     return len(data.get("prompts", []))
 
 
-def get_totals() -> dict:
+def load_round_config(path: Path) -> dict:
+    """Load a round config YAML and return structured config."""
+    with open(path, "r", encoding="utf-8") as f:
+        config = yaml.safe_load(f)
+
+    teachers = {}
+    all_outputs = []
+    for teacher, files in config["teachers"].items():
+        teachers[teacher] = [(f["yaml"], f["output"]) for f in files]
+        all_outputs.extend(f["output"] for f in files)
+
+    return {
+        "description": config.get("description", ""),
+        "suffix": config.get("suffix", ""),
+        "temperature": config.get("temperature"),
+        "concurrency": config.get("concurrency", 7),
+        "teachers": teachers,
+        "all_outputs": all_outputs,
+    }
+
+
+def get_totals(round_config: dict) -> dict:
     """Get prompt totals for each domain from expanded YAMLs."""
     totals = {}
-    for teacher, files in TEACHERS.items():
+    for teacher, files in round_config["teachers"].items():
         for yaml_stem, output_name in files:
-            config = EXPANDED_DIR / f"{yaml_stem}.yaml"
+            config_path = EXPANDED_DIR / f"{yaml_stem}.yaml"
             totals[output_name] = {
-                "total": count_prompts(config),
+                "total": count_prompts(config_path),
                 "teacher": teacher,
             }
     return totals
 
 
-def print_status(totals: dict, suffix: str = "", start_time: float = None):
+def print_status(
+    round_config: dict, totals: dict, suffix: str = "", start_time: float = None
+):
     """Print the status dashboard."""
     now = datetime.now()
     os.system("cls" if os.name == "nt" else "clear")
 
-    label = f" (pass 2, temp override)" if suffix else ""
+    desc = round_config["description"]
+    label = f" [{desc}]" if desc else ""
     print(f"{'=' * 65}")
-    print(f"  GENERATION STATUS{label} -- {now.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"  GENERATION STATUS{label}")
+    print(f"  {now.strftime('%Y-%m-%d %H:%M:%S')}")
     if start_time:
         elapsed = timedelta(seconds=time.monotonic() - start_time)
         print(f"  Running for {str(elapsed).split('.')[0]}")
@@ -124,8 +113,8 @@ def print_status(totals: dict, suffix: str = "", start_time: float = None):
     grand_done = 0
     grand_total = 0
 
-    for teacher in ["DeepSeek", "Kimi", "MiniMax"]:
-        files = TEACHERS[teacher]
+    for teacher in round_config["teachers"]:
+        files = round_config["teachers"][teacher]
         teacher_done = 0
         teacher_total = 0
 
@@ -168,6 +157,7 @@ def print_status(totals: dict, suffix: str = "", start_time: float = None):
         grand_total += teacher_total
 
     grand_pct = (grand_done / grand_total * 100) if grand_total > 0 else 0
+    remaining = grand_total - grand_done
     print(f"  {'-' * 55}")
     print(f"  DISTILLED TOTAL: {grand_done:,} / {grand_total:,} ({grand_pct:.1f}%)")
 
@@ -177,11 +167,9 @@ def print_status(totals: dict, suffix: str = "", start_time: float = None):
         print(f"  OPENCODE INSTRUCT: {oci_count:,} samples (verified)")
     print(f"  GRAND TOTAL: {grand_done + oci_count:,} samples")
 
-    # Estimate remaining time
-    remaining = grand_total - grand_done
     if start_time and grand_done > 0:
         elapsed_s = time.monotonic() - start_time
-        rate = grand_done / (elapsed_s / 60)  # samples per minute
+        rate = grand_done / (elapsed_s / 60)
         if rate > 0 and remaining > 0:
             eta_min = remaining / rate
             finish = now + timedelta(minutes=eta_min)
@@ -302,20 +290,24 @@ async def run_teacher(
 
 
 async def status_loop(
-    totals: dict, start_time: float, suffix: str = "", check_interval: int = 15
+    round_config: dict,
+    totals: dict,
+    start_time: float,
+    suffix: str = "",
+    check_interval: int = 15,
 ):
     """Periodically refresh the status dashboard."""
     grand_total = sum(t["total"] for t in totals.values())
 
     while True:
-        print_status(totals, suffix=suffix, start_time=start_time)
+        print_status(round_config, totals, suffix=suffix, start_time=start_time)
         print(
             f"  Refreshing every {check_interval}s (generation running in background)"
         )
 
-        # Check if all done
         grand_done = sum(
-            count_lines(RAW_DIR / f"{name}{suffix}.jsonl") for name in ALL_OUTPUTS
+            count_lines(RAW_DIR / f"{name}{suffix}.jsonl")
+            for name in round_config["all_outputs"]
         )
         if grand_done >= grand_total:
             break
@@ -324,56 +316,32 @@ async def status_loop(
 
 
 async def generate_all(
-    concurrency: int, verbose: bool, suffix: str = "", temperature: float = None
+    round_config: dict,
+    concurrency: int,
+    verbose: bool,
+    suffix: str = "",
+    temperature: float = None,
 ):
-    """Run all 3 teachers in parallel."""
-    totals = get_totals()
+    """Run all teachers in parallel."""
+    totals = get_totals(round_config)
     start_time = time.monotonic()
 
     teacher_args = dict(suffix=suffix, temperature=temperature)
 
     if verbose:
-        await asyncio.gather(
-            run_teacher(
-                "DeepSeek",
-                TEACHERS["DeepSeek"],
-                concurrency,
-                verbose=True,
-                **teacher_args,
-            ),
-            run_teacher(
-                "Kimi", TEACHERS["Kimi"], concurrency, verbose=True, **teacher_args
-            ),
-            run_teacher(
-                "MiniMax",
-                TEACHERS["MiniMax"],
-                concurrency,
-                verbose=True,
-                **teacher_args,
-            ),
-        )
+        tasks = [
+            run_teacher(teacher, files, concurrency, verbose=True, **teacher_args)
+            for teacher, files in round_config["teachers"].items()
+        ]
+        await asyncio.gather(*tasks)
     else:
-        gen_task = asyncio.gather(
-            run_teacher(
-                "DeepSeek",
-                TEACHERS["DeepSeek"],
-                concurrency,
-                verbose=False,
-                **teacher_args,
-            ),
-            run_teacher(
-                "Kimi", TEACHERS["Kimi"], concurrency, verbose=False, **teacher_args
-            ),
-            run_teacher(
-                "MiniMax",
-                TEACHERS["MiniMax"],
-                concurrency,
-                verbose=False,
-                **teacher_args,
-            ),
-        )
+        gen_tasks = [
+            run_teacher(teacher, files, concurrency, verbose=False, **teacher_args)
+            for teacher, files in round_config["teachers"].items()
+        ]
+        gen_task = asyncio.gather(*gen_tasks)
         status_task = asyncio.create_task(
-            status_loop(totals, start_time, suffix=suffix)
+            status_loop(round_config, totals, start_time, suffix=suffix)
         )
 
         await gen_task
@@ -383,10 +351,10 @@ async def generate_all(
         except asyncio.CancelledError:
             pass
 
-        print_status(totals, suffix=suffix, start_time=start_time)
+        print_status(round_config, totals, suffix=suffix, start_time=start_time)
 
 
-def run_verify(suffix: str = ""):
+def run_verify(round_config: dict, suffix: str = ""):
     """Run F# verification on applicable domains."""
     print("\n" + "=" * 60)
     print("  F# VERIFICATION")
@@ -394,7 +362,7 @@ def run_verify(suffix: str = ""):
 
     VERIFIED_DIR.mkdir(parents=True, exist_ok=True)
 
-    for output_name in ALL_OUTPUTS:
+    for output_name in round_config["all_outputs"]:
         raw_path = RAW_DIR / f"{output_name}{suffix}.jsonl"
         verified_path = VERIFIED_DIR / f"{output_name}{suffix}.jsonl"
 
@@ -447,10 +415,16 @@ def run_format():
 def main():
     parser = argparse.ArgumentParser(description="Parallel Training Data Generation")
     parser.add_argument(
+        "--round-config",
+        type=Path,
+        required=True,
+        help="Round config YAML (e.g., ../../configs/rounds/round2.yaml)",
+    )
+    parser.add_argument(
         "--concurrency",
         type=int,
-        default=7,
-        help="Concurrent requests per teacher (default: 7, 21 total across 3 teachers)",
+        default=None,
+        help="Override concurrent requests per teacher (default: from config)",
     )
     parser.add_argument(
         "--verify",
@@ -470,33 +444,54 @@ def main():
     parser.add_argument(
         "--suffix",
         type=str,
-        default="",
-        help="Suffix for output files (e.g., '_t2' for second pass)",
+        default=None,
+        help="Override output file suffix (default: from config)",
     )
     parser.add_argument(
         "--temperature",
         type=float,
         default=None,
-        help="Override temperature for all prompts",
+        help="Override temperature for all prompts (default: from config)",
     )
     args = parser.parse_args()
 
+    # Load round config
+    if not args.round_config.exists():
+        print(f"Error: Round config not found: {args.round_config}")
+        sys.exit(1)
+
+    round_config = load_round_config(args.round_config)
+
+    # CLI overrides config values
+    suffix = args.suffix if args.suffix is not None else round_config["suffix"]
+    temperature = (
+        args.temperature
+        if args.temperature is not None
+        else round_config["temperature"]
+    )
+    concurrency = (
+        args.concurrency
+        if args.concurrency is not None
+        else round_config["concurrency"]
+    )
+
     if args.status:
-        totals = get_totals()
-        print_status(totals, suffix=args.suffix)
+        totals = get_totals(round_config)
+        print_status(round_config, totals, suffix=suffix)
         return
 
     asyncio.run(
         generate_all(
-            args.concurrency,
+            round_config,
+            concurrency,
             args.verbose,
-            suffix=args.suffix,
-            temperature=args.temperature,
+            suffix=suffix,
+            temperature=temperature,
         )
     )
 
     if args.verify:
-        run_verify(suffix=args.suffix)
+        run_verify(round_config, suffix=suffix)
         run_format()
 
     print("\nDone! Run with --verify to also verify F# and format the dataset.")

@@ -1,0 +1,27 @@
+description: "Round 1 - Original teacher assignments (redistributed)"
+suffix: ""
+temperature: null
+concurrency: 7
+
+teachers:
+  DeepSeek:
+    - yaml: fsharp_core_expanded
+      output: fsharp_core
+    - yaml: fsharp_libraries_expanded
+      output: fsharp_libraries
+  Kimi:
+    - yaml: svelte_typescript_expanded
+      output: svelte_typescript
+    - yaml: cross_domain_expanded
+      output: cross_domain
+    - yaml: long_context_expanded
+      output: long_context
+    - yaml: dotnet_aspnet_expanded_kimi
+      output: dotnet_aspnet
+  MiniMax:
+    - yaml: docker_kubernetes_expanded
+      output: docker_kubernetes
+    - yaml: agentic_swe_expanded
+      output: agentic_swe
+    - yaml: general_coding_expanded_minimax
+      output: general_coding

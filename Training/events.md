@@ -432,28 +432,83 @@ Ran GLM-5 on:
 
 ---
 
+## Config-Driven Round System
+
+### Problem
+`run_generation.py` had hardcoded teacher assignments. Changing teachers for round 2 would overwrite round 1 config, making it non-reproducible. Also risked breaking resume if the script was re-run for round 1.
+
+### Solution: Round config YAMLs
+Extracted teacher assignments into separate config files:
+- `configs/rounds/round1.yaml` -- historical round 1 assignments (DeepSeek + Kimi + MiniMax)
+- `configs/rounds/round2.yaml` -- optimized round 2 assignments (MiniMax + Kimi + GLM-5)
+
+Each config specifies: teacher-to-domain mapping, suffix, temperature, concurrency.
+
+`run_generation.py` now takes `--round-config` as a required argument. Config values (suffix, temperature, concurrency) serve as defaults that can be overridden by CLI flags.
+
+### Files created
+- `configs/rounds/round1.yaml`, `configs/rounds/round2.yaml`
+- 6 new expanded YAML copies with updated teacher fields:
+  - `fsharp_core_expanded_minimax.yaml` (750 prompts)
+  - `fsharp_libraries_expanded_minimax.yaml` (962 prompts)
+  - `dotnet_aspnet_expanded_glm5.yaml` (450 prompts)
+  - `docker_kubernetes_expanded_glm5.yaml` (414 prompts)
+  - `agentic_swe_expanded_glm5.yaml` (279 prompts)
+  - `general_coding_expanded_glm5.yaml` (450 prompts)
+
+### Usage
+```bash
+# Round 1 (historical)
+python run_generation.py --round-config ../../configs/rounds/round1.yaml --status
+
+# Round 2
+python run_generation.py --round-config ../../configs/rounds/round2.yaml --verify
+
+# Override config values
+python run_generation.py --round-config ../../configs/rounds/round2.yaml --concurrency 5 --temperature 0.85
+```
+
+### Tested
+- `--status` on round 1 config shows all 4,569 samples complete
+- `--status` on round 2 config shows correct teacher assignments (MiniMax, Kimi, GLM-5) with all samples pending
+
+---
+
+## Round 2 Generation (In Progress)
+
+- **Started**: 2026-03-22
+- **Config**: `configs/rounds/round2.yaml`
+- **Teachers**: MiniMax (F#), Kimi (Svelte/TS/long-context), GLM-5 (.NET/general)
+- **Temperature**: 0.9 (higher than round 1 defaults for diverse outputs)
+- **Suffix**: `_t2` (outputs to `*_t2.jsonl`)
+- **Total prompts**: 4,569 (same prompts as round 1, different teachers + temperature)
+- **Estimated time**: ~8-10 hours (3 teachers in parallel, concurrency 7)
+
+---
+
 ## Remaining Issues
 
 ### 1. general_coding proportion still too high (42.5%)
 - OpenCodeInstruct at 2,500 samples dominates the mix
-- Plan: downsample to ~500
+- Plan: downsample to ~500 after round 2 completes
 
 ### 2. fsharp_core still below target (10.1% vs 15% target)
 - Improved from 4.6% to 10.1% thanks to benchmark merge
-- Round 2 with MiniMax should push this higher
+- Round 2 with MiniMax (76.6% F# pass rate) should push this significantly higher
 
 ### 3. No long-context samples
 - All samples fit in stage1 (0-16K)
 - Teachers not generating long enough responses
+- May need explicit instructions in prompts to generate longer outputs
 
 ---
 
 ## Pending Actions (in order)
 
-1. **Downsample OpenCodeInstruct** from 2,500 to ~500
-2. **Update round 2 scripts** with new teacher assignments (MiniMax, Kimi, GLM-5)
-3. **Run round 2** with temp 0.9
-4. **Re-verify and reformat** combined round 1 + round 2 data
-5. **Train Student 1** (Qwen3.5-27B) on cloud GPU (4-stage progressive LoRA)
-6. **Train Student 2** (Devstral Small 2 24B) on same data
-6. **Train** on cloud GPU (4-stage progressive LoRA)
+1. **Wait for round 2 to complete** (~8-10 hours)
+2. **Re-verify and reformat** combined round 1 + round 2 data
+3. **Downsample OpenCodeInstruct** from 2,500 to ~500 to fix proportion imbalance
+4. **Train Student 1** (Qwen3.5-27B) on cloud GPU (4-stage progressive LoRA)
+5. **Train Student 2** (Devstral Small 2 24B) on same data
+6. **Evaluate and compare** both students
+7. **Export** best model to GGUF/GPTQ for local inference

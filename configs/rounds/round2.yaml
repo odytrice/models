@@ -1,0 +1,27 @@
+description: "Round 2 - Optimized teachers based on F# benchmark results"
+suffix: "_t2"
+temperature: 0.9
+concurrency: 7
+
+teachers:
+  MiniMax:
+    - yaml: fsharp_core_expanded_minimax
+      output: fsharp_core
+    - yaml: fsharp_libraries_expanded_minimax
+      output: fsharp_libraries
+  Kimi:
+    - yaml: svelte_typescript_expanded
+      output: svelte_typescript
+    - yaml: cross_domain_expanded
+      output: cross_domain
+    - yaml: long_context_expanded
+      output: long_context
+  GLM-5:
+    - yaml: dotnet_aspnet_expanded_glm5
+      output: dotnet_aspnet
+    - yaml: docker_kubernetes_expanded_glm5
+      output: docker_kubernetes
+    - yaml: agentic_swe_expanded_glm5
+      output: agentic_swe
+    - yaml: general_coding_expanded_glm5
+      output: general_coding
