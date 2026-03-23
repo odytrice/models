@@ -1,8 +1,17 @@
-# Multi-Teacher Distillation for Domain-Specialized Coding Models
+# Kenichi -- Multi-Teacher Distilled F# Coding Models
+
+> Named after the anime **"Kenichi: The Mightiest Disciple"** -- a student who trains under multiple masters to become the strongest.
 
 ## Overview
 
 Distill domain-specialized coding capabilities from multiple teacher models into two student models for local inference. The distilled models are **domain-specialized** for full-stack web development with F#, Svelte, TypeScript, .NET, Docker, and Kubernetes.
+
+## HuggingFace Datasets
+
+| Dataset | Contents | Link |
+|---------|----------|------|
+| **kenichi-sft** | 6,558 instruction-tuning samples (ChatML + Mistral formats) | [odytrice/kenichi-sft](https://huggingface.co/datasets/odytrice/kenichi-sft) |
+| **kenichi-logprob** | Logprob distillation dataset (planned) | TBD |
 
 ## Document Index
 
@@ -34,7 +43,7 @@ All teachers are accessible via Ollama cloud subscription (Max plan).
 
 ## Student Models
 
-### Student 1: Qwen3.5-27B (Dense) -- Primary
+### Kenichi Thinking: Qwen3.5-27B (Dense)
 
 - **Source**: `Qwen/Qwen3.5-27B` ([HuggingFace](https://huggingface.co/Qwen/Qwen3.5-27B))
 - **Architecture**: Dense transformer (NOT MoE)
@@ -46,7 +55,7 @@ All teachers are accessible via Ollama cloud subscription (Max plan).
 - **Inference VRAM**: ~16GB at 4-bit quantization, fits 32GB VRAM comfortably
 - **Training VRAM**: ~32-48GB with LoRA + gradient checkpointing (16-bit)
 
-### Student 2: Devstral Small 2 (24B) -- Secondary
+### Kenichi Flash: Devstral Small 2 (24B)
 
 - **Source**: `mistralai/Devstral-Small-2` ([HuggingFace](https://huggingface.co/mistralai/Devstral-Small-2))
 - **Architecture**: Dense transformer
@@ -54,15 +63,15 @@ All teachers are accessible via Ollama cloud subscription (Max plan).
 - **Native Context**: 256K tokens
 - **SWE-bench Verified**: 65.8% (strong baseline for a 24B model)
 - **Ollama**: `devstral-small-2` (available locally at ~15GB quantized)
-- **License**: Modified MIT (revenue cap: $20M/month)
+- **License**: Apache 2.0
 - **Inference VRAM**: ~14GB at 4-bit quantization
 - **Training VRAM**: ~28-40GB with LoRA + gradient checkpointing (16-bit)
 
-**Why two students?**
-- **Qwen3.5-27B** is the primary target -- strongest overall base model, Apache 2.0 license, 201-language support
-- **Devstral Small 2** is purpose-built for agentic coding -- trained for multi-file editing, codebase exploration, and IDE integration. Slightly smaller (24B vs 27B), meaning faster inference and lower VRAM. Its SWE-bench baseline of 65.8% at 24B is exceptional. The same training data can be used for both models with minimal config changes.
+**Why two variants?**
+- **Kenichi Thinking** (Qwen3.5-27B) -- the reasoning variant. Has native `<think>` mode for step-by-step reasoning before generating code. Stronger on architecture decisions, system design, and complex debugging. Deliberate and strategic.
+- **Kenichi Flash** (Devstral Small 2) -- the execution variant. Purpose-built for agentic coding: multi-file editing, codebase exploration, IDE integration. Slightly smaller (24B vs 27B), faster inference, lower VRAM. Instinctive and fast.
 
-Both models will be trained on the same distilled dataset using the same 4-stage progressive LoRA approach. The resulting models can be compared and the better performer used in production.
+Both models are trained on the same distilled dataset using LoRA with a combined CE + KL-divergence loss (SFT curated data + logprob distillation data).
 
 ---
 

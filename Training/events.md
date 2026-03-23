@@ -708,16 +708,97 @@ Grand total seeds: 185 (was 165)
 
 ---
 
+## Round 2 Fully Complete
+
+Round 2 re-run completed all remaining prompts. No duplicates found (dedup bug fix working).
+
+### Final Round 2 F# Verification
+
+| Dataset | Total | Passed | Failed | Skipped | Pass Rate |
+|---------|-------|--------|--------|---------|-----------|
+| fsharp_core_t2 | 750 | 600 | 141 | 9 | **80.0%** |
+| fsharp_libraries_t2 | 962 | 829 | 101 | 32 | **86.2%** |
+| cross_domain_t2 | 321 | 296 | 15 | 10 | **92.2%** |
+| dotnet_aspnet_t2 | 450 | 445 | 5 | 0 | **98.9%** |
+
+### Final Formatted Dataset
+
+| Domain | Samples | % |
+|--------|---------|---|
+| fsharp_libraries | 1,695 | 25.8% |
+| fsharp_core | 1,003 | 15.3% |
+| general_coding | 950 | 14.5% |
+| svelte_typescript | 676 | 10.3% |
+| dotnet_aspnet | 689 | 10.5% |
+| cross_domain | 585 | 8.9% |
+| docker_kubernetes | 414 | 6.3% |
+| agentic_swe | 279 | 4.3% |
+| long_context | 267 | 4.1% |
+| **Total** | **6,558** | |
+
+Train: 6,231 / Val: 327. Both ChatML and Mistral formats.
+
+---
+
+## Project Named "Kenichi"
+
+Named after the anime **"Kenichi: The Mightiest Disciple"** -- a student who trains under multiple masters to become the strongest.
+
+| Variant | Base Model | Role |
+|---------|-----------|------|
+| **Kenichi Thinking** | Qwen3.5-27B | Reasoning-first, deliberate, `<think>` mode |
+| **Kenichi Flash** | Devstral Small 2 (24B) | Fast agentic coding, instinctive execution |
+
+---
+
+## SFT Dataset Published to HuggingFace
+
+Published `odytrice/kenichi-sft` to HuggingFace: https://huggingface.co/datasets/odytrice/kenichi-sft
+
+- 6,558 samples across 4 splits: chatml_train, chatml_val, mistral_train, mistral_val
+- Full dataset card with pipeline description, teacher benchmarks, domain distribution
+- Public, Apache 2.0 license
+- Created `pipeline/scripts/push_to_hub.py` for publishing
+
+---
+
+## Strategic Pivot: Logprob Distillation
+
+After researching unsupervised distillation approaches, decided to add logprob-based distillation on top of the existing SFT data.
+
+### Key Insights
+- Ollama API supports `logprobs: true` and `top_logprobs: 15` -- returns per-token probability distributions
+- Logprob distillation gives ~10x more information per sample than SFT (soft labels vs hard labels)
+- Multi-teacher logprob averaging is mathematically principled (vs picking one teacher in SFT)
+- The existing 6,558 SFT samples become "curated Tier 3 data" trained with CE loss
+- New logprob data (generated with all 3 teachers per prompt) trained with KL-divergence loss
+- Combined loss: `alpha * CE(sft_data) + (1-alpha) * KL(logprob_data)`
+
+### Revised Data Strategy
+
+| Tier | Source | Samples | Loss | Signal |
+|------|--------|---------|------|--------|
+| Curated (existing SFT) | Rounds 1+2 + benchmarks + OCI | ~6,558 | CE (hard labels) | 1 bit/token |
+| Logprob (new generation) | All 5,169 prompts x 3 teachers, temp 1.0 | ~5,169 | KL (soft labels) | ~10-15 bits/token |
+| **Total** | | **~11,727** | Combined | ~55K SFT-equivalent |
+
+### Plan
+1. Re-run ALL existing expanded prompts (rounds 1+2+3) through ALL 3 teachers with logprobs
+2. Each prompt gets 3 teacher distributions (MiniMax, GLM-5, Kimi)
+3. Primary teacher handles F# verification, fallback on failure
+4. Train with multi-teacher KL loss: `sum(wi * KL(student || teacher_i))`
+5. Temperature 1.0 for logprob collection (preserves natural distribution)
+
+---
+
 ## Pending Actions
 
-1. **Complete round 2 generation** (1,398 remaining prompts, ~2-3 hours)
-2. **Run dedup again** after round 2 completes (safety check)
-3. **Expand round 3 seeds** (`python expand_new_seeds.py --variations 30 --concurrency 3`)
-4. **Generate round 3 data** (`python run_generation.py --round-config ../../configs/rounds/round3.yaml --verify`)
-5. **Re-verify and reformat** combined data from all rounds
-6. **Train Student 1** (Qwen3.5-27B) on cloud GPU -- stage1 LoRA
-7. **Evaluate Student 1** on F#, Svelte, TypeScript, Docker, K8s tasks
-8. **Train Student 2** (Devstral Small 2 24B) on same data with Mistral format
-9. **Evaluate and compare** both students
-10. **Export** to GGUF (Q4_K_M, Q5_K_M, Q8_0) and GPTQ for local inference
-11. **Push dataset and models** to HuggingFace
+1. **Implement logprob pipeline** -- add `--logprobs` to generate_data.py, multi-teacher config format, training configs
+2. **Expand round 3 seeds** (20 new seeds -> ~600 prompts)
+3. **Generate logprob dataset** -- all ~5,169 prompts x 3 teachers x logprobs (~30-40 hours)
+4. **Format and publish** kenichi-logprob to HuggingFace
+5. **Create training configs** for Kenichi Thinking (Qwen3.5, CE+KL) and Kenichi Flash (Devstral, CE+KL)
+6. **Train both students** on cloud GPU (can run in parallel)
+7. **Evaluate and compare** both variants
+8. **Export** to GGUF/GPTQ for local inference
+9. **Push models** to HuggingFace
