@@ -313,6 +313,7 @@ async def generate_batch(
     file_lock = asyncio.Lock()
     completed = 0
     failed_ids = []
+    completed_ids = set()  # Track IDs written during this run to prevent duplicates
 
     async def process_and_write(client, prompt):
         nonlocal completed
@@ -321,9 +322,14 @@ async def generate_batch(
             failed_ids.append(prompt.id)
             return
         async with file_lock:
+            # Check if another concurrent task already wrote this ID
+            if prompt.id in completed_ids:
+                log.debug(f"[{prompt.id}] Skipping duplicate write")
+                return
             with open(output_path, "a", encoding="utf-8") as f:
                 f.write(json.dumps(asdict(result), ensure_ascii=False) + "\n")
                 f.flush()
+            completed_ids.add(prompt.id)
             completed += 1
             pct = completed / len(remaining) * 100
             if completed % progress_every == 0 or completed == len(remaining):
