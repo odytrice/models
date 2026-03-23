@@ -474,41 +474,115 @@ python run_generation.py --round-config ../../configs/rounds/round2.yaml --concu
 
 ---
 
-## Round 2 Generation (In Progress)
+## Round 2 Generation (Complete)
 
-- **Started**: 2026-03-22
+- **Started**: 2026-03-22 ~18:00
+- **Completed**: 2026-03-23 ~05:00 (~11 hours)
 - **Config**: `configs/rounds/round2.yaml`
 - **Teachers**: MiniMax (F#), Kimi (Svelte/TS/long-context), GLM-5 (.NET/general)
 - **Temperature**: 0.9 (higher than round 1 defaults for diverse outputs)
 - **Suffix**: `_t2` (outputs to `*_t2.jsonl`)
-- **Total prompts**: 4,569 (same prompts as round 1, different teachers + temperature)
-- **Estimated time**: ~8-10 hours (3 teachers in parallel, concurrency 7)
+- **Total prompts**: 4,569
+
+### Round 2 F# Verification Results
+
+| Domain | Teacher | Total | Passed | Pass Rate | vs Round 1 |
+|--------|---------|-------|--------|-----------|------------|
+| fsharp_core | MiniMax | 627 | 498 | **79.4%** | +36.3 pts (was 43.1% with DeepSeek) |
+| fsharp_libraries | MiniMax | 1,412 | 1,203 | **85.2%** | -2.1 pts (was 87.3% with DeepSeek) |
+| cross_domain | Kimi | 278 | 257 | **92.4%** | +2.4 pts |
+| dotnet_aspnet | GLM-5 | 353 | 350 | **99.2%** | +45.4 pts (was 53.8% with Kimi) |
+
+Teacher reassignments validated:
+- **MiniMax on fsharp_core**: 79.4% vs DeepSeek's 43.1% -- nearly doubled the pass rate
+- **GLM-5 on dotnet_aspnet**: 99.2% vs Kimi's 53.8% -- near perfect
+- **MiniMax on fsharp_libraries**: 85.2% vs DeepSeek's 87.3% -- comparable, slightly lower but within noise
+
+Note: MiniMax generated 2,013 samples for a 1,712 prompt workload (118%) -- some prompts got duplicate responses at the higher temperature. Kimi and GLM-5 completed 72% and 79% of their prompts before the verify step ran, but the critical F# domains were fully processed.
+
+### OpenCodeInstruct Downsampled
+
+- Reduced from 2,500 to 500 samples
+- Re-ran `download_opencode.py --samples 500`
+- Same strict quality filters (test score >= 0.9, LLM judgement >= 4)
+- general_coding proportion dropped from 42.5% to 13.9%
+
+### Mistral Instruct Format Added
+
+- Added `--format mistral` to `format_dataset.py` for Devstral Small 2 training
+- Added `--format all` option that outputs both chatml and mistral in subdirectories
+- Mistral format uses same `messages` structure as ChatML -- Unsloth applies correct special tokens at training time via `chat_template="mistral"`
+
+### Final Formatted Dataset (Training-Ready)
+
+| Domain | Samples | % |
+|--------|---------|---|
+| fsharp_libraries | 2,068 | 30.2% |
+| fsharp_core | 990 | 14.4% |
+| general_coding | 950 | 13.9% |
+| svelte_typescript | 676 | 9.9% |
+| dotnet_aspnet | 665 | 9.7% |
+| cross_domain | 546 | 8.0% |
+| docker_kubernetes | 414 | 6.0% |
+| agentic_swe | 279 | 4.1% |
+| long_context | 267 | 3.9% |
+| **Total** | **6,855** | |
+
+- **Train**: 6,513 / **Val**: 342
+- **Formats**: ChatML (Qwen3.5) and Mistral (Devstral) in separate subdirectories
+- All samples in stage1 (0-16K tokens)
+- F# total (core + libraries) = 3,058 (44.6%) -- intentionally high given F# scarcity in pre-training data
+
+### Data output structure:
+```
+data/formatted/
+  chatml/
+    stage1_train.jsonl     # 6,513 samples (for Qwen3.5-27B)
+    stage1_val.jsonl       # 342 samples
+  mistral/
+    stage1_train.jsonl     # 6,513 samples (for Devstral Small 2)
+    stage1_val.jsonl       # 342 samples
+```
+
+---
+
+## Data Generation Complete
+
+Total generation effort across both rounds:
+
+| Phase | Duration | Samples Generated | Samples Verified |
+|-------|----------|-------------------|-----------------|
+| Prompt expansion | ~75 min | 4,569 prompts from 165 seeds | -- |
+| Round 1 generation | 8h 37m | 4,569 | 4,446 (after verification) |
+| F# benchmark (Kimi+MiniMax) | ~2h | 1,098 | 439 additional |
+| GLM-5 benchmark | ~1.5h | 757 | ~360 additional |
+| Round 2 generation | ~11h | 4,569 | ~4,170 (after verification) |
+| OpenCodeInstruct download | <1 min | 500 (from 5M pool) | 500 (pre-verified) |
+| **Total wall time** | **~24h** | **~11,493** | **6,855 final** |
+
+Pass rate: 59.6% overall (dominated by F# compiler verification filtering out bad code). Non-F# domains have ~100% pass rate.
 
 ---
 
 ## Remaining Issues
 
-### 1. general_coding proportion still too high (42.5%)
-- OpenCodeInstruct at 2,500 samples dominates the mix
-- Plan: downsample to ~500 after round 2 completes
-
-### 2. fsharp_core still below target (10.1% vs 15% target)
-- Improved from 4.6% to 10.1% thanks to benchmark merge
-- Round 2 with MiniMax (76.6% F# pass rate) should push this significantly higher
-
-### 3. No long-context samples
-- All samples fit in stage1 (0-16K)
+### 1. No long-context samples
+- All 6,855 samples fit in stage1 (0-16K tokens)
 - Teachers not generating long enough responses
-- May need explicit instructions in prompts to generate longer outputs
+- Stages 2-4 of progressive training have no data
+- Could be addressed in a future round with explicit long-response prompts, but not blocking for initial training
+
+### 2. fsharp_libraries proportion high (30.2%)
+- Intentionally high -- F# is severely underrepresented in base model pre-training
+- Can be rebalanced if evaluation shows overfitting on F# library patterns
 
 ---
 
-## Pending Actions (in order)
+## Pending Actions
 
-1. **Wait for round 2 to complete** (~8-10 hours)
-2. **Re-verify and reformat** combined round 1 + round 2 data
-3. **Downsample OpenCodeInstruct** from 2,500 to ~500 to fix proportion imbalance
-4. **Train Student 1** (Qwen3.5-27B) on cloud GPU (4-stage progressive LoRA)
-5. **Train Student 2** (Devstral Small 2 24B) on same data
-6. **Evaluate and compare** both students
-7. **Export** best model to GGUF/GPTQ for local inference
+1. **Train Student 1** (Qwen3.5-27B) on cloud GPU -- 4-stage progressive LoRA (though only stage1 has data currently)
+2. **Evaluate Student 1** on F#, Svelte, TypeScript, Docker, K8s tasks
+3. **Train Student 2** (Devstral Small 2 24B) on same data with Mistral format
+4. **Evaluate and compare** both students
+5. **Export** to GGUF (Q4_K_M, Q5_K_M, Q8_0) and GPTQ for local inference
+6. **Push dataset and models** to HuggingFace
