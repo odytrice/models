@@ -1,16 +1,22 @@
 """
-Kenichi Thinking: Qwen3.5-27B Domain-Specialized SFT
-=====================================================
+Kenichi Thinking: Qwen3.5-27B Domain-Specialized SFT (Vision-Language)
+=====================================================================
 
 Reasoning-first coding model specialized for F#, Svelte 5, TypeScript,
 .NET, Docker, and Kubernetes. Has native <think> mode for step-by-step
-reasoning before generating code.
+reasoning before generating code. Retains vision capabilities for
+understanding screenshots, diagrams, and architecture drawings.
 
-- Base model: Qwen/Qwen3.5-27B (dense, 27B params, 256K native context)
+- Base model: Qwen/Qwen3.5-27B (dense VL, 27B params, 256K native context)
 - Format: ChatML (Qwen native)
 - Data: 7,556 train / 397 val samples from odytrice/kenichi-sft
-- Training: BF16 LoRA on A100 80GB, single-stage SFT
-- Expected: ~2-3 hours on A100 80GB
+- Training: BF16 LoRA (standard HuggingFace stack, no Unsloth)
+- Vision tower: Frozen (preserved but not trained)
+- Expected: ~8-12 hours on H200 141GB
+
+Note: This script uses transformers+peft+trl directly (not Unsloth) because
+Qwen3.5-27B is a unified Vision-Language model. Unsloth's VL loading causes
+gradient offloading even on 141GB VRAM. The standard stack avoids this.
 
 Usage:
   # From HuggingFace dataset (recommended on RunPod):
@@ -24,29 +30,53 @@ Usage:
 """
 
 import argparse
+import os
 from pathlib import Path
 
-from unsloth import FastLanguageModel
-from unsloth.chat_templates import get_chat_template
+# Disable flex_attention — requires torch 2.6+, we're on 2.5
+os.environ["TRANSFORMERS_NO_FLEX_ATTENTION"] = "1"
+
+import torch
+from transformers import (
+    AutoModelForImageTextToText,
+    AutoTokenizer,
+    AutoProcessor,
+    TrainingArguments,
+)
+from peft import LoraConfig, get_peft_model, TaskType
 from datasets import load_dataset
 from trl import SFTTrainer
-from transformers import TrainingArguments
 
 # ── Model Configuration ──────────────────────────────────────────────
 MODEL_NAME = "Qwen/Qwen3.5-27B"
 MAX_SEQ_LENGTH = 131072  # 128K — zero truncation, all samples preserved
-LOAD_IN_4BIT = False  # Train in BF16, NOT QLoRA
-DTYPE = None  # Auto-detect (BF16 on A100)
+DTYPE = torch.bfloat16
 
 # ── LoRA Configuration ───────────────────────────────────────────────
+# Qwen3.5-27B uses a hybrid architecture:
+#   - GDN (Gated DeltaNet) layers: linear_attn with in_proj_qkv, in_proj_z,
+#     in_proj_b, in_proj_a, out_proj, conv1d
+#   - Standard attention layers: self_attn with q_proj, k_proj, v_proj, o_proj
+#   - Both layer types have: mlp.gate_proj, mlp.up_proj, mlp.down_proj
+#
+# Layout: 16 × (3 × (GDN → FFN) → 1 × (Attention → FFN)) = 64 layers
+# We target projections in both layer types + all MLPs.
 LORA_R = 16
 LORA_ALPHA = 32  # alpha/r ratio of 2
 LORA_DROPOUT = 0.0
 TARGET_MODULES = [
+    # Standard attention layers (every 4th layer)
     "q_proj",
     "k_proj",
     "v_proj",
     "o_proj",
+    # GDN layers (3 out of every 4 layers)
+    "in_proj_qkv",
+    "in_proj_z",
+    "in_proj_b",
+    "in_proj_a",
+    "out_proj",
+    # MLP (all layers)
     "gate_proj",
     "up_proj",
     "down_proj",
@@ -57,7 +87,7 @@ BATCH_SIZE = 1
 GRADIENT_ACCUMULATION = 8  # Effective batch size = 8
 EPOCHS = 3  # 3 epochs for 7,556 samples
 LEARNING_RATE = 2e-4
-WARMUP_RATIO = 0.05  # 5% warmup (more robust than fixed steps)
+WARMUP_RATIO = 0.05  # 5% warmup
 WEIGHT_DECAY = 0.01
 LR_SCHEDULER = "cosine"
 SEED = 3407
@@ -79,6 +109,7 @@ HF_VAL_SPLIT = "chatml_val"
 def main(data_path: str = None, val_path: str = None, resume: str = None):
     print("=" * 60)
     print("  Kenichi Thinking — Qwen3.5-27B Domain-Specialized SFT")
+    print("  (Vision-Language model, standard HuggingFace stack)")
     print("=" * 60)
     print(f"  Model:          {MODEL_NAME}")
     print(f"  Max seq length: {MAX_SEQ_LENGTH:,}")
@@ -89,31 +120,53 @@ def main(data_path: str = None, val_path: str = None, resume: str = None):
     print("=" * 60)
 
     # ── Load Model ───────────────────────────────────────────────────
-    print("\n[1/5] Loading model...")
-    model, tokenizer = FastLanguageModel.from_pretrained(
-        model_name=MODEL_NAME,
-        max_seq_length=MAX_SEQ_LENGTH,
-        load_in_4bit=LOAD_IN_4BIT,
-        dtype=DTYPE,
+    print("\n[1/6] Loading model...")
+    model = AutoModelForImageTextToText.from_pretrained(
+        MODEL_NAME,
+        torch_dtype=DTYPE,
+        device_map="auto",
+        attn_implementation="eager",  # flex_attention needs torch 2.6+
     )
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+
+    print(f"  Model loaded: {type(model).__name__}")
+    total_params = sum(p.numel() for p in model.parameters())
+    print(f"  Total parameters: {total_params / 1e9:.1f}B")
+
+    # ── Freeze Vision Tower ──────────────────────────────────────────
+    print("[2/6] Freezing vision tower...")
+    vision_params = 0
+    for name, param in model.named_parameters():
+        if "visual" in name or "vision" in name:
+            param.requires_grad = False
+            vision_params += param.numel()
+    print(f"  Frozen vision parameters: {vision_params / 1e6:.1f}M")
+
+    # Also freeze the multimodal projector (we're doing text-only SFT)
+    for name, param in model.named_parameters():
+        if "multi_modal_projector" in name:
+            param.requires_grad = False
 
     # ── Apply LoRA ───────────────────────────────────────────────────
-    print("[2/5] Applying LoRA adapters...")
-    model = FastLanguageModel.get_peft_model(
-        model,
+    print("[3/6] Applying LoRA adapters...")
+    lora_config = LoraConfig(
         r=LORA_R,
-        target_modules=TARGET_MODULES,
         lora_alpha=LORA_ALPHA,
+        target_modules=TARGET_MODULES,
         lora_dropout=LORA_DROPOUT,
         bias="none",
-        use_gradient_checkpointing="unsloth",  # 30% less VRAM
-        random_state=SEED,
-        max_seq_length=MAX_SEQ_LENGTH,
+        task_type=TaskType.CAUSAL_LM,
+    )
+    model = get_peft_model(model, lora_config)
+    model.print_trainable_parameters()
+
+    # Enable gradient checkpointing for memory efficiency
+    model.gradient_checkpointing_enable(
+        gradient_checkpointing_kwargs={"use_reentrant": False}
     )
 
     # ── Chat Template ────────────────────────────────────────────────
-    tokenizer = get_chat_template(tokenizer, chat_template="qwen-2.5")
-
+    # Qwen3.5 tokenizer has apply_chat_template built-in (no Unsloth needed)
     def formatting_func(examples):
         texts = []
         for messages in examples["messages"]:
@@ -129,7 +182,7 @@ def main(data_path: str = None, val_path: str = None, resume: str = None):
         return {"text": texts}
 
     # ── Load Dataset ─────────────────────────────────────────────────
-    print("[3/5] Loading dataset...")
+    print("[4/6] Loading dataset...")
     if data_path and Path(data_path).exists():
         print(f"  Source: local file {data_path}")
         dataset = load_dataset("json", data_files=data_path, split="train")
@@ -152,7 +205,7 @@ def main(data_path: str = None, val_path: str = None, resume: str = None):
         print(f"  Validation samples: {len(eval_dataset):,}")
 
     # ── Training Arguments ───────────────────────────────────────────
-    print("[4/5] Configuring trainer...")
+    print("[5/6] Configuring trainer...")
     training_args = TrainingArguments(
         output_dir=OUTPUT_DIR,
         num_train_epochs=EPOCHS,
@@ -175,6 +228,7 @@ def main(data_path: str = None, val_path: str = None, resume: str = None):
         seed=SEED,
         report_to="none",  # Set to "wandb" for Weights & Biases tracking
         gradient_checkpointing=True,
+        gradient_checkpointing_kwargs={"use_reentrant": False},
         optim="adamw_8bit",
         dataloader_num_workers=4,
     )
@@ -192,7 +246,7 @@ def main(data_path: str = None, val_path: str = None, resume: str = None):
     )
 
     # ── Train ────────────────────────────────────────────────────────
-    print("[5/5] Starting training...")
+    print("[6/6] Starting training...")
     if resume and Path(resume).exists():
         print(f"  Resuming from checkpoint: {resume}")
         trainer.train(resume_from_checkpoint=resume)
