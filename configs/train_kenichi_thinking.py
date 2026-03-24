@@ -52,7 +52,7 @@ from trl import SFTTrainer, SFTConfig
 
 # ── Model Configuration ──────────────────────────────────────────────
 MODEL_NAME = "Qwen/Qwen3.5-27B"
-MAX_SEQ_LENGTH = 32768  # 32K — zero truncation (max sample is ~24K tokens). Packing disabled for VL model.
+MAX_SEQ_LENGTH = 24576  # 24K — zero truncation (max sample is ~24K tokens). Reduced from 32K to cut padding waste.
 DTYPE = torch.bfloat16
 
 # ── LoRA Configuration ───────────────────────────────────────────────
