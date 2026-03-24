@@ -28,7 +28,11 @@ Usage:
 """
 
 import argparse
+import os
 from pathlib import Path
+
+# Disable flex_attention — requires torch 2.6+, we're on 2.5
+os.environ["TRANSFORMERS_NO_FLEX_ATTENTION"] = "1"
 
 from unsloth import FastLanguageModel
 from unsloth.chat_templates import get_chat_template
