@@ -68,7 +68,8 @@ echo "[4/7] Installing causal-conv1d + flash-linear-attention (required for Qwen
 # Without these, Qwen3.5's Gated DeltaNet layers fall back to a slow torch
 # implementation that OOMs on long sequences.
 pip install -q causal-conv1d --no-build-isolation --no-cache-dir
-pip install -q flash-linear-attention --no-build-isolation --no-cache-dir
+# Pin fla versions — latest requires Triton 3.2+ but torch 2.5.1 ships Triton 3.1.0
+pip install -q fla-core==0.3.2 flash-linear-attention==0.3.2 --no-build-isolation --no-cache-dir
 
 # ── Unsloth + dependencies ───────────────────────────────────────────
 echo ""
