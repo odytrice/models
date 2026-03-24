@@ -37,7 +37,7 @@ from trl import SFTTrainer
 from transformers import TrainingArguments
 
 # ── Model Configuration ──────────────────────────────────────────────
-MODEL_NAME = "unsloth/Devstral-Small-2-24B-Instruct-2512"  # Unsloth optimized
+MODEL_NAME = "mistralai/Devstral-Small-2-24B-Instruct-2512"  # Original (auto-dequantizes FP8→BF16)
 MAX_SEQ_LENGTH = 131072  # 128K — fits all training samples without truncation
 LOAD_IN_4BIT = False  # Train in BF16, NOT QLoRA
 DTYPE = None  # Auto-detect (BF16 on A100)
