@@ -67,9 +67,7 @@ from trl import SFTTrainer, SFTConfig
 
 # ── Model Configuration ──────────────────────────────────────────────
 MODEL_NAME = "Qwen/Qwen3.5-27B"
-MAX_SEQ_LENGTH = (
-    65536  # 64K — zero truncation (max sample ~24K tokens). 128K OOMs on GDN layers.
-)
+MAX_SEQ_LENGTH = 32768  # 32K — zero truncation (max sample ~24K). 64K OOMs at logits.float() (60 GB).
 DTYPE = torch.bfloat16
 
 # ── LoRA Configuration ───────────────────────────────────────────────
