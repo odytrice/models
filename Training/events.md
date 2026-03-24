@@ -1369,6 +1369,56 @@ Terminated the A100 Thinking pod and deployed an **NVIDIA H200 141GB** pod inste
 - Single GPU — Unsloth free license works (multi-GPU would require paid license)
 - Restored `MAX_SEQ_LENGTH` back to **131072 (128K)** — zero truncation, all 7,556 samples preserved intact. The Flash model trains at 128K without issues; both models should use identical data processing.
 
+### Qwen3.5-27B is a Vision-Language Model — Key Discovery
+
+Discovered that **Qwen3.5-27B is a unified Vision-Language model**, not text-only. All Qwen3.5 models include a Pixtral vision tower (24 layers, ~460M params). This explains the issues:
+
+1. **1,184 weight files** loaded (a text-only 27B would have ~20-30 shards)
+2. Unsloth loaded it as VL model → `model.base_model.model.model.language_model` nesting
+3. Gradient offloading triggered **even on H200 141GB** due to Unsloth's VL overhead
+
+The architecture is hybrid with two layer types:
+- **Gated DeltaNet (GDN)** layers (3 of every 4): `in_proj_qkv`, `in_proj_z`, `in_proj_b`, `in_proj_a`, `out_proj`, `conv1d`
+- **Standard attention** layers (1 of every 4): `q_proj`, `k_proj`, `v_proj`, `o_proj`
+- **MLP** (all layers): `gate_proj`, `up_proj`, `down_proj`
+- Layout: 16 × (3 × (GDN → FFN) → 1 × (Attention → FFN)) = 64 layers total
+
+No official text-only Qwen3.5-27B exists. Community extractions (`principled-intelligence`) only go up to 9B.
+
+### Decision: Retain Vision, Drop Unsloth
+
+**Options evaluated:**
+1. Extract text-only model + Unsloth — Fast (~5-8 hrs), but loses vision
+2. Full VL model + standard HuggingFace stack — Slower (~8-16 hrs), retains vision
+3. QLoRA on Unsloth — Fast, but lower quality
+
+**Chose Option 2** — retain vision capabilities. Kenichi Thinking can process screenshots, architecture diagrams, and error screenshots alongside code.
+
+### Rewrite: Standard HuggingFace Training Stack
+
+Rewrote `train_kenichi_thinking.py` to use `transformers` + `peft` + `trl` directly (no Unsloth):
+
+- **Model**: `AutoModelForImageTextToText.from_pretrained("Qwen/Qwen3.5-27B")` with `dtype=bfloat16`, `device_map="auto"`, `attn_implementation="eager"`
+- **Vision tower**: Frozen (`requires_grad=False`) — preserved but not trained (~460M params frozen)
+- **Multimodal projector**: Also frozen
+- **LoRA**: Targets both GDN layers and standard attention layers + all MLPs (116M trainable / 27.4B total = 0.42%)
+- **Chat template**: Tokenizer's built-in `apply_chat_template` (no Unsloth `get_chat_template` needed)
+- **Gradient checkpointing**: Standard `gradient_checkpointing=True` with `use_reentrant=False`
+- **`TRANSFORMERS_NO_FLEX_ATTENTION=1`** + `attn_implementation="eager"` to avoid torch 2.5 flex_attention crash
+- **`max_seq_length=131072`** — 128K, zero truncation
+
+API fixes needed:
+- `tokenizer` → `processing_class` in `SFTTrainer` (trl 0.24 API change)
+- `torch_dtype` → `dtype` in `from_pretrained` (transformers 5.3 deprecation)
+
+Model loaded successfully:
+```
+Model loaded: Qwen3_5ForConditionalGeneration
+Total parameters: 27.4B
+Frozen vision parameters: 460.7M
+trainable params: 116,727,808 || all params: 27,473,456,368 || trainable%: 0.4249
+```
+
 ### BF16 Model Audit — Kenichi Flash Base Model
 
 Audited `akoumpa/Devstral-Small-2-24B-Instruct-2512-BF16` (community BF16 conversion used for Flash training):
@@ -1383,8 +1433,10 @@ Audited `akoumpa/Devstral-Small-2-24B-Instruct-2512-BF16` (community BF16 conver
 
 ## Pending Actions
 
-1. **Wait for training** to complete (Thinking: ~9-10 hrs on H200, Flash: ~4-5 hrs on A100)
-2. **Merge LoRA + export** to GGUF and push to HuggingFace
-3. **Evaluate and compare** both variants on held-out validation set
-4. **Download GGUFs locally** and test with Ollama on RTX 4090 / RTX 5090
-5. **Terminate RunPod pods**
+1. **Wait for Thinking training** to complete (~8-16 hrs on H200) — step times TBD
+2. **Wait for Flash training** to complete (~4-5 hrs on A100) — already running, ~6.4 s/step
+3. **Update `merge_and_export.py`** for non-Unsloth merge path (Thinking uses peft directly)
+4. **Merge LoRA + export** to GGUF and push to HuggingFace
+5. **Evaluate and compare** both variants on held-out validation set
+6. **Download GGUFs locally** and test with Ollama on RTX 4090 / RTX 5090
+7. **Terminate RunPod pods**
