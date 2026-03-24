@@ -1619,13 +1619,36 @@ Kenichi Thinking (Qwen3.5-27B VL) required dramatically more debugging than Keni
 
 The hybrid GDN + standard attention architecture, VL 3D position IDs, massive vocab (248K), and vision tower overhead all compound to make VL model training significantly harder than text-only models. The payoff is vision capabilities for the planning agent use case.
 
+### Kenichi Flash Training Complete
+
+Flash training finished successfully on A100 SXM:
+- **Total time**: 5 hours 21 minutes
+- **Final train loss**: 0.3383 (started at ~0.49)
+- **Final step loss**: 0.1586
+- **Epochs**: 3.0 complete
+- **Step speed**: 6.81 s/step average
+- **LoRA adapter saved**: `./outputs/kenichi-flash/lora_adapter`
+
+### Flash Merge + Export — Disk Quota Issue
+
+First merge attempt failed with `Errno 122: Disk quota exceeded` — the container disk (original size) filled up when Unsloth tried to copy the 48 GB model to the HuggingFace upload cache. The partial write corrupted the safetensor file, causing a subsequent `SafetensorError: incomplete metadata, file not fully covered` error.
+
+**Fix**: Doubled the container storage on the A100 pod. This required a pod redeployment, which wiped installed Python packages (but `/workspace` persistent volume with the trained LoRA adapter survived). Running `bash configs/runpod_setup.sh` to reinstall dependencies before retrying the merge + export.
+
+### Kenichi Thinking Training Progress
+
+Thinking training continuing on H200 141GB:
+- 7% complete (42/582 steps), loss 0.36, token accuracy 89.2%
+- 63.8 s/step (settled from 82 s warmup), 100% GPU utilization
+- ETA: ~9.5 hours remaining
+
 ---
 
 ## Pending Actions
 
-1. **Flash training finishes** (~37 min) → run merge + export on A100 pod
-2. **Wait for Thinking training** to complete (~11 hrs on H200, ~$44)
-3. **Merge LoRA + export** both models to GGUF and push to HuggingFace
+1. **Flash merge + export** — reinstall deps on redeployed A100 pod, run merge, push to HuggingFace
+2. **Wait for Thinking training** to complete (~9.5 hrs on H200, ~$38)
+3. **Thinking merge + export** — run on H200 pod after training completes
 4. **Evaluate and compare** both variants on held-out validation set
 5. **Download GGUFs locally** and test with Ollama on RTX 4090 / RTX 5090
 6. **Terminate RunPod pods**
