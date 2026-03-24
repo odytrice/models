@@ -124,7 +124,7 @@ def main(data_path: str = None, val_path: str = None, resume: str = None):
         MODEL_NAME,
         dtype=DTYPE,
         device_map="auto",
-        attn_implementation="flash_attention_2",  # O(n) memory, works fine on individual ≤32K samples
+        attn_implementation="sdpa",  # flash_attention_2 crashes with VL position IDs even unpacked; sdpa at 32K fits in VRAM
     )
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
