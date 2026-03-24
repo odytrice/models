@@ -35,10 +35,6 @@ from pathlib import Path
 
 # Disable flex_attention — requires torch 2.6+, we're on 2.5
 os.environ["TRANSFORMERS_NO_FLEX_ATTENTION"] = "1"
-# Enable cuDNN SDPA backend — optimized for Hopper (H100/H200), dramatically faster
-# than math/mem_efficient fallback. Without this, SDPA silently falls back to naive
-# math kernel (181 s/step vs ~15-30 s/step with cuDNN).
-os.environ["TORCH_CUDNN_SDPA_ENABLED"] = "1"
 
 import torch
 from transformers import (
@@ -46,13 +42,34 @@ from transformers import (
     AutoTokenizer,
     AutoProcessor,
 )
+
+# ── Monkey-patch: Fix flash_attention_2 crash with Qwen3.5 3D position_ids ──
+# Bug: transformers 5.3.0 _is_packed_sequence() doesn't handle >2D position_ids.
+# Qwen3.5 passes [3, batch, seq_len] M-RoPE position_ids which gets misinterpreted
+# as a packed sequence, causing flash_attn_varlen_func to read beyond tensor bounds.
+# Fix: reject >2D position_ids in _is_packed_sequence().
+# Ref: https://github.com/huggingface/transformers/issues/44643
+import transformers.modeling_flash_attention_utils as _fa_utils
+
+_orig_is_packed = _fa_utils._is_packed_sequence
+
+
+def _patched_is_packed(position_ids, *args, **kwargs):
+    if position_ids is not None and position_ids.dim() > 2:
+        return False
+    return _orig_is_packed(position_ids, *args, **kwargs)
+
+
+_fa_utils._is_packed_sequence = _patched_is_packed
 from peft import LoraConfig, get_peft_model, TaskType
 from datasets import load_dataset
 from trl import SFTTrainer, SFTConfig
 
 # ── Model Configuration ──────────────────────────────────────────────
 MODEL_NAME = "Qwen/Qwen3.5-27B"
-MAX_SEQ_LENGTH = 24576  # 24K — zero truncation (max sample is ~24K tokens). Reduced from 32K to cut padding waste.
+MAX_SEQ_LENGTH = (
+    131072  # 128K — zero truncation, all samples preserved. Packing enabled.
+)
 DTYPE = torch.bfloat16
 
 # ── LoRA Configuration ───────────────────────────────────────────────
@@ -128,7 +145,7 @@ def main(data_path: str = None, val_path: str = None, resume: str = None):
         MODEL_NAME,
         dtype=DTYPE,
         device_map="auto",
-        attn_implementation="sdpa",  # flash_attention_2 crashes with VL position IDs even unpacked; sdpa at 32K fits in VRAM
+        attn_implementation="flash_attention_2",  # O(n) memory, monkey-patched for Qwen3.5 3D position_ids
     )
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
@@ -237,7 +254,7 @@ def main(data_path: str = None, val_path: str = None, resume: str = None):
         # SFT-specific config (moved from SFTTrainer constructor)
         dataset_text_field="text",
         max_length=MAX_SEQ_LENGTH,
-        packing=False,  # VL model's 3D position IDs crash with flash_attn on ANY packed sequence length
+        packing=True,  # Enabled — monkey-patch fixes the VL 3D position_ids crash
     )
 
     # ── Trainer ──────────────────────────────────────────────────────
