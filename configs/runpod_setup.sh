@@ -30,16 +30,16 @@ echo "  Kenichi Training — RunPod Setup"
 echo "============================================"
 
 # ── Symlink HF cache to /workspace ───────────────────────────────────
-# Model weights (~55GB) and pip cache can overflow the container disk.
-# Redirect to /workspace which has hundreds of GB available.
+# Model weights (~55GB) overflow the container disk (20GB default).
+# Redirect HF cache to /workspace which has hundreds of GB available.
+# NOTE: Do NOT symlink pip cache — causes "Invalid cross-device link"
+# errors when pip tries to hardlink wheel files across filesystems.
 echo ""
-echo "[0/6] Redirecting caches to /workspace..."
-mkdir -p /workspace/.cache/huggingface /workspace/.cache/pip
-rm -rf /root/.cache/huggingface /root/.cache/pip 2>/dev/null || true
+echo "[0/6] Redirecting HuggingFace cache to /workspace..."
+mkdir -p /workspace/.cache/huggingface
+rm -rf /root/.cache/huggingface 2>/dev/null || true
 ln -sf /workspace/.cache/huggingface /root/.cache/huggingface
-ln -sf /workspace/.cache/pip /root/.cache/pip
 echo "  HF cache -> /workspace/.cache/huggingface"
-echo "  pip cache -> /workspace/.cache/pip"
 
 # ── System packages ──────────────────────────────────────────────────
 echo ""
@@ -60,7 +60,7 @@ echo "  $(python -c "import torch; print(f'PyTorch {torch.__version__}, CUDA {to
 # ── flash-attn ───────────────────────────────────────────────────────
 echo ""
 echo "[3/6] Installing flash-attn (may take a few minutes if building from source)..."
-pip install -q flash-attn --no-build-isolation
+pip install -q flash-attn --no-build-isolation --no-cache-dir
 
 # ── Unsloth + dependencies ───────────────────────────────────────────
 echo ""
