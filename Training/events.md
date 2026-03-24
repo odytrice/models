@@ -1429,12 +1429,64 @@ Audited `akoumpa/Devstral-Small-2-24B-Instruct-2512-BF16` (community BF16 conver
 - Apache 2.0 license preserved
 - Conclusion: **No concerns, training on this model is fine.**
 
+### Attention Implementation Debugging Saga
+
+Getting Qwen3.5-27B's attention layers working on H200 with torch 2.5 required extensive debugging. The model has a hybrid architecture with GDN (Gated DeltaNet) linear attention layers and standard attention layers, plus a VL (vision-language) wrapper with 3D position IDs. Each combination of attention implementation and configuration hit a different failure mode:
+
+| Attempt | attn_impl | Packing | max_length | Result |
+|---------|-----------|---------|------------|--------|
+| 1 | eager | yes | 128K | **OOM** — 768 GB allocation for full attention matrix |
+| 2 | flash_attention_2 | yes | 128K | **Crash** — VL 3D position IDs + flash attn varlen path |
+| 3 | sdpa | yes | 128K | **OOM** — 32 GB allocation, SDPA fell back to naive kernel |
+| 4 | flash_attention_2 | yes | 80K | **Crash** — same VL position ID crash at any packed length |
+| 5 | flash_attention_2 | no | 32K | **Crash** — VL position IDs crash even on individual samples |
+| 6 | sdpa | no | 32K | **Works but 181 s/step** — SDPA silently falls back to math kernel |
+| 7 | sdpa + TORCH_CUDNN_SDPA_ENABLED=1 | no | 32K | **Works at 100% GPU util** — cuDNN SDPA backend on H200 |
+
+**Root causes identified:**
+1. **GDN layers**: Need `flash-linear-attention` (fla) + `causal-conv1d` libraries for fast path. Without them, torch fallback OOMs on long sequences. fla 0.4.2 incompatible with Triton 3.1.0 (`STAGE` arg error) — downgraded to fla 0.3.2.
+2. **Standard attention layers + flash_attention_2**: Transformers' flash attention wrapper (`modeling_flash_attention_utils.py` line 677) crashes with "illegal memory access" when processing VL model position IDs, regardless of sequence length or packing. This is a transformers bug specific to VL models.
+3. **SDPA without cuDNN**: PyTorch's SDPA has flash SDP available (`flash_sdp_enabled() = True`) but silently falls back to the naive math kernel for the VL model's attention mask format, resulting in 181 s/step.
+4. **SDPA with cuDNN**: `TORCH_CUDNN_SDPA_ENABLED=1` enables the cuDNN-based SDPA backend optimized for Hopper architecture (H100/H200). This correctly handles the VL attention format with fast kernels.
+
+**Final working configuration:**
+```python
+os.environ["TRANSFORMERS_NO_FLEX_ATTENTION"] = "1"
+os.environ["TORCH_CUDNN_SDPA_ENABLED"] = "1"
+
+model = AutoModelForImageTextToText.from_pretrained(
+    "Qwen/Qwen3.5-27B",
+    dtype=torch.bfloat16,
+    device_map="auto",
+    attn_implementation="sdpa",
+)
+# max_length=32768, packing=False, flash-linear-attention==0.3.2, causal-conv1d==1.6.1
+```
+
+**Dependencies required for Qwen3.5 GDN layers:**
+- `causal-conv1d==1.6.1` (built from source for torch 2.5+cu124)
+- `flash-linear-attention==0.3.2` / `fla-core==0.3.2` (NOT 0.4.2 — incompatible with Triton 3.1.0)
+
+### Training Finally Running
+
+Kenichi Thinking training started successfully on H200 141GB:
+- 100% GPU utilization with cuDNN SDPA
+- First step: 74.7 s (includes Triton kernel compilation warmup)
+- Expected to settle to ~15-30 s/step after warmup
+- 2,835 total steps, no packing (each sample processed individually)
+- Zero data loss (max sample ~24K tokens, max_length=32K)
+
+Kenichi Flash training progressing well on A100 SXM:
+- 53% complete (1,500/2,835 steps), epoch 1.58
+- 6.32 s/step, loss 0.31-0.34
+- ETA: ~2.5 hours remaining
+
 ---
 
 ## Pending Actions
 
-1. **Wait for Thinking training** to complete (~8-16 hrs on H200) — step times TBD
-2. **Wait for Flash training** to complete (~4-5 hrs on A100) — already running, ~6.4 s/step
+1. **Monitor Thinking training** — check step time after warmup (~15-30 s/step expected)
+2. **Wait for Flash training** to complete (~2.5 hrs remaining on A100)
 3. **Update `merge_and_export.py`** for non-Unsloth merge path (Thinking uses peft directly)
 4. **Merge LoRA + export** to GGUF and push to HuggingFace
 5. **Evaluate and compare** both variants on held-out validation set

@@ -35,6 +35,10 @@ from pathlib import Path
 
 # Disable flex_attention — requires torch 2.6+, we're on 2.5
 os.environ["TRANSFORMERS_NO_FLEX_ATTENTION"] = "1"
+# Enable cuDNN SDPA backend — optimized for Hopper (H100/H200), dramatically faster
+# than math/mem_efficient fallback. Without this, SDPA silently falls back to naive
+# math kernel (181 s/step vs ~15-30 s/step with cuDNN).
+os.environ["TORCH_CUDNN_SDPA_ENABLED"] = "1"
 
 import torch
 from transformers import (
