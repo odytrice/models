@@ -1299,18 +1299,18 @@ Both models are now training on RunPod A100 80GB SXM pods.
 
 Created 4 Modelfiles targeting specific VRAM capacities. Each selects the optimal model quantization and context window for the GPU. KV cache quantization is set via the `OLLAMA_KV_CACHE_TYPE` environment variable (global Ollama setting, not per-model).
 
-| Ollama Tag | Model | Model Quant | KV Quant | Context | Target GPU |
-|------------|-------|-------------|----------|---------|------------|
-| `kenichi-thinking:24gb` | Qwen3.5-27B | Q4_K_M | Q4 | ~88K | RTX 4090 |
-| `kenichi-thinking:32gb` | Qwen3.5-27B | Q4_K_M | Q4 | ~177K | RTX 5090 |
-| `kenichi-thinking:48gb` | Qwen3.5-27B | Q5_K_M | Q4 | ~256K (max) | A6000 Ada |
-| `kenichi-flash:24gb` | Devstral Small 2 | Q4_K_M | Q8 | ~121K | RTX 4090 |
-| `kenichi-flash:32gb` | Devstral Small 2 | Q5_K_M | Q8 | ~182K | RTX 5090 |
-| `kenichi-flash:48gb` | Devstral Small 2 | Q8_0 | Q8 | ~256K (max) | A6000 Ada |
-| `kenichi-thinking:96gb` | Qwen3.5-27B | Q8_0 | Q8 | ~256K (max) | RTX PRO 6000 |
-| `kenichi-flash:96gb` | Devstral Small 2 | Q8_0 | FP16 | ~256K (max) | RTX PRO 6000 |
-| `kenichi-thinking:full` | Qwen3.5-27B | **F16** | FP16 | ~256K (max) | Mac Studio 256GB |
-| `kenichi-flash:full` | Devstral Small 2 | **F16** | FP16 | ~256K (max) | Mac Studio 256GB |
+| Ollama Tag | Model | Model Quant | KV Quant | Context | VRAM Usage | Target GPU |
+|------------|-------|-------------|----------|---------|------------|------------|
+| `kenichi-thinking:24gb` | Qwen3.5-27B | Q4_K_M | Q4 | ~88K | ~24 GB | RTX 4090 |
+| `kenichi-thinking:32gb` | Qwen3.5-27B | Q4_K_M | Q4 | ~177K | ~32 GB | RTX 5090 |
+| `kenichi-thinking:48gb` | Qwen3.5-27B | Q5_K_M | Q4 | ~256K (max) | ~42 GB | A6000 Ada |
+| `kenichi-thinking:96gb` | Qwen3.5-27B | Q8_0 | Q8 | ~256K (max) | ~74 GB | RTX PRO 6000 |
+| `kenichi-thinking:full` | Qwen3.5-27B | **F16** | FP16 | ~256K (max) | ~144 GB | Mac Studio 256GB |
+| `kenichi-flash:24gb` | Devstral Small 2 | Q4_K_M | Q8 | ~121K | ~24 GB | RTX 4090 |
+| `kenichi-flash:32gb` | Devstral Small 2 | Q5_K_M | Q8 | ~182K | ~32 GB | RTX 5090 |
+| `kenichi-flash:48gb` | Devstral Small 2 | Q8_0 | Q8 | ~256K (max) | ~47 GB | A6000 Ada |
+| `kenichi-flash:96gb` | Devstral Small 2 | Q8_0 | FP16 | ~256K (max) | ~67 GB | RTX PRO 6000 |
+| `kenichi-flash:full` | Devstral Small 2 | **F16** | FP16 | ~256K (max) | ~89 GB | Mac Studio 256GB |
 
 Key design decisions:
 - **Thinking uses Q4 KV on 24/32/48gb tiers** — 88 layers makes KV cache expensive, Q8 KV doesn't leave enough room
