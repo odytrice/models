@@ -123,7 +123,7 @@ def main(data_path: str = None, val_path: str = None, resume: str = None):
     print("\n[1/6] Loading model...")
     model = AutoModelForImageTextToText.from_pretrained(
         MODEL_NAME,
-        torch_dtype=DTYPE,
+        dtype=DTYPE,
         device_map="auto",
         attn_implementation="eager",  # flex_attention needs torch 2.6+
     )
@@ -236,7 +236,7 @@ def main(data_path: str = None, val_path: str = None, resume: str = None):
     # ── Trainer ──────────────────────────────────────────────────────
     trainer = SFTTrainer(
         model=model,
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
         train_dataset=dataset,
         eval_dataset=eval_dataset,
         args=training_args,
