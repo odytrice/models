@@ -68,7 +68,7 @@ from trl import SFTTrainer, SFTConfig
 # ── Model Configuration ──────────────────────────────────────────────
 MODEL_NAME = "Qwen/Qwen3.5-27B"
 MAX_SEQ_LENGTH = (
-    131072  # 128K — zero truncation, all samples preserved. Packing enabled.
+    65536  # 64K — zero truncation (max sample ~24K tokens). 128K OOMs on GDN layers.
 )
 DTYPE = torch.bfloat16
 
