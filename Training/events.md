@@ -1579,8 +1579,8 @@ The bottleneck is the logits tensor at loss computation: `vocab_size (248,320) �
 
 **Kenichi Thinking** (H200 141GB):
 - flash_attention_2 + packing at 16K, monkey-patched
-- 582 total steps, ~71 s/step (dropping from initial 82 s warmup)
-- ETA: ~11.4 hours, ~$46 H200 cost
+- 582 total steps, ~68 s/step (settled from 82 s warmup), 100% GPU util, 87% VRAM
+- ETA: ~11 hours, ~$44 H200 cost
 - Massive improvement from 52 hours / $208 (no packing) and 142 hours / $568 (no cuDNN)
 
 **Kenichi Flash** (A100 SXM):
@@ -1590,12 +1590,41 @@ The bottleneck is the logits tensor at loss computation: `vocab_size (248,320) �
 
 **`merge_and_export.py`** updated to support both Unsloth (Flash) and peft (Thinking) backends via `--peft` flag.
 
+### Accepted Tradeoff: 110 Samples Truncated (1.5%)
+
+With `max_length=16384` (16K) and packing enabled, 110 of 7,556 training samples (1.5%) are truncated. The longest sample is ~24,323 tokens (~85,129 chars). These 110 samples still contribute their first 16K tokens of training signal — only their tails are lost.
+
+Why not pack at 24K (zero truncation)?
+- Logits tensor at loss computation: `vocab_size (248,320) × seq_len × 4 bytes (float32)`
+- At 32K packed: 30 GB logits, OOM'd with only 11 GB free
+- At 64K packed: 60 GB logits, OOM'd with only 7 GB free
+- The model weights (54 GB) + activations (~60-80 GB) leave insufficient room for large logits
+- `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` only reduces fragmentation, not total memory — doesn't help when it's a hard VRAM limit
+- 16K is the sweet spot: logits ~15 GB, fits within the ~20 GB remaining after forward pass
+
+### Lessons Learned: VL Models Are Tricky to Train
+
+Kenichi Thinking (Qwen3.5-27B VL) required dramatically more debugging than Kenichi Flash (Devstral text-only):
+
+| Challenge | Thinking (VL) | Flash (text-only) |
+|-----------|--------------|-------------------|
+| Unsloth support | No — gradient offloading even on 141 GB | Yes — works on A100 80 GB |
+| Attention implementation | 7 attempts to find working config | 1 fix (`attn_implementation="eager"`) |
+| Packing | Requires monkey-patch for transformers bug | Works out of the box |
+| Max packed sequence | 16K (vocab 248K × seq × 4B limits logits) | 131K (smaller vocab, fits easily) |
+| Training stack | Custom transformers+peft+trl | Unsloth (2x faster kernels) |
+| GPU required | H200 141 GB ($4/hr) | A100 80 GB (~$1.79/hr) |
+| Training time | ~11 hours | ~5 hours |
+| Total cost | ~$44 | ~$12 |
+
+The hybrid GDN + standard attention architecture, VL 3D position IDs, massive vocab (248K), and vision tower overhead all compound to make VL model training significantly harder than text-only models. The payoff is vision capabilities for the planning agent use case.
+
 ---
 
 ## Pending Actions
 
 1. **Flash training finishes** (~37 min) → run merge + export on A100 pod
-2. **Wait for Thinking training** to complete (~11 hrs on H200, ~$46)
+2. **Wait for Thinking training** to complete (~11 hrs on H200, ~$44)
 3. **Merge LoRA + export** both models to GGUF and push to HuggingFace
 4. **Evaluate and compare** both variants on held-out validation set
 5. **Download GGUFs locally** and test with Ollama on RTX 4090 / RTX 5090
