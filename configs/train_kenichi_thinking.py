@@ -48,7 +48,7 @@ from trl import SFTTrainer, SFTConfig
 
 # ── Model Configuration ──────────────────────────────────────────────
 MODEL_NAME = "Qwen/Qwen3.5-27B"
-MAX_SEQ_LENGTH = 32768  # 32K — covers 95.4% of samples. Packing disabled (VL model + flash_attn incompatible at 128K)
+MAX_SEQ_LENGTH = 131072  # 128K — zero truncation, all samples preserved
 DTYPE = torch.bfloat16
 
 # ── LoRA Configuration ───────────────────────────────────────────────
@@ -124,7 +124,7 @@ def main(data_path: str = None, val_path: str = None, resume: str = None):
         MODEL_NAME,
         dtype=DTYPE,
         device_map="auto",
-        attn_implementation="flash_attention_2",  # eager OOMs at 128K; flash_attention_2 is O(n) memory
+        attn_implementation="sdpa",  # eager OOMs at 128K; flash_attention_2 crashes with VL 3D position IDs
     )
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
@@ -233,7 +233,7 @@ def main(data_path: str = None, val_path: str = None, resume: str = None):
         # SFT-specific config (moved from SFTTrainer constructor)
         dataset_text_field="text",
         max_length=MAX_SEQ_LENGTH,
-        packing=False,  # Disabled — VL model's 3D position IDs + flash_attn crash with packed 128K sequences
+        packing=True,  # Pack short sequences together — critical for efficiency
     )
 
     # ── Trainer ──────────────────────────────────────────────────────
