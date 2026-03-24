@@ -107,6 +107,7 @@ def main(data_path: str = None, val_path: str = None, resume: str = None):
         max_seq_length=MAX_SEQ_LENGTH,
         load_in_4bit=LOAD_IN_4BIT,
         dtype=DTYPE,
+        attn_implementation="eager",  # flex_attention requires torch 2.6+
     )
 
     # ── Apply LoRA ───────────────────────────────────────────────────
