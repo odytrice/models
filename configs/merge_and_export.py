@@ -35,6 +35,14 @@ Usage:
     --name kenichi-thinking \\
     --gguf-only --peft
 
+  # Merge + push BF16 only (no GGUF — saves disk, quantize later on CPU):
+  python merge_and_export.py \\
+    --model Qwen/Qwen3.5-27B \\
+    --adapter ./outputs/kenichi-thinking/lora_adapter \\
+    --name kenichi-thinking \\
+    --push odytrice/kenichi-thinking \\
+    --peft --no-gguf
+
   # Specific quantization types:
   python merge_and_export.py \\
     --model Qwen/Qwen3.5-27B \\
@@ -58,6 +66,7 @@ def merge_unsloth(
     gguf_dir: str,
     quants: list,
     gguf_only: bool,
+    no_gguf: bool = False,
 ):
     """Merge and export using Unsloth (for models trained with Unsloth, e.g., Kenichi Flash)."""
     from unsloth import FastLanguageModel
@@ -96,6 +105,10 @@ def merge_unsloth(
         print("[3/4] Skipping HuggingFace push (--gguf-only)")
 
     # Export to GGUF
+    if no_gguf:
+        print(f"\n[4/4] Skipping GGUF export (--no-gguf)")
+        return
+
     print(f"\n[4/4] Exporting GGUF quantizations...")
     Path(gguf_dir).mkdir(parents=True, exist_ok=True)
     for quant in quants:
@@ -125,6 +138,7 @@ def merge_peft(
     gguf_dir: str,
     quants: list,
     gguf_only: bool,
+    no_gguf: bool = False,
 ):
     """Merge and export using peft (for models trained without Unsloth, e.g., Kenichi Thinking VL)."""
     import torch
@@ -168,6 +182,10 @@ def merge_peft(
         print("[3/4] Skipping HuggingFace push (--gguf-only)")
 
     # Export to GGUF using llama.cpp converter
+    if no_gguf:
+        print(f"\n[4/4] Skipping GGUF export (--no-gguf)")
+        return
+
     print(f"\n[4/4] Exporting GGUF quantizations...")
     Path(gguf_dir).mkdir(parents=True, exist_ok=True)
 
@@ -282,6 +300,7 @@ def main(
     name: str,
     push_repo: str = None,
     gguf_only: bool = False,
+    no_gguf: bool = False,
     quants: list = None,
     use_peft: bool = False,
 ):
@@ -300,18 +319,30 @@ def main(
     print(f"  Base model:  {model_name}")
     print(f"  Adapter:     {adapter_path}")
     print(f"  Merged dir:  {merged_dir}")
-    print(f"  GGUF dir:    {gguf_dir}")
-    print(f"  Quants:      {', '.join(quants)}")
+    if no_gguf:
+        print(f"  GGUF:        SKIPPED (--no-gguf)")
+    else:
+        print(f"  GGUF dir:    {gguf_dir}")
+        print(f"  Quants:      {', '.join(quants)}")
     if push_repo:
         print(f"  Push to:     {push_repo}")
     print("=" * 60)
 
     if use_peft:
         merge_peft(
-            model_name, adapter_path, merged_dir, push_repo, gguf_dir, quants, gguf_only
+            model_name,
+            adapter_path,
+            merged_dir,
+            push_repo,
+            gguf_dir,
+            quants,
+            gguf_only,
+            no_gguf,
         )
     else:
-        merge_unsloth(adapter_path, merged_dir, push_repo, gguf_dir, quants, gguf_only)
+        merge_unsloth(
+            adapter_path, merged_dir, push_repo, gguf_dir, quants, gguf_only, no_gguf
+        )
 
     # Done
     print("\n" + "=" * 60)
@@ -319,12 +350,21 @@ def main(
     print("=" * 60)
     if not gguf_only:
         print(f"\n  Merged model:  {merged_dir}")
-    print(f"  GGUF files:    {gguf_dir}")
+    if not no_gguf:
+        print(f"  GGUF files:    {gguf_dir}")
     if push_repo:
         print(f"  HuggingFace:   https://huggingface.co/{push_repo}")
-        print(f"  GGUF repo:     https://huggingface.co/{push_repo}-GGUF")
-    print(f"\n  To run locally with Ollama:")
-    print(f"    ollama create {name} -f Modelfile")
+        if not no_gguf:
+            print(f"  GGUF repo:     https://huggingface.co/{push_repo}-GGUF")
+    if no_gguf:
+        print(f"\n  GGUF export skipped. To quantize later on a CPU machine:")
+        print(
+            f"    python merge_and_export.py --model {model_name} --adapter {adapter_path} --name {name} --gguf-only"
+            + (" --peft" if use_peft else "")
+        )
+    else:
+        print(f"\n  To run locally with Ollama:")
+        print(f"    ollama create {name} -f Modelfile")
 
 
 if __name__ == "__main__":
@@ -351,6 +391,11 @@ if __name__ == "__main__":
         help="Only export GGUF, skip merged save and HF push",
     )
     parser.add_argument(
+        "--no-gguf",
+        action="store_true",
+        help="Skip GGUF export entirely (merge + push BF16 only, quantize later on CPU)",
+    )
+    parser.add_argument(
         "--quant",
         nargs="+",
         default=None,
@@ -368,6 +413,7 @@ if __name__ == "__main__":
         args.name,
         args.push,
         args.gguf_only,
+        args.no_gguf,
         args.quant,
         args.peft,
     )
