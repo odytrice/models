@@ -1,8 +1,8 @@
 # Kenichi Flash — 96 GB VRAM Profile (RTX PRO 6000, A100 80GB, H100)
-# Devstral Small 2 (24B) | Q8_0 model | FP16 KV cache | ~256K context (model max)
+# Devstral Small 2 (24B) | F16 model (zero quantization) | FP16 KV cache | ~256K context (model max)
 #
-# Zero compromise. Q8_0 model with unquantized FP16 KV cache at full context.
-# 70 GB free after model load — more than enough for 256K with FP16 KV (~42 GB).
+# True zero quantization. Full FP16 weights, full FP16 KV cache.
+# Model: ~48 GB | FP16 KV at 256K: ~42 GB | Total: ~90 GB → fits in 96 GB.
 #
 # Setup:
 #   1. Download GGUF:
@@ -16,7 +16,7 @@
 #      ollama create kenichi-flash:96gb -f Modelfile.kenichi-flash-96gb
 #      ollama run kenichi-flash:96gb
 
-FROM ./kenichi-flash/unsloth.Q8_0.gguf
+FROM ./kenichi-flash/unsloth.F16.gguf
 
 TEMPLATE """{{- if .System }}[SYSTEM_PROMPT] {{ .System }}[/SYSTEM_PROMPT]{{ end }}{{- range .Messages }}{{- if eq .Role "user" }}[INST] {{ .Content }}[/INST]{{ end }}{{- if eq .Role "assistant" }} {{ .Content }}</s>{{ end }}{{- end }}"""
 

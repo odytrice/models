@@ -1,7 +1,11 @@
 # Kenichi Thinking — 96 GB VRAM Profile (RTX PRO 6000, A100 80GB, H100)
-# Qwen3.5-27B | Q8_0 model | Q8 KV cache | ~256K context (model max)
+# Qwen3.5-27B | F16 model (zero quantization) | Q8 KV cache | ~233K context
 #
-# Near-lossless quality at maximum context. No compromises.
+# True zero quantization on model weights. Full FP16 GGUF.
+# Model: ~54 GB | Q8 KV at 233K: ~42 GB | Total: ~96 GB
+#
+# Note: FP16 KV would need 144 GB at full 256K — doesn't fit in 96 GB.
+# Q8 KV is used instead (negligible quality impact).
 #
 # Setup:
 #   1. Download GGUF:
@@ -14,7 +18,7 @@
 #      ollama create kenichi-thinking:96gb -f Modelfile.kenichi-thinking-96gb
 #      ollama run kenichi-thinking:96gb
 
-FROM ./kenichi-thinking/unsloth.Q8_0.gguf
+FROM ./kenichi-thinking/unsloth.F16.gguf
 
 TEMPLATE """{{- if .System }}<|im_start|>system
 {{ .System }}<|im_end|>
@@ -30,6 +34,6 @@ SYSTEM """You are Kenichi, an expert coding assistant specialized in F#, .NET, S
 PARAMETER temperature 0.6
 PARAMETER top_p 0.95
 PARAMETER top_k 40
-PARAMETER num_ctx 262144
+PARAMETER num_ctx 233000
 PARAMETER stop <|im_end|>
 PARAMETER stop <|im_start|>

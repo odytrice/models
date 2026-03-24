@@ -45,7 +45,7 @@ from unsloth import FastLanguageModel
 
 
 # Default GGUF quantization types to export
-DEFAULT_QUANTS = ["q4_k_m", "q5_k_m", "q8_0"]
+DEFAULT_QUANTS = ["q4_k_m", "q5_k_m", "q8_0", "f16"]
 
 
 def main(
