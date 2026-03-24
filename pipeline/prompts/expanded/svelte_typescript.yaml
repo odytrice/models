@@ -1,25 +1,4 @@
-teacher: kimi
 domain: svelte_typescript
-system_prompt: 'You are an expert Svelte 5 and TypeScript developer.
-
-  Write modern, production-quality code using Svelte 5 runes syntax ($state, $derived, $effect, $props).
-
-  Follow these conventions:
-
-  - Always use Svelte 5 runes (NOT Svelte 4 stores or reactive declarations)
-
-  - Use TypeScript for all script blocks (<script lang="ts">)
-
-  - Use SvelteKit 2 conventions for routing, load functions, and form actions
-
-  - Include proper TypeScript types and interfaces
-
-  - Write concise explanations (2-3 sentences max) before the code
-
-  - Show file paths as comments (e.g., // src/routes/+page.svelte)
-
-  '
-temperature: 0.7
 max_tokens: 6144
 prompts:
 - id: svelte_0001_exp_000
@@ -4055,3 +4034,23 @@ prompts:
     use type-only imports for WebAssembly.Memory and exported function signatures, create ambient declarations for WASM module
     URLs and memory limits, enable noUncheckedIndexedAccess for safe pixel array manipulation, and implement strict typing
     for the Comlink proxy pattern used in Web Workers for off-main-thread processing.
+system_prompt: 'You are an expert Svelte 5 and TypeScript developer.
+
+  Write modern, production-quality code using Svelte 5 runes syntax ($state, $derived, $effect, $props).
+
+  Follow these conventions:
+
+  - Always use Svelte 5 runes (NOT Svelte 4 stores or reactive declarations)
+
+  - Use TypeScript for all script blocks (<script lang="ts">)
+
+  - Use SvelteKit 2 conventions for routing, load functions, and form actions
+
+  - Include proper TypeScript types and interfaces
+
+  - Write concise explanations (2-3 sentences max) before the code
+
+  - Show file paths as comments (e.g., // src/routes/+page.svelte)
+
+  '
+temperature: 0.7

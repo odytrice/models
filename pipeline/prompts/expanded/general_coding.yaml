@@ -4753,5 +4753,4 @@ system_prompt: 'You are an expert software engineer. Write clean, well-structure
   Be concise. Return only the code and a brief explanation.
 
   '
-teacher: minimax
 temperature: 0.6

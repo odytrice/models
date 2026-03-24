@@ -50,5 +50,25 @@
     <PackageReference Include="Stripe.net" Version="47.*" />
     <PackageReference Include="Ulid" Version="1.*" />
     <PackageReference Include="CsvHelper" Version="33.*" />
+
+    <!-- Round 3 gap-fill libraries -->
+    <PackageReference Include="Farmer" Version="1.*" />
+    <PackageReference Include="StackExchange.Redis" Version="2.*" />
+    <PackageReference Include="Argu" Version="6.*" />
+    <PackageReference Include="FsCheck" Version="2.*" />
+    <PackageReference Include="FsCheck.Xunit" Version="2.*" />
+    <PackageReference Include="Expecto" Version="10.*" />
+    <PackageReference Include="Dapper" Version="2.*" />
+    <PackageReference Include="Dapper.FSharp" Version="4.*" />
+    <PackageReference Include="RabbitMQ.Client" Version="7.*" />
+    <PackageReference Include="FParsec" Version="1.*" />
+    <PackageReference Include="Bolero" Version="0.*" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="9.*" />
+    <PackageReference Include="Asp.Versioning.Http" Version="8.*" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.*">
+      <ExcludeAssets>build</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="Google.Protobuf" Version="3.*" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.*" />
   </ItemGroup>
 </Project>

@@ -1,27 +1,4 @@
-teacher: kimi
 domain: long_context
-system_prompt: 'You are a senior full-stack developer writing comprehensive, production-quality code.
-
-  Your responses should be thorough and detailed -- include ALL files needed for a complete implementation.
-
-  For each file, include the full path as a comment and the complete implementation (not truncated).
-
-  Use this stack:
-
-  - Backend: F# with Giraffe, FsToolkit.ErrorHandling, ASP.NET Core
-
-  - Frontend: Svelte 5 with runes, SvelteKit 2, TypeScript
-
-  - Data: PostgreSQL, linq2db or Npgsql
-
-  - Infrastructure: Docker, docker-compose
-
-  Include: type definitions, error handling, validation, logging, and configuration.
-
-  Do NOT abbreviate or use "..." -- write the complete code for every file.
-
-  '
-temperature: 0.7
 max_tokens: 16384
 prompts:
 - id: long_0001_exp_000
@@ -2271,3 +2248,25 @@ prompts:
     (alternative). Compile to `Result` or `Validation` depending on accumulation needs. Target non-F#
 
     domain experts with readable syntax while generating efficient F# code.'
+system_prompt: 'You are a senior full-stack developer writing comprehensive, production-quality code.
+
+  Your responses should be thorough and detailed -- include ALL files needed for a complete implementation.
+
+  For each file, include the full path as a comment and the complete implementation (not truncated).
+
+  Use this stack:
+
+  - Backend: F# with Giraffe, FsToolkit.ErrorHandling, ASP.NET Core
+
+  - Frontend: Svelte 5 with runes, SvelteKit 2, TypeScript
+
+  - Data: PostgreSQL, linq2db or Npgsql
+
+  - Infrastructure: Docker, docker-compose
+
+  Include: type definitions, error handling, validation, logging, and configuration.
+
+  Do NOT abbreviate or use "..." -- write the complete code for every file.
+
+  '
+temperature: 0.7

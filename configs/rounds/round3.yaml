@@ -1,5 +1,5 @@
 description: "Round 3 - Curriculum gap fills (20 new seeds: SRTP, FsCheck, gRPC, Expecto, etc.)"
-suffix: "_r3"
+suffix: ""
 temperature: 0.7
 concurrency: 7
 
@@ -8,11 +8,11 @@ concurrency: 7
 # GLM-5: best .NET/general teacher (97.1% on dotnet_aspnet)
 # Kimi: not used in round 3 (no new Svelte/TS/long-context seeds)
 teachers:
-  MiniMax:
-    - yaml: fsharp_core_r3_minimax
+  minimax:
+    - yaml: fsharp_core_r3
       output: fsharp_core_r3
-    - yaml: fsharp_libraries_r3_minimax
+    - yaml: fsharp_libraries_r3
       output: fsharp_libraries_r3
-  GLM-5:
-    - yaml: dotnet_aspnet_r3_glm5
+  glm5:
+    - yaml: dotnet_aspnet_r3
       output: dotnet_aspnet_r3

@@ -1,0 +1,243 @@
+domain: cross_domain
+prompts:
+- id: cross_0006_exp_000
+  instruction: 'Implement a HIPAA-compliant CI/CD pipeline for a healthcare patient records system:
+
+    - GitLab CI: Build a C# FHIR API (.NET 8) with unit tests and integration tests against a PostgreSQL container
+
+    - GitLab CI: Build a React TypeScript frontend with accessibility (a11y) testing
+
+    - Docker: Multi-stage builds with distroless base images, scan for vulnerabilities using Trivy
+
+    - Push to Azure Container Registry with content trust (Notary) signing
+
+    - Kubernetes: Blue-green deployment strategy with Istio traffic splitting
+
+    - Database: FluentMigrator migrations with encrypted column transformations, run as Kubernetes Job with resource limits
+
+    - Audit: Log all migration executions to Azure Blob Storage for compliance
+
+    - Health checks: Custom readiness probes checking FHIR endpoint conformance
+
+    Show the complete `.gitlab-ci.yml`, Kubernetes manifests with Istio VirtualService, and FluentMigrator configuration with
+    transaction rollback on failure.'
+- id: cross_0007_exp_006
+  instruction: 'Debug a production memory leak in Akka.NET actors: Analyze a scenario where message processing causes Gen
+    2 heap growth due to captured closures in HttpHandler chains. Provide diagnostic steps using dotnet-counters and heap
+    dumps. Implement the fix using the "Warbler" pattern to prevent closure allocations. Show how to implement bounded mailbox
+    queues to prevent out-of-memory errors under load. Include unit tests using Akka.NET TestKit to reproduce the memory leak
+    and verify the fix.'
+- id: cross_0010_exp_004
+  instruction: 'Debug and fix an Akka.NET cluster sharding memory leak:
+
+    - Scenario: ShardRegion actors not terminating after entity passivation
+
+    - Tools: Use Akka.NET diagnostics and memory profiling
+
+    - Fix: Implement proper Passivate message handling and StopTimeout configuration
+
+    - Verification: Write a test using Akka.TestKit to reproduce the leak
+
+    - Constraints: Must maintain exactly-once message delivery guarantees
+
+    Show the problematic code, the fix, and the TestKit verification spec.'
+- id: cross_0010_exp_013
+  instruction: 'Design a distributed cache using Akka.DistributedData:
+
+    - Advanced: ORDictionary for key-value storage with LWWRegister
+
+    - C#: Replicator actor setup with WriteMajority/ReadMajority
+
+    - Conflict resolution: Custom merge function for complex objects
+
+    - Expiration: TTL implementation using scheduled replicator updates
+
+    - Monitoring: Subscribe to Replicator.Changed events for cache metrics
+
+    Show the DistributedData setup and custom merge logic.'
+- id: cross_0010_exp_025
+  instruction: 'Design a medical imaging processing pipeline:
+
+    - C# Akka.Streams: DICOM file processing with async I/O
+
+    - Processing: Parallel image enhancement actors (GPU-bound)
+
+    - Storage: Azure Blob Sink with chunked uploading
+
+    - HIPAA: Encryption actors for PHI protection
+
+    - Progress: WebSocket notifications for upload progress
+
+    Show the stream processing graph and encryption stage.'
+- id: cross_0010_exp_024
+  instruction: 'Implement adaptive load balancing router:
+
+    - Advanced: C# SmallestMailboxPool with custom selection logic
+
+    - Metrics: Collection of mailbox depth and processing time
+
+    - Adaptation: Dynamic routing weights based on node performance
+
+    - Health checks: Remove unhealthy nodes from routing pool
+
+    - Fallback: Broadcast to backup pool when primary saturated
+
+    Show the custom router logic and metrics collection.'
+- id: cross_0006_exp_000
+  instruction: 'Implement a HIPAA-compliant CI/CD pipeline for a healthcare patient records system:
+
+    - GitLab CI: Build a C# FHIR API (.NET 8) with unit tests and integration tests against a PostgreSQL container
+
+    - GitLab CI: Build a React TypeScript frontend with accessibility (a11y) testing
+
+    - Docker: Multi-stage builds with distroless base images, scan for vulnerabilities using Trivy
+
+    - Push to Azure Container Registry with content trust (Notary) signing
+
+    - Kubernetes: Blue-green deployment strategy with Istio traffic splitting
+
+    - Database: FluentMigrator migrations with encrypted column transformations, run as Kubernetes Job with resource limits
+
+    - Audit: Log all migration executions to Azure Blob Storage for compliance
+
+    - Health checks: Custom readiness probes checking FHIR endpoint conformance
+
+    Show the complete `.gitlab-ci.yml`, Kubernetes manifests with Istio VirtualService, and FluentMigrator configuration with
+    transaction rollback on failure.'
+- id: cross_0006_exp_001
+  instruction: 'Design a zero-downtime database migration strategy for a high-traffic e-commerce platform using FluentMigrator:
+
+    - Azure DevOps: Build microservices (.NET 6) with SQL Server schema versioning
+
+    - Implement expand/contract pattern for column additions (add new column → dual-write → migrate data → switch reads →
+    remove old)
+
+    - Kubernetes: Canary deployment using Flagger with automated rollback on error
+
+    - Database: Run migrations as Kubernetes CronJob with idempotency checks, supporting 500GB+ tables with online index rebuilds
+
+    - Monitoring: Prometheus metrics for migration duration and row counts
+
+    - Constraints: Ensure backward compatibility between v1 and v2 schemas during 30-minute transition window
+
+    Show the Azure DevOps pipeline YAML, Kubernetes Flagger canary configuration, and FluentMigrator migration classes implementing
+    the expand/contract pattern.'
+- id: cross_0006_exp_006
+  instruction: 'Design a cost-optimized CI/CD pipeline for a startup using GitHub Actions and AWS spot instances:
+
+    - Build: .NET 8 minimal API with AOT compilation for smaller container images
+
+    - Frontend: Blazor WASM with Brotli compression
+
+    - Database: FluentMigrator with SQLite for integration tests, PostgreSQL for production
+
+    - Kubernetes: AWS EKS with Karpenter for spot instance provisioning
+
+    - Migration Job: Tolerate spot instance interruptions with checkpoint/resume capability
+
+    - Monitoring: CloudWatch alarms for migration duration costs > $5
+
+    Show the GitHub Actions workflow with cache optimization, Karpenter NodePool configuration, and FluentMigrator checkpoint
+    implementation.'
+- id: cross_0006_exp_023
+  instruction: 'Design a serverless database migration strategy for AWS Lambda and Aurora:
+
+    - GitHub Actions: Build .NET 8 Lambda functions with Native AOT compilation
+
+    - Database: FluentMigrator running in Lambda for Aurora Serverless v2
+
+    - Trigger: Step Functions orchestrating migration → validation → traffic shift
+
+    - Cold Start: Optimized FluentMigrator initialization for Lambda execution environment
+
+    - Permissions: Least-privilege IAM roles for migration execution vs application runtime
+
+    - Cost: EventBridge scheduling to run migrations only during deployment windows
+
+    Show the AWS Step Functions state machine, Lambda handler for FluentMigrator, and GitHub Actions deployment to Lambda.'
+- id: cross_0007_exp_006
+  instruction: 'Debug a production memory leak in Akka.NET actors: Analyze a scenario where message processing causes Gen
+    2 heap growth due to captured closures in HttpHandler chains. Provide diagnostic steps using dotnet-counters and heap
+    dumps. Implement the fix using the "Warbler" pattern to prevent closure allocations. Show how to implement bounded mailbox
+    queues to prevent out-of-memory errors under load. Include unit tests using Akka.NET TestKit to reproduce the memory leak
+    and verify the fix.'
+- id: cross_0010_exp_022
+  instruction: 'Create a weather data processing grid:
+
+    - C#: SensorStation actors grouped by geographic region
+
+    - Cluster: Sharding by station ID, rebalancing on node join/leave
+
+    - Aggregation: RegionalAggregator actors calculating hourly averages
+
+    - Fault tolerance: Supervisor strategy for station communication timeouts
+
+    - Data: Akka.Persistence for station calibration history
+
+    Show the cluster sharding setup and regional aggregation logic.'
+- id: cross_0010_exp_020
+  instruction: 'Design a blockchain transaction validator network:
+
+    - Advanced: C# ValidatorActor with cryptographic verification
+
+    - Consensus: RAFT-like consensus actor for block approval
+
+    - Cluster: Akka.Cluster with roles (Validator, Miner, Observer)
+
+    - Security: Actor isolation for private key operations
+
+    - Throughput: Parallel transaction validation with router
+
+    Show the consensus protocol and validator cluster setup.'
+- id: cross_0012_exp_016
+  instruction: "Create a Roslyn code generator that produces compile-time optimized logging methods for Serilog, eliminating\
+    \ runtime reflection and boxing. \nGenerate source code from message templates at build time. \nImplement analyzer warnings\
+    \ for incorrect parameter counts in template strings. \nAdd code fixes for automatic template extraction from string concatenation.\
+    \ \nBenchmark against traditional Serilog usage showing IL size and execution speed improvements."
+- id: cross_0010_exp_007
+  instruction: 'Create a file processing pipeline with backpressure management:
+
+    - C# Akka.Streams: Read large CSV files (10GB+) with StreamRefs
+
+    - Flow: Parse → Validate → Transform → BulkInsert to PostgreSQL
+
+    - Error handling: DeadLetter queue for poison records with retry logic
+
+    - Monitoring: Stream metrics via Akka.NET built-in telemetry
+
+    - Constraints: Limited memory (2GB heap), cannot load full file
+
+    Show the Stream graph with throttle and buffer stages.'
+- id: cross_0010_exp_019
+  instruction: 'Build a recommendation engine with actor-per-user:
+
+    - Intermediate: C# UserPreferenceActor maintaining taste profile
+
+    - Algorithm: Collaborative filtering via actor message passing
+
+    - Cache: In-memory LRU cache for popular recommendations
+
+    - Batch: Nightly retraining via Akka.Streams batch processing
+
+    - Privacy: GDPR-compliant data deletion via PoisonPill with cleanup
+
+    Show the preference actor and recommendation calculation logic.'
+system_prompt: 'You are a senior full-stack developer working with F#, Svelte 5, TypeScript, Docker, and Kubernetes.
+
+  Write production-quality code that connects multiple technologies in the stack.
+
+  Follow these conventions:
+
+  - F# backend: Giraffe, FsToolkit.ErrorHandling, idiomatic functional patterns
+
+  - Frontend: Svelte 5 with runes ($state, $derived, $effect), TypeScript, SvelteKit 2
+
+  - Infrastructure: Docker multi-stage builds, Kubernetes manifests, Helm charts
+
+  - Show all relevant files with clear file path comments
+
+  - Include type definitions that bridge the frontend and backend
+
+  Write concise explanations (2-3 sentences max) before each code block.
+
+  '

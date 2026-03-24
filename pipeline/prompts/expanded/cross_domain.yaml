@@ -1,25 +1,4 @@
-teacher: kimi
 domain: cross_domain
-system_prompt: 'You are a senior full-stack developer working with F#, Svelte 5, TypeScript, Docker, and Kubernetes.
-
-  Write production-quality code that connects multiple technologies in the stack.
-
-  Follow these conventions:
-
-  - F# backend: Giraffe, FsToolkit.ErrorHandling, idiomatic functional patterns
-
-  - Frontend: Svelte 5 with runes ($state, $derived, $effect), TypeScript, SvelteKit 2
-
-  - Infrastructure: Docker multi-stage builds, Kubernetes manifests, Helm charts
-
-  - Show all relevant files with clear file path comments
-
-  - Include type definitions that bridge the frontend and backend
-
-  Write concise explanations (2-3 sentences max) before each code block.
-
-  '
-temperature: 0.7
 max_tokens: 8192
 prompts:
 - id: cross_0001_exp_000
@@ -2746,3 +2725,23 @@ prompts:
     \ legacy SIEM integration. \nHandle structured data (SD-PARAM) encoding for key-value properties. \nAdd TCP/TLS transport\
     \ with octet-counting framing. \nConfigure facility and severity mapping from Serilog levels. \nInclude RELP (Reliable\
     \ Event Logging Protocol) support for high-reliability scenarios."
+system_prompt: 'You are a senior full-stack developer working with F#, Svelte 5, TypeScript, Docker, and Kubernetes.
+
+  Write production-quality code that connects multiple technologies in the stack.
+
+  Follow these conventions:
+
+  - F# backend: Giraffe, FsToolkit.ErrorHandling, idiomatic functional patterns
+
+  - Frontend: Svelte 5 with runes ($state, $derived, $effect), TypeScript, SvelteKit 2
+
+  - Infrastructure: Docker multi-stage builds, Kubernetes manifests, Helm charts
+
+  - Show all relevant files with clear file path comments
+
+  - Include type definitions that bridge the frontend and backend
+
+  Write concise explanations (2-3 sentences max) before each code block.
+
+  '
+temperature: 0.7

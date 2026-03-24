@@ -1,0 +1,1706 @@
+domain: fsharp_libraries
+prompts:
+- id: fsharp_lib_0033_exp_012
+  instruction: 'Write FsCheck property tests for a F# polynomial expression evaluator. Create:
+
+    1. Custom generator for Polynomial discriminated union (Constant, Linear, Quadratic, Custom)
+
+    2. Shrinker that reduces coefficient magnitudes while preserving degree
+
+    3. Properties: evaluate at x=0 returns constant term, differentiation followed by integration recovers original (up to
+    constant)
+
+    4. Conditional property: polynomial degree > 0 ==> derivative degree is one less
+
+    5. Compare naive vs Horner''s method implementation'
+- id: fsharp_lib_0033_exp_015
+  instruction: 'Implement FsCheck tests for a F# regular expression builder library. Include:
+
+    1. Custom generator for RegexAST discriminated union (Literal, CharClass, Repetition, Concatenation, Alternation)
+
+    2. Shrinker that minimizes AST depth while preserving matching behavior
+
+    3. Properties: regex matches strings with literal, inverse property (regex inverse matches complement)
+
+    4. Conditional property: repetition count > 0 ==> at least one match for single char
+
+    5. Configure large tests (2000) for complex pattern combinations'
+- id: fsharp_lib_0033_exp_024
+  instruction: 'Write FsCheck property-based tests for a F# bloom filter implementation. Include:
+
+    1. Custom generator for BloomFilterConfig (expected elements, false positive rate)
+
+    2. Shrinker that increases element count to expose false positive thresholds
+
+    3. Properties: elements added are always found (no false negatives), false positives bounded by expected rate
+
+    4. Conditional property: element not added ==> probability of being found < threshold
+
+    5. Test with different hash function counts and bit array sizes'
+- id: fsharp_lib_0034_exp_011
+  instruction: Create a test suite for an authentication and authorization service. Organize with testList by auth method
+    (OAuth, SAML, JWT), testAsync for token validation workflows, Expect.throws for invalid credential scenarios, testProperty
+    for generating and validating random JWT claims, and configure sequential execution for tests that share a test database
+    to avoid race conditions.
+- id: fsharp_lib_0034_exp_014
+  instruction: Implement Expecto tests for a real-time collaboration engine (similar to Google Docs). Test concurrent editing
+    scenarios with testAsync, use Expect.equal for operational transformation validation, property-based tests for random
+    concurrent operations, timeout configuration for sync operations, and focused tests (ftestCase) to debug a specific merge
+    conflict resolution issue.
+- id: fsharp_lib_0035_exp_005
+  instruction: "Build a F# configuration management CLI using Argu with subcommands: `get`, `set`, `list`, `validate`. \n\
+    Support dot-notation keys (e.g., `database.connection.timeout`). \nImplement type-safe value setting with DU-based value\
+    \ type arguments. \nEnvironment variable fallback for config file locations. \nCustom error handling for type mismatches\
+    \ (setting string where int expected). \nPattern match on configuration key paths for dispatch."
+- id: fsharp_lib_0035_exp_006
+  instruction: "Design a F# container orchestration CLI using Argu with commands: `scale`, `deploy`, `rollback`, `inspect`.\
+    \ \nDefine arguments for replica counts, image tags, and resource limits. \nImplement environment variable fallbacks for\
+    \ registry credentials and namespace contexts. \nAdd confirmation prompts for destructive operations. \nCustom help text\
+    \ formatting with command grouping. \nDemonstrate Argu error formatting for invalid deployment manifests."
+- id: fsharp_lib_0035_exp_011
+  instruction: "Build a F# service mesh configuration CLI using Argu. \nSubcommands: `inject`, `route`, `policy`, `stats`.\
+    \ \nDefine DUs for traffic management rules with [<AltCommandLine>] short flags. \nEnvironment variable fallback for mesh\
+    \ control plane endpoints. \nImplement YAML and JSON output formatting options. \nPattern match on policy types for handler\
+    \ dispatch. \nError handling for invalid rule configurations."
+- id: fsharp_lib_0035_exp_014
+  instruction: "Build a F# documentation generation CLI using Argu. \nCommands: `generate`, `serve`, `validate`, `export`.\
+    \ \nDefine DUs for documentation formats (Markdown, HTML, PDF). \nSupport source path and output directory arguments.\
+    \ \nEnvironment variable fallback for theme configurations. \nPattern match on export format for handler selection. \n\
+    Show Argu error formatting for missing source directories."
+- id: fsharp_lib_0035_exp_015
+  instruction: "Design a F# build pipeline CLI using Argu with commands: `build`, `test`, `package`, `publish`. \nDefine argument\
+    \ DUs for build configurations and platform targets. \nSupport incremental builds with cache directory arguments. \nEnvironment\
+    \ variable fallbacks for artifact repositories. \nCustom help text showing pipeline stage options. \nError handling for\
+    \ circular dependency detection."
+- id: fsharp_lib_0035_exp_016
+  instruction: "Create a F# feature flag management CLI using Argu. \nSubcommands: `enable`, `disable`, `list`, `config`,\
+    \ `evaluate`. \nDefine argument DUs for flag names and targeting rules. \nEnvironment variable fallback for flag service\
+    \ endpoints. \nSupport JSON and YAML flag configuration formats. \nPattern matching dispatch based on flag operation type.\
+    \ \nShow Argu formatting for invalid flag name formats."
+- id: fsharp_lib_0035_exp_019
+  instruction: "Create a F# webhook testing CLI using Argu. \nCommands: `send`, `record`, `replay`, `inspect`. \nDefine argument\
+    \ DUs for HTTP methods, headers, and payloads. \nEnvironment variable fallbacks for webhook endpoints and auth tokens.\
+    \ \nSupport response matching and diff generation. \nPattern match on operation type for handler dispatch. \nShow Argu\
+    \ error formatting for malformed JSON payloads."
+- id: fsharp_lib_0035_exp_018
+  instruction: "Design a F# certificate management CLI using Argu. \nSubcommands: `generate`, `sign`, `verify`, `renew`, `revoke`.\
+    \ \nDefine argument DUs for certificate types and validity periods. \nEnvironment variable fallbacks for CA certificates\
+    \ and private keys. \nSupport CSR generation and certificate chain operations. \nCustom help text with certificate workflow\
+    \ examples. \nError handling for expired or invalid certificates."
+- id: fsharp_lib_0035_exp_022
+  instruction: "Create a F# A/B testing CLI using Argu. \nCommands: `create`, `activate`, `pause`, `analyze`. \nDefine argument\
+    \ DUs for experiment configurations and targeting criteria. \nEnvironment variable fallbacks for analytics endpoints.\
+    \ \nSupport variant weight arguments. \nCustom help text with targeting examples. \nShow Argu formatting for conflicting\
+    \ experiment settings."
+- id: fsharp_lib_0035_exp_023
+  instruction: "Build a F# search indexing CLI using Argu. \nSubcommands: `index`, `rebuild`, `optimize`, `delete`. \nDefine\
+    \ argument DUs for index names and document types. \nEnvironment variable fallbacks for search service endpoints. \nSupport\
+    \ batch size and concurrent indexing options. \nPattern match on index operations. \nError handling for oversized documents."
+- id: fsharp_lib_0037_exp_005
+  instruction: 'Create a data lake and analytics pipeline infrastructure using Farmer in F#:
+
+    1. Data Lake Storage Gen2 with hierarchical namespace
+
+    2. Azure Databricks workspace
+
+    3. Data Factory with pipeline definitions
+
+    4. Synapse Analytics workspace
+
+    5. Event Hub for streaming data ingestion
+
+    6. Power BI Embedded capacity allocation'
+- id: fsharp_lib_0037_exp_002
+  instruction: 'Design a HIPAA-compliant healthcare data platform using Farmer in F#:
+
+    1. Azure SQL with transparent data encryption and audit logging
+
+    2. Blob storage with immutability policies for medical records
+
+    3. Logic Apps for data workflow orchestration
+
+    4. Event Grid topics for clinical event publishing
+
+    5. Private endpoints for all services
+
+    6. Export an ARM template with compliance tags'
+- id: fsharp_lib_0037_exp_004
+  instruction: 'Define microservices infrastructure using Farmer in F# with API Management:
+
+    1. API Management instance with OpenAPI import
+
+    2. Multiple App Service instances for different microservices
+
+    3. Internal Load Balancer configuration
+
+    4. Application Insights per service with distributed tracing
+
+    5. Cosmos DB with multi-region writes
+
+    6. Rate limiting and throttling policies'
+- id: fsharp_lib_0037_exp_006
+  instruction: 'Design a serverless machine learning workflow using Farmer in F#:
+
+    1. Azure Machine Learning workspace with compute clusters
+
+    2. Blob storage for training datasets and model artifacts
+
+    3. Azure Functions for model inference endpoints
+
+    4. Container Instances for batch scoring jobs
+
+    5. Key Vault for model secrets and credentials
+
+    6. Implement A/B testing infrastructure for model deployment'
+- id: fsharp_lib_0037_exp_009
+  instruction: 'Implement a disaster recovery topology using Farmer in F#:
+
+    1. Primary region with full infrastructure stack
+
+    2. Secondary region with failover resources
+
+    3. Traffic Manager for global load balancing
+
+    4. Cosmos DB with multi-region replication
+
+    5. SQL Geo-Replication configuration
+
+    6. Storage account with RA-GRS redundancy'
+- id: fsharp_lib_0037_exp_008
+  instruction: 'Create a cost-optimized development environment using Farmer in F#:
+
+    1. Shared App Service Plan for multiple dev apps
+
+    2. Azure SQL elastic database with auto-pause
+
+    3. Development-grade resources with minimal redundancy
+
+    4. Auto-shutdown automation for VMs
+
+    5. Resource tagging strategy for cost allocation
+
+    6. Budget alerts and cost management configuration'
+- id: fsharp_lib_0037_exp_007
+  instruction: 'Define a media processing pipeline using Farmer in F#:
+
+    1. Azure Media Services account with encoding presets
+
+    2. Web App for content management dashboard
+
+    3. Storage account with CDN integration
+
+    4. Azure Functions triggered by blob uploads
+
+    5. Logic Apps for workflow automation
+
+    6. Digital twins integration for video metadata'
+- id: fsharp_lib_0037_exp_012
+  instruction: 'Define gaming backend infrastructure using Farmer in F#:
+
+    1. Game server hosting with Container Instances
+
+    2. SignalR for real-time multiplayer communication
+
+    3. Cosmos DB for player state and match history
+
+    4. Blob storage for game assets
+
+    5. CDN for content delivery optimization
+
+    6. PlayFab integration configuration'
+- id: fsharp_lib_0037_exp_010
+  instruction: 'Design an enterprise integration platform using Farmer in F#:
+
+    1. Logic Apps with enterprise connector configuration
+
+    2. Service Bus with partitioned queues
+
+    3. API Management with OAuth 2.0 backend
+
+    4. Integration Account for B2B messaging
+
+    5. Event Grid for system-wide event distribution
+
+    6. Hybrid Connections for on-premises integration'
+- id: fsharp_lib_0037_exp_015
+  instruction: 'Design a mobile app backend using Farmer in F#:
+
+    1. App Service with EasyAuth integration
+
+    2. Cosmos DB with MongoDB API
+
+    3. Notification Hubs configuration
+
+    4. Blob storage for media uploads
+
+    5. Azure Functions for serverless APIs
+
+    6. Cognitive Services for image recognition APIs'
+- id: fsharp_lib_0037_exp_014
+  instruction: 'Create an edge computing solution using Farmer in F#:
+
+    1. IoT Edge deployment with custom modules
+
+    2. Azure Functions with edge trigger configuration
+
+    3. Blob Storage with edge local caching
+
+    4. Azure SQL Edge in containers
+
+    5. DPS (Device Provisioning Service) integration
+
+    6. Offline synchronization capabilities'
+- id: fsharp_lib_0037_exp_013
+  instruction: 'Implement a fintech transaction processing system using Farmer in F#:
+
+    1. Azure SQL with always encrypted columns
+
+    2. Service Bus with session-enabled queues
+
+    3. Key Vault for payment processor credentials
+
+    4. App Service with private endpoint
+
+    5. Application Insights with custom transaction tracing
+
+    6. Compliance audit logging to dedicated storage'
+- id: fsharp_lib_0037_exp_017
+  instruction: 'Create a multi-region deployment strategy using Farmer in F#:
+
+    1. Regional App Service instances behind Front Door
+
+    2. Cosmos DB with preferred region configuration
+
+    3. Traffic Manager with failover policies
+
+    4. Regional SQL databases with sync groups
+
+    5. Cross-region storage replication
+
+    6. Latency-based routing configuration'
+- id: fsharp_lib_0037_exp_016
+  instruction: 'Define a CI/CD-ready infrastructure using Farmer in F#:
+
+    1. App Service deployment slots (dev, staging, prod)
+
+    2. Azure SQL with deployment automation
+
+    3. Resource locks for production environments
+
+    4. Managed identities for CI/CD authentication
+
+    5. Application Insights with deployment correlation
+
+    6. Generate parameterized ARM templates for environments'
+- id: fsharp_lib_0037_exp_018
+  instruction: 'Implement network-isolated infrastructure using Farmer in F#:
+
+    1. Virtual Network with subnets for different tiers
+
+    2. App Service with VNet integration
+
+    3. Private endpoints for all data services
+
+    4. Azure SQL with firewall rules
+
+    5. NAT Gateway for outbound connectivity
+
+    6. Network Security Groups configuration'
+- id: fsharp_lib_0037_exp_021
+  instruction: 'Define a hybrid cloud infrastructure using Farmer in F#:
+
+    1. Azure Arc-enabled resources
+
+    2. VPN Gateway for on-premises connectivity
+
+    3. Azure AD Connect integration
+
+    4. Site Recovery configuration for VMs
+
+    5. Azure Files with sync groups
+
+    6. Custom script extensions for configuration'
+- id: fsharp_lib_0037_exp_019
+  instruction: 'Design a SOC 2 compliant e-commerce platform using Farmer in F#:
+
+    1. Web App with WAF and custom domains
+
+    2. Azure SQL with encryption at rest
+
+    3. Payment gateway integration with Key Vault
+
+    4. Redis Cache with TLS encryption
+
+    5. Application Insights with security monitoring
+
+    6. Resource locks and audit logging'
+- id: fsharp_lib_0037_exp_020
+  instruction: 'Create an anomaly detection system using Farmer in F#:
+
+    1. Event Hub for telemetry ingestion
+
+    2. Azure Functions for real-time processing
+
+    3. Cosmos DB for storing detected anomalies
+
+    4. Logic Apps for alert workflows
+
+    5. Machine Learning workspace for model hosting
+
+    6. Dashboard visualization with Azure Boards integration'
+- id: fsharp_lib_0037_exp_023
+  instruction: 'Design a legacy application modernization path using Farmer in F#:
+
+    1. App Service migration from classic cloud service
+
+    2. Azure SQL with managed instance configuration
+
+    3. Traffic Manager for gradual migration
+
+    4. Application Insights for performance monitoring
+
+    5. Azure AD application proxy configuration
+
+    6. Runbooks for automated migration steps'
+- id: fsharp_lib_0037_exp_022
+  instruction: 'Implement a real-time dashboard infrastructure using Farmer in F#:
+
+    1. App Service with SignalR for live updates
+
+    2. Cosmos DB with change feed
+
+    3. Azure Functions processing background jobs
+
+    4. Power BI Embedded for visualizations
+
+    5. Redis Cache for dashboard data caching
+
+    6. Web PubSub service for scale'
+- id: fsharp_lib_0037_exp_025
+  instruction: 'Define a high-performance computing infrastructure using Farmer in F#:
+
+    1. Azure CycleCloud for HPC cluster management
+
+    2. Virtual Machine Scale Sets for compute nodes
+
+    3. Avere vFXT for file caching
+
+    4. Blob Storage with high throughput tier
+
+    5. Low Priority VMs for cost optimization
+
+    6. RDMA networking configuration'
+- id: fsharp_lib_0037_exp_027
+  instruction: 'Create a multi-tenant data isolation architecture using Farmer in F#:
+
+    1. Resource Group per tenant pattern
+
+    2. Shared services with RBAC for tenant admins
+
+    3. Cosmos DB with dedicated throughput per database
+
+    4. Key Vault with per-tenant secret scopes
+
+    5. App Insights with custom dimensions for tenant filtering
+
+    6. Cross-tenant reporting with Data Factory'
+- id: fsharp_lib_0037_exp_028
+  instruction: 'Design a progressive web app backend using Farmer in F#:
+
+    1. Static Web App for frontend hosting
+
+    2. Azure Functions API with offline support
+
+    3. Cosmos DB with conflict resolution
+
+    4. Blob storage for file pre-caching
+
+    5. Azure AD B2C for authentication
+
+    6. CDN with dynamic site acceleration'
+- id: fsharp_lib_0037_exp_029
+  instruction: 'Define an observability platform using Farmer in F#:
+
+    1. Application Insights with sampling configuration
+
+    2. Log Analytics workspace with custom tables
+
+    3. Azure Monitor for metrics collection
+
+    4. Service Map dependency visualization
+
+    5. Alert rules with action groups
+
+    6. Workbook dashboards for team collaboration'
+- id: fsharp_lib_0038_exp_002
+  instruction: 'Implement the outbox pattern in F# using functional composition withRailway Oriented Programming:
+
+    1. Define Result-based OutboxRepository with save, getUnprocessed, markProcessed methods
+
+    2. Domain event types as F# Discriminated Unions mapped to JSON storage
+
+    3. Atomic command handler that wraps aggregate update + outbox insert in a DbTransaction
+
+    4. Implement polling worker as an F# Agent (MailboxProcessor) with configurable interval
+
+    5. Kafka producer as a ResilientPublisher with circuit breaker pattern
+
+    6. Show composition: createOrderCommand >>= saveToOutbox >>= publishToKafka'
+- id: fsharp_lib_0038_exp_009
+  instruction: 'Design a CQRS architecture with outbox pattern in F#:
+
+    1. Command side: save aggregates and outbox messages in single transaction
+
+    2. Query side: materialized views updated by outbox consumer
+
+    3. OutboxMessage includes routing metadata: targetView, projectionVersion
+
+    4. Projections as F# Agents processing messages sequentially per aggregate
+
+    5. Consistency guarantees: show staleness window and read-your-writes handling
+
+    6. Compare synchronous vs eventual consistency read models'
+- id: fsharp_lib_0039_exp_000
+  instruction: Implement an IoT telemetry consumer in F# that processes device sensor data from RabbitMQ. Use topic exchanges
+    with wildcards for routing messages from thousands of IoT devices. Implement connection recovery with exponential backoff,
+    handle malformed JSON payloads gracefully, and use channel pooling for high-throughput scenarios.
+- id: fsharp_lib_0039_exp_007
+  instruction: Build a fanout exchange consumer in F# for a notification system where messages must be delivered to multiple
+    independent consumers (email, SMS, push). Implement subscription management, handle consumer crashes with rebalancing,
+    and compare fanout vs individual queue approaches.
+- id: fsharp_lib_0039_exp_009
+  instruction: Implement a message versioning strategy in F# where consumer can handle multiple versions of message schema
+    simultaneously. Use content-type headers for routing, implement version conversion functions, and demonstrate graceful
+    schema evolution without downtime.
+- id: fsharp_lib_0039_exp_014
+  instruction: Create an F# reactive streams implementation that bridges RabbitMQ with System.Threading.Channels. Implement
+    backpressure handling, memory-bounded buffering, and demonstrate composition of multiple RabbitMQ sources into unified
+    stream processing pipelines.
+- id: fsharp_lib_0039_exp_020
+  instruction: Create a CQRS projection updater in F# using RabbitMQ as the event bus. Handle projection rebuilds from event
+    replay, implement optimistic concurrency control, and provide eventual consistency guarantees with conflict resolution
+    strategies.
+- id: fsharp_lib_0039_exp_024
+  instruction: Implement a message priority escalation system in F# where consumer processing time determines message priority
+    upgrade. Long-running messages get demoted, stuck messages get escalated, and system adapts prefetch based on processing
+    velocity.
+- id: fsharp_lib_0039_exp_025
+  instruction: Build a session-based message router in F# using correlation IDs to maintain conversation state across request/response
+    message pairs. Handle session timeouts, implement session persistence across consumer restarts, and track session metrics.
+- id: fsharp_lib_0039_exp_026
+  instruction: Create an F# implementation of the claim check pattern where large message payloads are stored in object storage
+    and only references are sent through RabbitMQ. Implement automatic payload retrieval, compression for medium-sized payloads,
+    and streaming for very large messages.
+- id: fsharp_lib_0039_exp_027
+  instruction: Implement a circuit breaker pattern in F# for RabbitMQ consumers that monitors downstream service health. Trip
+    the breaker on consecutive failures, implement half-open state for probing recovery, and demonstrate fallback strategies
+    for degraded operation.
+- id: fsharp_lib_0039_exp_028
+  instruction: Build a message schema registry in F# that validates and stores message schemas from RabbitMQ. Include schema
+    evolution rules, backward/forward compatibility checking, and automatic schema migration functions for consumer adaptation.
+- id: fsharp_lib_0041_exp_002
+  instruction: Create a Blazor WebAssembly chess game using Bolero's Elmish architecture where two players can play against
+    each other. Implement move validation, check/checkmate detection, game history with move replay, and a server-side Elo
+    rating system via Remoting. Add time control with increment logic.
+- id: fsharp_lib_0041_exp_005
+  instruction: Create a Blazor WebAssembly music notation editor using Bolero where composers can create scores with multiple
+    tracks. Implement note placement, rest insertion, time signature changes, tempo markings, and export to MusicXML. Add
+    playback preview via Web Audio API integration and a measure-by-measure navigation system.
+- id: fsharp_lib_0041_exp_007
+  instruction: Implement a financial portfolio rebalancer in Bolero that connects to a mock brokerage API. Calculate drift
+    from target allocations, suggest trades to rebalance, and execute simulated trades. Include tax lot optimization, wash
+    sale tracking, and historical performance charts. Handle currency conversion for international holdings.
+- id: fsharp_lib_0041_exp_008
+  instruction: Create a multi-user collaborative markdown editor in Bolero WebAssembly using operational transformation for
+    conflict resolution. Implement real-time cursor presence, comment threads on specific paragraphs, version history with
+    diff view, and export to HTML/PDF. Connect to Giraffe for persistence and user authentication.
+- id: fsharp_lib_0041_exp_011
+  instruction: Create an event-driven microservices architecture visualizer in Bolero showing service dependencies and message
+    flows. Implement real-time health monitoring via subscriptions, click-to-drill-down into individual service logs, and
+    deployment history timeline. Connect to a Giraffe backend that aggregates Kubernetes metrics.
+- id: fsharp_lib_0041_exp_018
+  instruction: Build a restaurant reservation and table management system in Bolero. Implement floor plan visualization, waitlist
+    management with SMS notification simulation, and peak hours analytics. Support multiple dining periods (breakfast, lunch,
+    dinner) with different operating hours. Handle large party requests and blocking tables.
+- id: fsharp_lib_0003_exp_009
+  instruction: 'Build a library book catalog with Giraffe.ViewEngine:
+
+    1. Design a classic library layout with search bar, genre filters, and user account sidebar
+
+    2. Create a book grid showing cover, title, author, availability status, and rating
+
+    3. Implement a book checkout form with CSRF protection and due date calculation
+
+    4. Use F# option types to handle missing book covers (show placeholder) and nullable fields
+
+    5. Show how to implement pagination with query string parameters in the route handlers'
+- id: fsharp_lib_0005_exp_000
+  instruction: 'Implement an F# function for an e-commerce system that:
+
+    1. Fetches a product by SKU from a database (returns Task<Result<Product, EcommerceError>>)
+
+    2. Validates the product is in stock and not discontinued
+
+    3. Applies any active promotions to the product price
+
+    4. Compose all three steps using taskResult CE
+
+    Include proper error types for out-of-stock, discontinued, and database connection failures.'
+- id: fsharp_lib_0005_exp_011
+  instruction: 'Create an F# data migration tool:
+
+    1. Read records from legacy database (async with pagination)
+
+    2. Validate and transform each record
+
+    3. Write to new database with consistency checks
+
+    4. Use taskResult for error handling across async I/O operations
+
+    Handle schema mismatches, data corruption, and rollback scenarios.'
+- id: fsharp_lib_0005_exp_012
+  instruction: 'Write an F# recommendation engine service:
+
+    1. Fetch user history and preferences (async)
+
+    2. Validate data freshness and completeness
+
+    3. Generate personalized recommendations
+
+    4. Compose with taskResult, handling missing data, algorithm failures, and performance constraints
+
+    Include caching layer and cold start problem handling.'
+- id: fsharp_lib_0005_exp_018
+  instruction: 'Write an F# real-time chat service:
+
+    1. Validate user can join room (async permissions check)
+
+    2. Check message content for violations
+
+    3. Broadcast to connected clients
+
+    4. Compose with taskResult, handling permission denied, content filtering, and connection failures
+
+    Include rate limiting per user and message size constraints.'
+- id: fsharp_lib_0005_exp_021
+  instruction: 'Write an F# image processing pipeline:
+
+    1. Load image from storage (async)
+
+    2. Validate dimensions and format constraints
+
+    3. Apply transformations and optimizations
+
+    4. Use taskResult for error handling across async I/O and processing
+
+    Handle memory constraints for large images and format conversion errors.'
+- id: fsharp_lib_0005_exp_026
+  instruction: 'Create an F# workflow orchestration engine:
+
+    1. Fetch workflow definition (async)
+
+    2. Validate step dependencies and permissions
+
+    3. Execute steps with state persistence
+
+    4. Compose with taskResult, handling invalid workflows, step failures, and state corruption
+
+    Include compensation logic for failed steps and timeout handling.'
+- id: fsharp_lib_0005_exp_027
+  instruction: 'Write an F# data synchronization service:
+
+    1. Detect changes between source and target (async)
+
+    2. Validate conflict resolution rules
+
+    3. Apply changes with atomicity guarantees
+
+    4. Use taskResult CE to handle sync conflicts, network partitions, and data type mismatches
+
+    Include bidirectional sync and conflict detection algorithms.'
+- id: fsharp_lib_0006_exp_006
+  instruction: 'Create a restaurant reservation management system:
+
+    1. Use `option { }` CE: find customer → check party size → verify table availability
+
+    2. Transform Option<Result<Reservation, TimeSlotError>> with traverseResult
+
+    3. Implement AsyncOption CE for checking special requests that may not apply
+
+    Handle concurrent reservation attempts and implement idempotency for duplicate requests.'
+- id: fsharp_lib_0006_exp_007
+  instruction: 'Build a library book checkout system:
+
+    1. Chain with `option { }`: find book → check availability → validate patron status
+
+    2. Use Option.traverseResult for Option<Result<Checkout, LibraryPolicyError>>
+
+    3. Create AsyncOption CE for checking inter-library loans that may return None
+
+    Implement fine calculation logic and handle edge cases for overdue renewals.'
+- id: fsharp_lib_0005_exp_008
+  instruction: 'Create an F# user authentication service:
+
+    1. Verify credentials against identity provider (async)
+
+    2. Validate session token hasn''t expired
+
+    3. Check multi-factor authentication status
+
+    4. Use taskResult CE to compose, handling invalid credentials, expired sessions, and MFA requirements
+
+    Include security constraints like maximum failed attempts and lockout periods.'
+- id: fsharp_lib_0005_exp_013
+  instruction: 'Implement an F# payment gateway integration:
+
+    1. Process payment through external provider (async with timeout)
+
+    2. Validate response and fraud indicators
+
+    3. Update local transaction records
+
+    4. Use taskResult CE to handle network failures, payment declines, and duplicate processing
+
+    Include idempotency keys and reconciliation logic.'
+- id: fsharp_lib_0006_exp_014
+  instruction: 'Build a manufacturing quality control system:
+
+    1. Use `option { }` CE: get batch → run tests → classify defects
+
+    2. Apply traverseResult to Option<Result<Inspection, CalibrationError>>
+
+    3. Implement AsyncOption CE for sensor calibration checks that may return None
+
+    Handle statistical process control calculations and implement alert thresholds.'
+- id: fsharp_lib_0006_exp_015
+  instruction: 'Create a hotel booking management system:
+
+    1. Chain with `option { }`: find room → check dates → calculate rate
+
+    2. Transform Option<Result<Booking, AvailabilityError>> using traverseResult
+
+    3. Use AsyncOption CE for checking guest preferences that may not exist
+
+    Handle seasonal pricing rules and implement overbooking prevention.'
+- id: fsharp_lib_0005_exp_019
+  instruction: 'Implement an F# backup and restore system:
+
+    1. Read backup metadata (async)
+
+    2. Validate backup integrity and version compatibility
+
+    3. Execute restore with progress tracking
+
+    4. Use taskResult CE to handle corrupted backups, version mismatches, and restore conflicts
+
+    Include checksum validation and partial restore capabilities.'
+- id: fsharp_lib_0006_exp_019
+  instruction: 'Create a cybersecurity threat detection system:
+
+    1. Chain with `option { }`: get log entry → analyze pattern → classify threat
+
+    2. Use Option.traverseResult for Option<Result<Alert, ParsingError>>
+
+    3. Implement AsyncOption CE for checking threat intelligence feeds that may return None
+
+    Handle real-time event correlation and implement false positive filtering.'
+- id: fsharp_lib_0005_exp_024
+  instruction: 'Write an F# compliance auditing system:
+
+    1. Fetch audit trail data (async with filtering)
+
+    2. Validate data integrity and completeness
+
+    3. Generate compliance reports
+
+    4. Chain with taskResult, handling missing logs, integrity failures, and report generation errors
+
+    Include retention policy enforcement and regulatory requirement validation.'
+- id: fsharp_lib_0006_exp_027
+  instruction: 'Design a cryptocurrency trading platform:
+
+    1. Use `option { }` CE: get wallet → check balance → validate transaction
+
+    2. Transform Option<Result<Trade, ExchangeError>> using traverseResult
+
+    3. Implement AsyncOption CE for checking gas fees that may be unavailable
+
+    Handle blockchain confirmation times and implement slippage protection.'
+- id: fsharp_lib_0006_exp_028
+  instruction: 'Create a legal document analysis system:
+
+    1. Chain with `option { }`: fetch document → extract clauses → check compliance
+
+    2. Use Option.traverseResult for Option<Result<Review, LegalError>>
+
+    3. Implement AsyncOption CE for checking precedent cases that may return None
+
+    Handle document version comparison and implement red flag detection.'
+- id: fsharp_lib_0006_exp_029
+  instruction: 'Build an airline flight booking system:
+
+    1. Use `option { }` CE: find flight → check seats → calculate fare
+
+    2. Apply traverseResult to Option<Result<Booking, AvailabilityError>>
+
+    3. Create AsyncOption CE for checking upgrade availability that may return None
+
+    Handle baggage fee calculations and implement frequent flyer mileage accrual.'
+- id: fsharp_lib_0005_exp_029
+  instruction: 'Create an F# queue processing service:
+
+    1. Poll message from queue (async with visibility timeout)
+
+    2. Validate message schema and business rules
+
+    3. Process and acknowledge message
+
+    4. Use taskResult for error handling, with dead letter queue support for failures
+
+    Handle poison messages, duplicate processing, and scaling constraints.'
+- id: fsharp_lib_0006_exp_009
+  instruction: 'Implement a gaming inventory management system:
+
+    1. Chain with `option { }`: find player → get inventory → check item durability
+
+    2. Transform Option<Result<Trade, TradingError>> using traverseResult
+
+    3. Use AsyncOption CE for checking auction house listings that may return None
+
+    Handle concurrent item transfers and implement rollback for failed transactions.'
+- id: fsharp_lib_0006_exp_012
+  instruction: 'Design a content management system:
+
+    1. Use `option { }` CE: get content → check permissions → generate preview
+
+    2. Transform Option<Result<Publish, ValidationError>> with traverseResult
+
+    3. Implement AsyncOption CE for fetching related content that may not exist
+
+    Handle version control for content updates and implement draft/published state management.'
+- id: fsharp_lib_0006_exp_017
+  instruction: 'Implement a supply chain inventory system:
+
+    1. Chain with `option { }`: find product → check warehouses → calculate restock
+
+    2. Use traverseResult for Option<Result<Shipment, LogisticsError>>
+
+    3. Create AsyncOption CE for checking supplier availability that may return None
+
+    Handle lead time calculations and implement safety stock level management.'
+- id: fsharp_lib_0006_exp_018
+  instruction: 'Build a video streaming recommendation engine:
+
+    1. Use `option { }` CE: get viewer → analyze history → generate suggestions
+
+    2. Transform Option<Result<Recommendation, AlgorithmError>> with traverseResult
+
+    3. Implement AsyncOption CE for checking content ratings that may be missing
+
+    Handle A/B testing for recommendation algorithms and implement personalization weights.'
+- id: fsharp_lib_0006_exp_020
+  instruction: 'Design a real estate property valuation system:
+
+    1. Use `option { }` CE: find property → get comparables → calculate value
+
+    2. Apply traverseResult to Option<Result<Valuation, MarketError>>
+
+    3. Create AsyncOption CE for checking zoning restrictions that may not exist
+
+    Handle property feature weighting and implement market trend adjustments.'
+- id: fsharp_lib_0006_exp_022
+  instruction: 'Build a telemedicine consultation system:
+
+    1. Use `option { }` CE: find patient → check vitals → recommend specialist
+
+    2. Apply Option.traverseResult to Option<Result<Consultation, MedicalError>>
+
+    3. Implement AsyncOption CE for checking doctor availability that may return None
+
+    Handle HIPAA compliance for data access and implement emergency escalation paths.'
+- id: fsharp_lib_0006_exp_023
+  instruction: 'Create a project management task dependency system:
+
+    1. Chain with `option { }`: get task → find dependencies → calculate critical path
+
+    2. Use traverseResult for Option<Result<Schedule, DependencyError>>
+
+    3. Implement AsyncOption CE for checking resource availability that may return None
+
+    Handle circular dependency detection and implement milestone tracking.'
+- id: fsharp_lib_0006_exp_024
+  instruction: 'Design a car rental reservation system:
+
+    1. Use `option { }` CE: find vehicle → check availability → calculate rental cost
+
+    2. Transform Option<Result<Reservation, PricingError>> with traverseResult
+
+    3. Create AsyncOption CE for checking loyalty points that may not apply
+
+    Handle age-based surcharges and implement damage waiver calculations.'
+- id: fsharp_lib_0006_exp_026
+  instruction: 'Build a fitness tracking data analysis system:
+
+    1. Use `option { }` CE: get user → fetch workouts → calculate progress
+
+    2. Apply traverseResult to Option<Result<Report, DataError>>
+
+    3. Create AsyncOption CE for checking goal achievement that may return None
+
+    Handle biometric data validation and implement trend analysis algorithms.'
+- id: fsharp_lib_0009_exp_007
+  instruction: 'Develop a logistics package tracking system with Akka.NET and Giraffe:
+
+    1. Register ActorSystem with DI, configuring for geographic distribution with cluster nodes
+
+    2. Create PackageTrackerActor that uses DI-injected geolocation and ETA services
+
+    3. Inject IActorRef<PackageTracker> into Giraffe routes for real-time tracking queries
+
+    4. Show actor processing location updates with predictive routing and anomaly detection
+
+    5. Implement CQRS pattern separating read/write models for tracking data
+
+    Include DI registration with external API clients and demonstrate handling of network partitions.'
+- id: fsharp_lib_0008_exp_001
+  instruction: 'Build a real-time stock trading platform using Akka.NET in C#. Requirements:
+
+    1. Configure a 5-node cluster using HOCON with automatic seed node discovery
+
+    2. Implement OrderBook actors as cluster sharding entities for different stock symbols
+
+    3. Create a cluster singleton RiskManager actor that monitors total exposure
+
+    4. Use a pool router to distribute market data processing across worker nodes
+
+    5. Handle cluster membership changes by rebalancing order books
+
+    Show C# actor classes and the cluster configuration.'
+- id: fsharp_lib_0008_exp_005
+  instruction: 'Build a social media feed generation system in C# with Akka.NET:
+
+    1. Multi-datacenter cluster configuration using Akka.Cluster.Sharding
+
+    2. UserFeed actors that maintain personalized content feeds
+
+    3. Cluster singleton ContentRanker for trending topic calculation
+
+    4. Broadcast router for propagating global configuration updates
+
+    5. Handle cluster split-brain scenarios with a downing provider
+
+    Show C# implementations and HOCON with multi-datacenter settings.'
+- id: fsharp_lib_0008_exp_025
+  instruction: 'Build a telemedicine video conferencing system in C# with Akka.NET:
+
+    1. Cluster configuration with QoS settings for media streams
+
+    2. CallSession actors with WebRTC signaling
+
+    3. Cluster singleton MediaRouter for SFU functionality
+
+    4. Broadcast router for signaling messages
+
+    5. Handle cluster node media codec capability events
+
+    Show C# code with media handling and QoS configuration.'
+- id: fsharp_lib_0012_exp_015
+  instruction: 'Write F# data access code for a content management system using linq2db:
+
+    1. Map Article, Category, and Comment tables with F# record types and attributes
+
+    2. Create a query that finds articles with the most comments in the last week
+
+    3. Implement a function to publish scheduled articles (update status based on date)
+
+    4. Demonstrate bulk archiving old articles (older than 2 years)
+
+    5. Use raw SQL to calculate author productivity metrics (articles per month)
+
+    PostgreSQL is the target database.'
+- id: fsharp_lib_0012_exp_028
+  instruction: 'Create F# data access layer for a car rental system using linq2db:
+
+    1. Define mappings for Vehicle, Rental, and Customer tables
+
+    2. Write a query that finds vehicles available for rental on specific dates
+
+    3. Implement a function to process rental returns with late fee calculations
+
+    4. Show how to bulk update vehicle maintenance statuses
+
+    5. Use raw SQL to calculate rental utilization rates by vehicle class
+
+    Use PostgreSQL as the database.'
+- id: fsharp_lib_0013_exp_006
+  instruction: 'Design a hotel booking system repository using F# and linq2db:
+
+    1. Create an IBookingRepository interface for rooms, reservations, and guests
+
+    2. Implement with linq2db, including support for date range availability queries
+
+    3. Include methods for checking room availability with conflict detection
+
+    4. Add transaction support for multi-room bookings with rollback on failure
+
+    5. Show DI registration with connection pooling configuration'
+- id: fsharp_lib_0012_exp_005
+  instruction: 'Implement F# data access code for a library management system using linq2db:
+
+    1. Map Book, Author, and Loan tables with F# record types and attributes
+
+    2. Create a query that finds overdue books with borrower information using joins
+
+    3. Write a function to check out multiple books for a member in a single transaction
+
+    4. Demonstrate bulk importing new book catalog from a CSV file
+
+    5. Use raw SQL to calculate most popular authors by loan count
+
+    Target database is PostgreSQL.'
+- id: fsharp_lib_0017_exp_029
+  instruction: 'Develop an F# pharmaceutical clinical trial data collector using:
+
+    - Akka.NET actors for anonymizing and validating patient-reported outcomes
+
+    - FsToolkit.ErrorHandling for protocol deviation and data integrity violations
+
+    - Serilog for audit trails with patient cohort identifiers
+
+    - HL7 FHIR API for receiving electronic health record data
+
+    Implement blinding procedures, adverse event reporting, and regulatory submission formatting.'
+- id: fsharp_lib_0018_exp_002
+  instruction: 'Design a financial portfolio management system for multiple investment firms:
+
+    - DUs ensuring portfolio operations can''t cross firm/tenant boundaries
+
+    - Giraffe middleware extracting tenant from OAuth2 token with custom scope validation
+
+    - linq2db queries with automatic tenant filtering and audit logging
+
+    - FsToolkit.ErrorHandling for trade validation and compliance checks
+
+    Show complete implementation from authentication to trade execution with audit trail.'
+- id: fsharp_lib_0018_exp_013
+  instruction: 'Implement a multi-tenant time tracking system for consulting firms:
+
+    - DUs for client/project-scoped operations preventing time leakage
+
+    - Giraffe middleware extracting client ID from JWT "client_id" claim
+
+    - Dapper with query builders that automatically add tenant filters
+
+    - FsToolkit.ErrorHandling for timesheet validation and billing rules
+
+    Show time entry, approval, and invoicing endpoints with proper tenant boundaries.'
+- id: fsharp_lib_0020_exp_006
+  instruction: Create a model binding and validation pipeline for a fintech loan application API. Use FSharp.SystemTextJson's
+    union encoding for loan types (Personal, Mortgage, Business) and Skippable<'T> for optional co-signer information. Return
+    detailed validation errors for missing required fields.
+- id: fsharp_lib_0020_exp_010
+  instruction: Build a configuration loader for a microservices architecture that reads JSON configuration files with optional
+    sections. Use Skippable<'T> to distinguish between missing configuration sections (use defaults) and explicitly empty
+    sections (clear configuration).
+- id: fsharp_lib_0020_exp_014
+  instruction: Build a type-safe event sourcing system for a banking application where events are discriminated unions (AccountOpened,
+    MoneyDeposited, MoneyWithdrawn). Configure FSharp.SystemTextJson to serialize these events with minimal type information
+    in JSON.
+- id: fsharp_lib_0020_exp_011
+  instruction: Create an advanced serialization converter for a discriminated union representing mathematical expressions
+    (Add, Multiply, Value, Variable) that serializes to a compact JSON format optimized for network transmission in an educational
+    app.
+- id: fsharp_lib_0020_exp_016
+  instruction: Implement a GraphQL-like partial response system for a social media API where clients can specify which fields
+    to return. Use Skippable<'T> to track which fields were requested and only populate those in the response JSON.
+- id: fsharp_lib_0020_exp_019
+  instruction: Create a contract testing suite for a microservices architecture that verifies JSON serialization compatibility
+    between services using FSharp.SystemTextJson. Test edge cases with optional fields, null values, and union types.
+- id: fsharp_lib_0020_exp_022
+  instruction: Build a document storage API for an insurance claims system where documents have metadata with optional fields.
+    Use Skippable<'T> to handle partial updates to metadata and union types for document status (Draft, Submitted, Approved,
+    Denied).
+- id: fsharp_lib_0020_exp_023
+  instruction: Create a custom JsonConverter for a complex discriminated union representing weather data (Temperature, Precipitation,
+    Wind) that optimizes JSON size for a mobile weather app with limited bandwidth.
+- id: fsharp_lib_0020_exp_026
+  instruction: Build a scientific data processing pipeline where computation results are represented as discriminated unions
+    (Success, Error, Partial) and serialized to JSON for web visualization. Optimize serialization for large datasets.
+- id: fsharp_lib_0020_exp_027
+  instruction: Create a version-tolerant JSON deserializer for a video game save file system using FSharp.SystemTextJson.
+    Handle missing fields in old save files and new union types added in game updates.
+- id: fsharp_lib_0021_exp_000
+  instruction: 'Implement a real-time IoT sensor data processing pipeline using FSharp.Control.AsyncSeq:
+
+    1. Read sensor events from an MQTT broker as an async sequence
+
+    2. Validate each event has required fields (deviceId, timestamp, reading) using AsyncSeq.choose
+
+    3. Normalize readings to standard units with AsyncSeq.mapAsync
+
+    4. Aggregate readings by device using AsyncSeq.groupBy with a 5-second window
+
+    5. Calculate statistics (min, max, avg) for each device group
+
+    6. Store aggregated results in a time-series database using AsyncSeq.iterAsync
+
+    7. Handle malformed JSON and connection drops gracefully without stopping the pipeline
+
+    Include backpressure handling when database writes are slow.'
+- id: fsharp_lib_0021_exp_008
+  instruction: 'Create a document processing pipeline for legal contracts using FSharp.Control.AsyncSeq:
+
+    1. Read PDF documents from cloud storage as an async sequence
+
+    2. Extract text using OCR with AsyncSeq.mapAsync
+
+    3. Identify key clauses (termination, liability, payment) using AsyncSeq.map
+
+    4. Extract dates, parties, and amounts with regex patterns using AsyncSeq.mapAsync
+
+    5. Buffer processed contracts by client using AsyncSeq.bufferByCountAndTime
+
+    6. Update contract management system using AsyncSeq.iterAsync
+
+    7. Handle OCR failures and password-protected documents gracefully'
+- id: fsharp_lib_0021_exp_009
+  instruction: 'Implement a genomics data processing pipeline using FSharp.Control.AsyncSeq:
+
+    1. Stream DNA sequence chunks from FASTQ files as an async sequence
+
+    2. Validate sequence format and quality scores using AsyncSeq.filter
+
+    3. Align sequences to reference genome using AsyncSeq.mapAsync
+
+    4. Identify variants (SNPs, indels) with AsyncSeq.mapAsync
+
+    5. Buffer variants by chromosome using AsyncSeq.bufferByCountAndTime
+
+    6. Store in specialized bioinformatics database using AsyncSeq.iterAsync
+
+    7. Handle malformed sequences and memory constraints for large chunks'
+- id: fsharp_lib_0021_exp_010
+  instruction: 'Design a multiplayer game state synchronization pipeline using FSharp.Control.AsyncSeq:
+
+    1. Read player actions from WebSocket connections as async sequences
+
+    2. Validate action legality and timing using AsyncSeq.filter
+
+    3. Apply actions to game state with AsyncSeq.scan
+
+    4. Detect and resolve conflicts in distributed game state using AsyncSeq.mapAsync
+
+    5. Buffer state updates by game instance using AsyncSeq.bufferByCountAndTime
+
+    6. Broadcast to all connected players using AsyncSeq.iterAsync
+
+    7. Handle player disconnection and reconnection with state recovery'
+- id: fsharp_lib_0021_exp_012
+  instruction: 'Create a news article aggregation pipeline using FSharp.Control.AsyncSeq:
+
+    1. Fetch RSS/Atom feeds from multiple sources as merged async sequences
+
+    2. Parse feed entries into structured format with AsyncSeq.mapAsync
+
+    3. Deduplicate articles by content similarity using AsyncSeq.distinctBy
+
+    4. Translate articles to target language using AsyncSeq.mapAsync
+
+    5. Buffer by category/topic using AsyncSeq.bufferByCountAndTime
+
+    6. Index in search engine using AsyncSeq.iterAsync
+
+    7. Handle feed parsing errors and malformed XML gracefully'
+- id: fsharp_lib_0021_exp_013
+  instruction: 'Implement a customer support ticket routing pipeline using FSharp.Control.AsyncSeq:
+
+    1. Read incoming tickets from various channels (email, chat, phone) as async sequences
+
+    2. Classify ticket urgency and category using ML model with AsyncSeq.mapAsync
+
+    3. Enrich with customer history from CRM using AsyncSeq.mapAsync
+
+    4. Route to appropriate department/agent using AsyncSeq.map
+
+    5. Buffer tickets by priority using AsyncSeq.bufferByCountAndTime
+
+    6. Assign to support agents using AsyncSeq.iterAsync
+
+    7. Handle agent availability and load balancing across teams'
+- id: fsharp_lib_0021_exp_014
+  instruction: 'Design a stock market data processing pipeline using FSharp.Control.AsyncSeq:
+
+    1. Stream real-time tick data from exchange APIs as async sequences
+
+    2. Parse and validate market data packets using AsyncSeq.mapAsync
+
+    3. Calculate technical indicators (SMA, RSI, VWAP) with AsyncSeq.scan
+
+    4. Detect trading signals based on strategies using AsyncSeq.filter
+
+    5. Buffer signals by symbol using AsyncSeq.bufferByCountAndTime
+
+    6. Execute trades via brokerage API using AsyncSeq.iterAsync
+
+    7. Handle market holidays, splits, and corporate actions'
+- id: fsharp_lib_0021_exp_015
+  instruction: 'Build a code quality analysis pipeline for CI/CD using FSharp.Control.AsyncSeq:
+
+    1. Read source code files from git repository as an async sequence
+
+    2. Parse syntax trees and extract metrics using AsyncSeq.mapAsync
+
+    3. Run static analysis tools (linters, security scanners) with AsyncSeq.mapAsync
+
+    4. Identify code smells and vulnerabilities using AsyncSeq.filter
+
+    5. Buffer findings by severity using AsyncSeq.bufferByCountAndTime
+
+    6. Generate reports and post to PR comments using AsyncSeq.iterAsync
+
+    7. Handle large repositories with incremental analysis'
+- id: fsharp_lib_0021_exp_017
+  instruction: 'Implement a flight data processing pipeline for airline operations using FSharp.Control.AsyncSeq:
+
+    1. Stream ADS-B messages from aircraft as an async sequence
+
+    2. Parse position, altitude, and velocity data using AsyncSeq.mapAsync
+
+    3. Validate against flight plans using AsyncSeq.filter
+
+    4. Detect anomalies (deviations, emergencies) with AsyncSeq.map
+
+    5. Buffer updates by flight number using AsyncSeq.bufferByCountAndTime
+
+    6. Update air traffic control displays using AsyncSeq.iterAsync
+
+    7. Handle message corruption and out-of-order delivery'
+- id: fsharp_lib_0021_exp_016
+  instruction: 'Create a digital advertising impression tracking pipeline using FSharp.Control.AsyncSeq:
+
+    1. Read impression/click events from ad servers as an async sequence
+
+    2. Validate event signatures and timestamps using AsyncSeq.filter
+
+    3. Enrich with user demographic data (GDPR compliant) using AsyncSeq.mapAsync
+
+    4. Detect fraudulent patterns (bot traffic, click farms) with AsyncSeq.mapAsync
+
+    5. Buffer events by campaign using AsyncSeq.bufferByCountAndTime
+
+    6. Update real-time bidding system using AsyncSeq.iterAsync
+
+    7. Handle data privacy regulations and user opt-outs'
+- id: fsharp_lib_0021_exp_018
+  instruction: 'Design a retail recommendation engine pipeline using FSharp.Control.AsyncSeq:
+
+    1. Read user browsing events from website as an async sequence
+
+    2. Parse product views, cart additions, purchases using AsyncSeq.mapAsync
+
+    3. Update user profiles with recent activity using AsyncSeq.scan
+
+    4. Generate personalized recommendations using ML model with AsyncSeq.mapAsync
+
+    5. Buffer recommendations by user segment using AsyncSeq.bufferByCountAndTime
+
+    6. Serve via API with low latency using AsyncSeq.iterAsync
+
+    7. Handle cold-start problem for new users'
+- id: fsharp_lib_0021_exp_021
+  instruction: 'Implement a manufacturing quality control pipeline using FSharp.Control.AsyncSeq:
+
+    1. Read sensor data from production line as an async sequence
+
+    2. Parse measurements (dimensions, weight, temperature) using AsyncSeq.mapAsync
+
+    3. Validate against tolerance specifications using AsyncSeq.filter
+
+    4. Detect defect patterns requiring line stoppage with AsyncSeq.map
+
+    5. Buffer quality data by batch using AsyncSeq.bufferByCountAndTime
+
+    6. Update manufacturing execution system using AsyncSeq.iterAsync
+
+    7. Handle sensor calibration drift and maintenance periods'
+- id: fsharp_lib_0021_exp_024
+  instruction: 'Create a ride-sharing matching pipeline using FSharp.Control.AsyncSeq:
+
+    1. Read driver and rider locations as merged async sequences
+
+    2. Parse GPS coordinates and availability status using AsyncSeq.mapAsync
+
+    3. Match riders with nearby drivers using AsyncSeq.mapAsync
+
+    4. Calculate estimated arrival times and fares with AsyncSeq.map
+
+    5. Buffer matches by city zone using AsyncSeq.bufferByCountAndTime
+
+    6. Send notifications to drivers and riders using AsyncSeq.iterAsync
+
+    7. Handle surge pricing during high-demand periods'
+- id: fsharp_lib_0021_exp_023
+  instruction: 'Build a power grid monitoring pipeline using FSharp.Control.AsyncSeq:
+
+    1. Read SCADA measurements from substations as an async sequence
+
+    2. Parse voltage, current, and frequency data using AsyncSeq.mapAsync
+
+    3. Validate grid stability conditions using AsyncSeq.filter
+
+    4. Detect faults and outages requiring immediate action with AsyncSeq.map
+
+    5. Buffer measurements by feeder using AsyncSeq.bufferByCountAndTime
+
+    6. Update energy management system using AsyncSeq.iterAsync
+
+    7. Handle communication failures with remote terminal units'
+- id: fsharp_lib_0021_exp_026
+  instruction: 'Design a container shipping logistics pipeline using FSharp.Control.AsyncSeq:
+
+    1. Read container tracking events from port systems as an async sequence
+
+    2. Parse loading, unloading, and customs events using AsyncSeq.mapAsync
+
+    3. Validate against shipping manifests using AsyncSeq.filter
+
+    4. Detect delays and route deviations with AsyncSeq.map
+
+    5. Buffer events by vessel voyage using AsyncSeq.bufferByCountAndTime
+
+    6. Update logistics tracking system using AsyncSeq.iterAsync
+
+    7. Handle port congestion and weather-related disruptions'
+- id: fsharp_lib_0021_exp_027
+  instruction: 'Build a voice assistant query processing pipeline using FSharp.Control.AsyncSeq:
+
+    1. Read audio queries from users as an async sequence
+
+    2. Convert speech to text using ASR service with AsyncSeq.mapAsync
+
+    3. Parse intent and entities from text using AsyncSeq.mapAsync
+
+    4. Execute queries against knowledge graph using AsyncSeq.mapAsync
+
+    5. Buffer responses by user session using AsyncSeq.bufferByCountAndTime
+
+    6. Convert text to speech and stream back using AsyncSeq.iterAsync
+
+    7. Handle background noise and ambiguous pronunciations'
+- id: fsharp_lib_0021_exp_029
+  instruction: 'Implement a sports betting odds calculation pipeline using FSharp.Control.AsyncSeq:
+
+    1. Read live game data from sports APIs as an async sequence
+
+    2. Parse player stats, scores, and game events using AsyncSeq.mapAsync
+
+    3. Calculate implied probabilities and update odds using AsyncSeq.scan
+
+    4. Detect arbitrage opportunities across bookmakers with AsyncSeq.map
+
+    5. Buffer odds updates by sport/league using AsyncSeq.bufferByCountAndTime
+
+    6. Publish to betting exchange using AsyncSeq.iterAsync
+
+    7. Handle game cancellations and player injuries mid-event'
+- id: fsharp_lib_0026_exp_008
+  instruction: 'Develop a hotel reservation system with linq2db:
+
+    1. Model Room, Reservation, Guest, Payment with business logic constraints
+
+    2. Configure connection resiliency with Polly for transient fault handling
+
+    3. Write complex join queries for availability checking across date ranges
+
+    4. Implement transaction scope management for multi-step reservations
+
+    5. Benchmark different approaches for handling high-concurrency booking scenarios'
+- id: fsharp_lib_0026_exp_011
+  instruction: 'Develop a telemedicine appointment scheduler using linq2db:
+
+    1. Define Doctor, Patient, Appointment, Prescription with timezone handling
+
+    2. Configure database provider with support for SQL Server temporal tables
+
+    3. Create recursive queries for finding available time slots across providers
+
+    4. Implement row-level security patterns for HIPAA compliance
+
+    5. Analyze query plan caching behavior and parameter sniffing issues'
+- id: fsharp_lib_0026_exp_019
+  instruction: 'Create a fitness tracking application with linq2db:
+
+    1. Model User, Workout, Exercise, Progress with biometric data
+
+    2. Configure SQLite for mobile applications with offline sync
+
+    3. Write recursive queries for workout program progression
+
+    4. Implement data encryption at rest for sensitive health information
+
+    5. Analyze memory footprint for mobile device constraints'
+- id: fsharp_lib_0026_exp_024
+  instruction: 'Build a real estate property management system:
+
+    1. Design Property, Tenant, Lease, Maintenance entities with financial terms
+
+    2. Configure multi-database support for different regions/clients
+
+    3. Write queries for rent roll analysis and vacancy reporting
+
+    4. Implement soft delete with audit history using database triggers
+
+    5. Compare stored procedure usage vs dynamic LINQ queries'
+- id: fsharp_lib_0026_exp_025
+  instruction: 'Create a survey and feedback collection platform:
+
+    1. Model Survey, Question, Response, Analysis with branching logic
+
+    2. Configure database indexing strategies for query performance
+
+    3. Write pivot queries for survey result aggregation
+
+    4. Implement response validation at database constraint level
+
+    5. Evaluate database connection security best practices'
+- id: fsharp_lib_0028_exp_000
+  instruction: Implement a C# Kafka producer that sends IoT device telemetry data to a partitioned topic using Avro serialization
+    with Confluent Schema Registry. The telemetry includes device ID, timestamp, temperature, and humidity. Configure the
+    producer for high throughput with compression and ensure messages are delivered exactly once using idempotent producer
+    settings. Handle schema registry connection failures gracefully.
+- id: fsharp_lib_0028_exp_004
+  instruction: Create a C# Kafka producer/consumer pair for social media post analytics. The producer sends posts with JSON
+    serialization, and the consumer calculates engagement metrics in real-time. Use consumer groups for horizontal scaling
+    and implement graceful shutdown that saves checkpoint state. Add retry logic with exponential backoff for transient failures.
+- id: fsharp_lib_0028_exp_012
+  instruction: Create a C# Kafka consumer for email campaign analytics that processes JSON click events. The consumer must
+    track user engagement, calculate conversion rates, and update campaign metrics. Implement consumer group cooperative rebalancing
+    and handle duplicate events using idempotent processing. Add circuit breaker for downstream service failures.
+- id: fsharp_lib_0028_exp_016
+  instruction: Create a C# consumer for retail inventory updates that processes Avro-encoded stock level changes. The consumer
+    must update inventory databases, trigger reorder alerts, and sync with online stores. Implement consumer group static
+    membership for predictable assignment and handle schema migration during product catalog changes.
+- id: fsharp_lib_0029_exp_001
+  instruction: 'Build OpenAPI documentation for a healthcare patient management system:
+
+    1. Create REST endpoints for patient CRUD operations with FHIR-inspired schemas
+
+    2. Define Patient record with medical history, allergies, and emergency contacts
+
+    3. Add HIPAA-compliant authentication with role-based access control (doctor, nurse, admin)
+
+    4. Configure Swagger UI to require API key for accessing documentation
+
+    5. Generate C# API client for integration with existing .NET EHR systems
+
+    Include patient data validation and audit logging requirements.'
+- id: fsharp_lib_0029_exp_004
+  instruction: 'Implement OpenAPI for a real estate property listing service:
+
+    1. Create handlers for property search, listing creation, and agent management
+
+    2. Define Property schema with geolocation, amenities, pricing, and multimedia
+
+    3. Add API key authentication with rate limits based on subscription tier
+
+    4. Configure Swagger UI to show different examples for residential/commercial properties
+
+    5. Generate Swift API client for iOS mobile application
+
+    Include spatial queries for location-based search and image upload validation.'
+- id: fsharp_lib_0029_exp_006
+  instruction: 'Generate OpenAPI documentation for a document management system:
+
+    1. Create handlers for document upload, versioning, metadata search, and collaboration
+
+    2. Define Document schema with version history, access controls, and encryption metadata
+
+    3. Add SAML-based SSO authentication with document-level permissions
+
+    4. Configure Swagger UI with file upload examples for different document types
+
+    5. Generate Java API client for enterprise system integration
+
+    Include virus scanning requirements and compliance with data retention policies.'
+- id: fsharp_lib_0029_exp_010
+  instruction: 'Generate OpenAPI documentation for a fleet management system:
+
+    1. Create handlers for vehicle tracking, maintenance scheduling, fuel consumption, and driver assignments
+
+    2. Define Vehicle schema with VIN, maintenance history, GPS coordinates, and sensor data
+
+    3. Add API key authentication with geofence-based access restrictions
+
+    4. Configure Swagger UI with real-time telemetry examples and maintenance alerts
+
+    5. Generate C++ API client for embedded vehicle computer integration
+
+    Handle offline operation with data synchronization and compliance with transportation regulations.'
+- id: fsharp_lib_0029_exp_011
+  instruction: 'Document a digital asset management (DAM) API with Giraffe.OpenApi:
+
+    1. Create endpoints for asset upload, metadata tagging, transformation, and distribution
+
+    2. Define Asset schema with copyright information, usage rights, and transformation history
+
+    3. Add watermarking requirements and digital rights management (DRM) authentication
+
+    4. Configure Swagger UI with image/video transformation examples (resize, crop, format conversion)
+
+    5. Generate .NET MAUI API client for cross-platform content management apps
+
+    Include automated metadata extraction and AI-based tagging suggestions.'
+- id: fsharp_lib_0029_exp_012
+  instruction: 'Implement OpenAPI for a supply chain inventory management system:
+
+    1. Create handlers for inventory tracking, purchase orders, shipment tracking, and warehouse management
+
+    2. Define InventoryItem schema with SKU, batch/lot numbers, expiry dates, and storage requirements
+
+    3. Add mutual TLS authentication for B2B partner integration
+
+    4. Configure Swagger UI with EDI (Electronic Data Interchange) mapping examples
+
+    5. Generate Rust API client for high-performance inventory processing
+
+    Handle inventory reconciliation across multiple warehouses and just-in-time ordering.'
+- id: fsharp_lib_0029_exp_018
+  instruction: 'Generate OpenAPI documentation for a weather data aggregation service:
+
+    1. Create handlers for current conditions, forecasts, historical data, and severe weather alerts
+
+    2. Define WeatherObservation schema with multiple data sources, confidence scores, and units
+
+    3. Add API key authentication with tiered access (free, premium, enterprise)
+
+    4. Configure Swagger UI with geospatial query examples and visualization parameters
+
+    5. Generate MATLAB API client for scientific research and climate modeling
+
+    Handle data source discrepancies and provide data quality indicators with each response.'
+- id: fsharp_lib_0029_exp_025
+  instruction: 'Build OpenAPI documentation for a pet care and veterinary service platform:
+
+    1. Create endpoints for pet profiles, appointment scheduling, medical records, and medication reminders
+
+    2. Define PetMedicalRecord schema with vaccination history, allergies, treatments, and veterinarian notes
+
+    3. Add owner verification and emergency contact authentication
+
+    4. Configure Swagger UI with pet insurance integration examples
+
+    5. Generate smart pet device integration client for activity tracking
+
+    Include prescription management with pharmacy integration and telehealth consultation scheduling.'
+- id: fsharp_lib_0029_exp_027
+  instruction: 'Document a personal finance budgeting API with Giraffe.OpenApi:
+
+    1. Create endpoints for transaction import, categorization, budget planning, and financial goal tracking
+
+    2. Define FinancialTransaction schema with merchant information, categorization rules, and recurrence patterns
+
+    3. Add bank connectivity using OAuth for secure account aggregation (Plaid/Yodlee style)
+
+    4. Configure Swagger UI with personal finance management (PFM) examples
+
+    5. Generate Excel/Power BI integration client for financial reporting
+
+    Include transaction anomaly detection and savings opportunity recommendations.'
+- id: fsharp_lib_0030_exp_002
+  instruction: 'Build a financial trading platform order matcher using Akka.Streams and Akka.Cluster in C#:
+
+    1. Configure Akka.Cluster for Kubernetes with custom pod label selectors
+
+    2. Implement order book streams with backpressure handling for market data spikes
+
+    3. Use Akka.DistributedData for replicated order book state across nodes
+
+    4. Handle network partitions with split-brain resolver configuration
+
+    5. Create performance metrics endpoint reporting stream throughput and cluster latency
+
+    Show the Akka.Streams graph and split-brain resolver HOCON configuration.'
+- id: fsharp_lib_0030_exp_018
+  instruction: 'Build a machine learning inference service using Akka.Cluster and Akka.Streams in C#:
+
+    1. Configure Akka.Cluster for GPU-enabled nodes with custom node roles
+
+    2. Implement model serving with actor per model version
+
+    3. Use Akka.Streams for batch inference pipeline
+
+    4. Handle model warm-up and memory management for large models
+
+    5. Create an inference endpoint showing model versions and GPU utilization
+
+    Show the GPU-aware cluster configuration and model actor lifecycle.'
+- id: fsharp_lib_0030_exp_022
+  instruction: 'Build a video transcoding service using Akka.Cluster and Akka.IO in C#:
+
+    1. Configure Akka.Cluster for heterogeneous nodes (encoder, storage)
+
+    2. Implement video chunk processing with work distribution
+
+    3. Use Akka.IO for large file chunk transfer
+
+    4. Handle transcoding progress tracking and resume on failure
+
+    5. Create a transcoding status endpoint showing progress and node utilization
+
+    Show the work distribution logic and chunk transfer protocol.'
+- id: fsharp_lib_0031_exp_015
+  instruction: 'Create an F# game asset pipeline that uploads textures and models to MinIO.
+
+    Features: bucket creation with versioning for asset revisions, parallel upload of multiple asset files, presigned URL
+    generation for game clients, and bucket policies for development team access.
+
+    Implement taskResult CE with dependency tracking between related assets.'
+- id: fsharp_lib_0032_exp_013
+  instruction: 'Build a ride-sharing service backend in F# with Giraffe:
+
+    1. Implement driver and rider matching algorithms
+
+    2. Add real-time location tracking with geofencing
+
+    3. Implement fare calculation with surge pricing
+
+    4. Add payment processing with split payments
+
+    5. Implement webhook notifications for ride status changes
+
+    Include driver rating system, trip history, and dispute resolution handling.'
+- id: fsharp_lib_0005_exp_002
+  instruction: 'Write an F# IoT service that processes sensor data:
+
+    1. A function that reads sensor data from a device (simulated as async)
+
+    2. A function that validates the data is within acceptable ranges
+
+    3. A function that triggers an alert if validation fails or logs if successful
+
+    4. Use taskResult CE to chain these operations
+
+    Handle edge cases like sensor timeout, invalid readings, and concurrent access limitations.'
+- id: fsharp_lib_0005_exp_004
+  instruction: 'Create an F# social media moderation system:
+
+    1. Fetch a post from content database
+
+    2. Validate it doesn''t contain banned keywords
+
+    3. Apply content scoring algorithm
+
+    4. Use taskResult CE to handle async database calls and multiple validation error types
+
+    Include rate limiting and concurrent moderation checks as constraints.'
+- id: fsharp_lib_0005_exp_003
+  instruction: 'Implement an F# banking transaction processor:
+
+    1. Fetch account balance from a banking API (async)
+
+    2. Validate sufficient funds for a withdrawal
+
+    3. Execute the transaction with transaction ID generation
+
+    4. Compose with taskResult, handling insufficient funds, network errors, and duplicate transactions
+
+    Include rollback logic in error cases and proper error accumulation.'
+- id: fsharp_lib_0005_exp_010
+  instruction: 'Implement an F# API rate limiter middleware:
+
+    1. Check request count against user quota (async Redis call)
+
+    2. Validate API key and permissions
+
+    3. Apply business logic with rate limit awareness
+
+    4. Use taskResult CE to handle quota exceeded, invalid keys, and backend failures
+
+    Include sliding window algorithm and distributed consistency challenges.'
+- id: fsharp_lib_0005_exp_016
+  instruction: 'Implement an F# email notification service:
+
+    1. Fetch template and recipient data (async)
+
+    2. Validate email addresses and content safety
+
+    3. Send through SMTP with retry logic
+
+    4. Compose with taskResult, handling invalid addresses, template errors, and delivery failures
+
+    Include spam score checking and unsubscribe list validation.'
+- id: fsharp_lib_0005_exp_023
+  instruction: 'Create an F# search indexing service:
+
+    1. Fetch documents to index (async batch)
+
+    2. Validate and normalize content
+
+    3. Update search index with versioning
+
+    4. Use taskResult CE to handle parsing errors, index conflicts, and consistency issues
+
+    Include incremental updates and index optimization constraints.'
+- id: fsharp_lib_0006_exp_008
+  instruction: 'Design a weather forecasting data pipeline:
+
+    1. Use `option { }` CE: get location → fetch historical data → calculate trends
+
+    2. Apply traverseResult to Option<Result<Forecast, DataQualityError>>
+
+    3. Implement AsyncOption CE for satellite imagery that may be unavailable
+
+    Handle data normalization across different sources and implement data validation checks.'
+- id: fsharp_lib_0006_exp_004
+  instruction: 'Implement an IoT device monitoring service:
+
+    1. Use `option { }` CE: get device → read sensor data → check threshold violations
+
+    2. Apply Option.traverseResult to Option<Result<Alert, SensorError>> transformations
+
+    3. Create AsyncOption CE for battery level checks that might return None if device is offline
+
+    Include backpressure handling for high-frequency sensor data and implement circuit breaker pattern.'
+- id: fsharp_lib_0006_exp_011
+  instruction: 'Build a healthcare appointment scheduling system:
+
+    1. Chain with `option { }`: find doctor → check availability → validate patient eligibility
+
+    2. Use traverseResult for Option<Result<Appointment, SchedulingConflictError>>
+
+    3. Create AsyncOption CE for checking insurance pre-authorizations that may return None
+
+    Handle timezone conversions and implement cancellation policy enforcement.'
+- id: fsharp_lib_0006_exp_025
+  instruction: 'Implement a news article aggregation service:
+
+    1. Chain with `option { }`: fetch article → extract entities → categorize topic
+
+    2. Use Option.traverseResult for Option<Result<Analysis, ParsingError>>
+
+    3. Implement AsyncOption CE for checking sentiment analysis that may return None
+
+    Handle duplicate article detection and implement source credibility scoring.'
+system_prompt: 'You are an expert F# developer specializing in the F# ecosystem.
+
+  Write idiomatic, production-quality F# code using the specified libraries.
+
+  Follow these conventions:
+
+  - Use pipeline operators (|>) for data transformations
+
+  - Prefer immutable data and functional patterns
+
+  - Use computation expressions where the library provides them
+
+  - Include necessary `open` statements at the top
+
+  - Include type annotations on public APIs
+
+  - Write concise explanations (2-3 sentences max) before the code
+
+  - All code must compile with .NET 9 and the latest stable versions of each library
+
+  Be concise. Return only the code and a brief explanation.
+
+  '

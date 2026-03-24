@@ -1,0 +1,26 @@
+description: "Substitute teacher re-runs for failed QA pairs"
+suffix: "_sub"
+temperature: 0.7
+concurrency: 7
+
+# Re-run failed samples with substitute teachers:
+# - DeepSeek failures -> MiniMax (best F# teacher)
+# - MiniMax failures -> GLM-5 (second best F#, best .NET)
+# - Kimi failures -> MiniMax or GLM-5
+teachers:
+  minimax:
+    - yaml: fsharp_core_sub_minimax
+      output: fsharp_core_sub_minimax
+    - yaml: fsharp_libraries_sub_minimax
+      output: fsharp_libraries_sub_minimax
+    - yaml: cross_domain_sub_minimax
+      output: cross_domain_sub_minimax
+    - yaml: dotnet_aspnet_sub_minimax
+      output: dotnet_aspnet_sub_minimax
+  glm5:
+    - yaml: fsharp_core_sub_glm5
+      output: fsharp_core_sub_glm5
+    - yaml: fsharp_libraries_sub_glm5
+      output: fsharp_libraries_sub_glm5
+    - yaml: dotnet_aspnet_sub_glm5
+      output: dotnet_aspnet_sub_glm5

@@ -316,16 +316,33 @@ def needs_project_for_structure(code: str) -> bool:
 
     F# script files (.fsx) don't support top-level namespace or module declarations.
     These need to go through the project build path as .fs files.
+
+    Checks the first few non-comment, non-empty lines since teachers often
+    prepend file path comments like '// src/Domain/Types.fs' before namespace.
     """
-    first_line = code.strip().split("\n")[0].strip()
+    lines = code.strip().split("\n")
 
-    # Top-level namespace declaration
-    if first_line.startswith("namespace "):
-        return True
+    for line in lines:
+        stripped = line.strip()
 
-    # Top-level module declaration (e.g., "module MyModule" but NOT "module X =")
-    if re.match(r"^module\s+\S+\s*$", first_line):
-        return True
+        # Skip empty lines and comments
+        if not stripped or stripped.startswith("//") or stripped.startswith("(*"):
+            continue
+
+        # Skip #r and #load directives (valid in .fsx before code)
+        if stripped.startswith("#r ") or stripped.startswith("#load "):
+            continue
+
+        # Top-level namespace declaration
+        if stripped.startswith("namespace "):
+            return True
+
+        # Top-level module declaration (e.g., "module MyModule" but NOT "module X =")
+        if re.match(r"^module\s+\S+\s*$", stripped):
+            return True
+
+        # First real code line is not namespace/module -- use .fsx
+        break
 
     return False
 

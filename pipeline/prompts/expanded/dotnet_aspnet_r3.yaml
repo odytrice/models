@@ -1,0 +1,952 @@
+domain: dotnet_aspnet
+max_tokens: 4096
+prompts:
+- id: dotnet_0016_exp_000
+  instruction: 'Implement a gRPC service in F# ASP.NET Core for a healthcare patient records system:
+
+    1. Define a .proto file with RPCs: GetPatient, CreatePatient, UpdateMedicalHistory, StreamVitals
+
+    2. Create F# domain types for Patient, MedicalRecord, VitalSigns with proper validation
+
+    3. Implement server-side streaming for StreamVitals to push real-time heart rate and blood pressure updates
+
+    4. Handle PHI/PII considerations by implementing field-level encryption in the service layer
+
+    5. Map domain errors (PatientNotFound, UnauthorizedAccess) to appropriate gRPC status codes
+
+    6. Add deadline handling for long-running vital streaming sessions'
+- id: dotnet_0016_exp_001
+  instruction: 'Create a bidirectional streaming gRPC service in F# for a financial trading platform:
+
+    1. Design a .proto file for TradeExecution service with SubscribeToQuotes (server-streaming), ExecuteTrade (unary), and
+    StreamTradeUpdates (bidirectional)
+
+    2. Implement the F# service with proper concurrency handling using F# async workflows and MailboxProcessor
+
+    3. Create a client that subscribes to quotes and sends trade orders simultaneously
+
+    4. Handle backpressure when market data rates exceed processing capacity
+
+    5. Implement circuit breaker pattern for downstream exchange API failures
+
+    6. Add proper resource cleanup when client disconnects mid-stream'
+- id: dotnet_0016_exp_002
+  instruction: 'Build an IoT device management gRPC service in F# ASP.NET Core:
+
+    1. Define .proto for DeviceManager: RegisterDevice, GetDeviceStatus, StreamTelemetry (client-streaming), SendCommands
+    (server-streaming)
+
+    2. Implement F# domain types with discriminated unions for DeviceState (Online, Offline, Degraded)
+
+    3. Handle client-streaming telemetry where devices send continuous sensor readings
+
+    4. Aggregate telemetry data in memory with configurable retention windows
+
+    5. Implement graceful degradation when message queue exceeds capacity
+
+    6. Add authentication metadata validation for device identity verification'
+- id: dotnet_0016_exp_003
+  instruction: 'Implement a real-time chat messaging gRPC service in F#:
+
+    1. Create .proto for ChatService: SendMessage, GetMessageHistory, StreamMessages (bidirectional), JoinChannel, LeaveChannel
+
+    2. Use F# agent-based architecture (MailboxProcessor) to manage channel subscriptions and message broadcasting
+
+    3. Implement message ordering guarantees with sequence numbers
+
+    4. Handle presence tracking (user online/offline status) with heartbeat mechanism
+
+    5. Add rate limiting per user to prevent spam
+
+    6. Persist messages to database asynchronously while maintaining stream responsiveness'
+- id: dotnet_0016_exp_004
+  instruction: 'Design a gRPC-based game leaderboard service in F# ASP.NET Core:
+
+    1. Define .proto for LeaderboardService: UpdateScore, GetTopPlayers, GetPlayerRank, StreamLeaderboardUpdates
+
+    2. Implement efficient in-memory leaderboard using sorted data structures in F#
+
+    3. Stream leaderboard changes to subscribed clients with configurable update intervals
+
+    4. Handle concurrent score updates with proper locking or atomic operations
+
+    5. Implement pagination for large leaderboard queries
+
+    6. Add anti-cheat validation logic before accepting score updates'
+- id: dotnet_0016_exp_005
+  instruction: 'Create a logistics shipment tracking gRPC service in F#:
+
+    1. Design .proto for ShipmentTracker: CreateShipment, GetShipmentStatus, UpdateLocation (client-streaming), StreamLocationHistory
+
+    2. Model F# domain types for Shipment with state machine (Created, InTransit, Delivered, Returned)
+
+    3. Implement client-streaming for delivery vehicles to continuously update their GPS coordinates
+
+    4. Calculate estimated arrival times based on route and current location
+
+    5. Handle offline scenarios where vehicles queue updates locally before reconnecting
+
+    6. Implement geofencing alerts when shipments enter/exit defined zones'
+- id: dotnet_0016_exp_006
+  instruction: 'Implement a live classroom session gRPC service in F# ASP.NET Core:
+
+    1. Define .proto for ClassroomService: JoinSession, LeaveSession, StreamPresentation, SubmitAnswer, StreamParticipantEvents
+
+    2. Create F# domain types for Session, Participant, Slide, Question, Answer
+
+    3. Implement server-streaming for presenter slide changes to broadcast to all participants
+
+    4. Handle bidirectional streaming for real-time Q&A sessions
+
+    5. Implement participant role management (Presenter, Attendee, Moderator)
+
+    6. Add session recording capability for later playback'
+- id: dotnet_0016_exp_007
+  instruction: 'Build a real estate property listing gRPC service in F#:
+
+    1. Create .proto for PropertyService: SearchProperties, GetPropertyDetails, ScheduleViewing, StreamPriceChanges, StreamNewListings
+
+    2. Implement complex search filtering with F# query expressions
+
+    3. Stream price reduction alerts to subscribed clients
+
+    4. Handle timezone conversion for viewing appointments across regions
+
+    5. Implement image thumbnail generation as part of property detail responses
+
+    6. Add caching layer for frequently accessed property details'
+- id: dotnet_0016_exp_008
+  instruction: 'Implement a flight booking gRPC service in F# ASP.NET Core:
+
+    1. Design .proto for FlightBooking: SearchFlights, BookFlight, CancelBooking, StreamSeatAvailability, StreamPriceChanges
+
+    2. Model F# domain types for Flight, Seat, Booking with validation rules
+
+    3. Implement real-time seat availability streaming as bookings occur
+
+    4. Handle race conditions for concurrent seat selection attempts
+
+    5. Implement compensation logic for partial booking failures
+
+    6. Add integration with external payment gateway with timeout handling'
+- id: dotnet_0016_exp_009
+  instruction: 'Create an inventory management gRPC service in F#:
+
+    1. Define .proto for InventoryService: GetStock, ReserveStock, ReleaseReservation, StreamStockAlerts, BatchUpdateStock
+
+    2. Implement optimistic concurrency control using version numbers
+
+    3. Stream low-stock alerts when inventory falls below threshold
+
+    4. Handle batch operations efficiently with minimal database round-trips
+
+    5. Implement reservation expiration with background cleanup
+
+    6. Add audit trail for all stock modifications'
+- id: dotnet_0016_exp_010
+  instruction: 'Implement comprehensive gRPC error handling patterns in F#:
+
+    1. Create a base gRPC service with custom error mapping from F# Result types to gRPC Status
+
+    2. Define F# discriminated unions for domain errors with detailed error codes
+
+    3. Implement retry policies with exponential backoff for transient failures
+
+    4. Handle deadline exceeded scenarios gracefully with partial result returns where applicable
+
+    5. Create custom gRPC interceptors for centralized error logging and metrics
+
+    6. Implement client-side error handling with proper exception propagation'
+- id: dotnet_0016_exp_011
+  instruction: 'Build a secure gRPC service with authentication in F# ASP.NET Core:
+
+    1. Design .proto for SecureDataService with authentication metadata requirements
+
+    2. Implement JWT token validation in gRPC interceptor
+
+    3. Create role-based authorization attributes for specific RPC methods
+
+    4. Handle token refresh scenarios during long-running streams
+
+    5. Implement API key validation for service-to-service authentication
+
+    6. Add audit logging for all authenticated operations'
+- id: dotnet_0016_exp_012
+  instruction: 'Optimize a high-throughput gRPC service in F# for performance:
+
+    1. Create a gRPC service that processes 100,000+ requests per second
+
+    2. Implement connection pooling and channel reuse in the client
+
+    3. Use protocol buffer message compression for large payloads
+
+    4. Implement object pooling for frequently allocated F# types
+
+    5. Add performance counters and metrics using System.Diagnostics.Metrics
+
+    6. Profile and optimize hot paths with benchmark tests using BenchmarkDotNet'
+- id: dotnet_0016_exp_013
+  instruction: 'Implement gRPC service versioning in F# ASP.NET Core:
+
+    1. Design .proto files with versioning strategy (v1, v2) for UserService
+
+    2. Implement backward-compatible changes (adding optional fields, new methods)
+
+    3. Handle breaking changes by maintaining multiple service implementations
+
+    4. Create version negotiation in client code
+
+    5. Implement deprecation warnings for old API versions
+
+    6. Add documentation generation for each API version'
+- id: dotnet_0016_exp_014
+  instruction: 'Create gRPC interceptors in F# for cross-cutting concerns:
+
+    1. Implement logging interceptor that captures request/response metadata without body logging for sensitive data
+
+    2. Create metrics interceptor for Prometheus-compatible metrics collection
+
+    3. Implement distributed tracing interceptor with OpenTelemetry integration
+
+    4. Add request validation interceptor that checks required fields before reaching service
+
+    5. Create rate limiting interceptor with configurable limits per method
+
+    6. Implement caching interceptor for idempotent unary calls'
+- id: dotnet_0016_exp_015
+  instruction: 'Write comprehensive unit tests for gRPC services in F#:
+
+    1. Create test fixtures using xUnit and FsCheck for property-based testing
+
+    2. Mock gRPC client for testing service consumers
+
+    3. Test server-side streaming with in-memory channel
+
+    4. Verify error handling for all defined error conditions
+
+    5. Test concurrent access scenarios with Async.Parallel
+
+    6. Create integration tests that spin up test server with TestServer'
+- id: dotnet_0016_exp_016
+  instruction: 'Debug and fix issues in an existing gRPC service implementation in F#:
+
+    1. Analyze a gRPC service experiencing intermittent connection drops
+
+    2. Fix memory leak in streaming RPC where subscriptions aren''t properly cleaned up
+
+    3. Resolve deadlock in bidirectional streaming caused by blocking calls
+
+    4. Fix proto serialization issues with F# option types not mapping correctly
+
+    5. Resolve timeout issues in long-running operations by implementing proper deadline propagation
+
+    6. Fix race condition in shared state accessed by concurrent RPC handlers'
+- id: dotnet_0016_exp_017
+  instruction: 'Refactor an existing REST API to gRPC service in F#:
+
+    1. Convert existing Giraffe HTTP routes to gRPC RPC methods
+
+    2. Map JSON request/response models to protocol buffer messages
+
+    3. Preserve business logic while changing transport layer
+
+    4. Implement both REST and gRPC endpoints simultaneously during migration
+
+    5. Create adapter layer for gradual client migration
+
+    6. Document performance differences between REST and gRPC implementations'
+- id: dotnet_0016_exp_018
+  instruction: 'Compare and document gRPC vs REST vs GraphQL approaches in F#:
+
+    1. Implement the same ProductCatalog service in all three approaches
+
+    2. Document payload size differences for equivalent operations
+
+    3. Compare latency measurements for different scenarios
+
+    4. Analyze developer experience and tooling for each approach
+
+    5. Document use cases where each approach excels
+
+    6. Create decision matrix for choosing between approaches'
+- id: dotnet_0016_exp_019
+  instruction: 'Design a microservices architecture using gRPC for inter-service communication in F#:
+
+    1. Define service boundaries and contracts using .proto files
+
+    2. Implement service discovery for dynamic endpoint resolution
+
+    3. Create shared proto repository for contract management
+
+    4. Implement health check endpoints following gRPC health checking protocol
+
+    5. Design saga pattern for distributed transactions across services
+
+    6. Add centralized configuration management for service endpoints'
+- id: dotnet_0016_exp_020
+  instruction: 'Implement thread-safe gRPC service with concurrent state management in F#:
+
+    1. Create a gRPC service using F# MailboxProcessor for thread-safe state
+
+    2. Handle concurrent requests that modify shared state
+
+    3. Implement proper cancellation token propagation
+
+    4. Use F# async workflows for non-blocking operations
+
+    5. Add concurrent collection types for multi-reader/multi-writer scenarios
+
+    6. Implement proper locking strategies for different access patterns'
+- id: dotnet_0016_exp_021
+  instruction: 'Handle large messages and streaming in gRPC service in F#:
+
+    1. Implement file upload service using client-streaming RPC
+
+    2. Handle messages exceeding default gRPC message size limits
+
+    3. Implement chunked transfer for large files with progress reporting
+
+    4. Stream large datasets with server-side pagination
+
+    5. Implement flow control to prevent memory exhaustion
+
+    6. Add checksum validation for file integrity verification'
+- id: dotnet_0016_exp_022
+  instruction: 'Generate OpenAPI-compatible documentation for gRPC services in F#:
+
+    1. Configure gRPC JSON transcoding for REST compatibility
+
+    2. Generate OpenAPI specification from .proto files
+
+    3. Add XML documentation comments to proto definitions
+
+    4. Create Swagger UI endpoint for gRPC service testing
+
+    5. Document streaming endpoints with appropriate descriptions
+
+    6. Add example requests and responses for each RPC method'
+- id: dotnet_0016_exp_023
+  instruction: 'Implement health checks and diagnostics for gRPC services in F# ASP.NET Core:
+
+    1. Add Microsoft.AspNetCore.Diagnostics.HealthChecks middleware
+
+    2. Implement Grpc.AspNetCore.HealthChecks for standard health probe service
+
+    3. Create custom health check for dependent services (database, cache)
+
+    4. Add Prometheus metrics endpoint for scraping
+
+    5. Implement graceful shutdown with drain mode for existing connections
+
+    6. Create dashboard for monitoring service health'
+- id: dotnet_0016_exp_024
+  instruction: 'Configure gRPC client with load balancing in F#:
+
+    1. Create gRPC client with proper channel configuration for load balancing
+
+    2. Implement round-robin load balancing policy
+
+    3. Add client-side service discovery integration
+
+    4. Handle failover scenarios when server instances become unavailable
+
+    5. Implement connection management for optimal resource usage
+
+    6. Add client-side retry policies for failed requests'
+- id: dotnet_0016_exp_025
+  instruction: 'Implement gRPC service without proto files using code-first approach in F#:
+
+    1. Use protobuf-net.Grpc for code-first gRPC service definition
+
+    2. Define service contracts as F# interfaces and records
+
+    3. Implement server and client without .proto file generation
+
+    4. Compare developer experience between code-first and proto-first approaches
+
+    5. Handle streaming scenarios with code-first approach
+
+    6. Document limitations and workarounds for code-first gRPC'
+- id: dotnet_0016_exp_026
+  instruction: 'Create custom gRPC middleware pipeline in F# ASP.NET Core:
+
+    1. Implement middleware for request timing and logging
+
+    2. Create middleware for tenant identification and context propagation
+
+    3. Add middleware for correlation ID generation and tracking
+
+    4. Implement middleware for request/response transformation
+
+    5. Create middleware for feature flag evaluation
+
+    6. Document middleware execution order and best practices'
+- id: dotnet_0016_exp_027
+  instruction: 'Implement custom protobuf serialization for F# types in gRPC:
+
+    1. Create custom marshallers for F# discriminated unions
+
+    2. Implement protobuf converters for F# option types
+
+    3. Handle F# lists and arrays with proper serialization
+
+    4. Create custom serialization for F# maps with complex key types
+
+    5. Implement efficient serialization for large F# records
+
+    6. Add backward compatibility handling for evolved F# types'
+- id: dotnet_0016_exp_028
+  instruction: 'Implement message compression for gRPC services in F#:
+
+    1. Configure gzip compression for gRPC messages
+
+    2. Implement custom compression algorithms (LZ4, Snappy)
+
+    3. Measure compression ratios for different message types
+
+    4. Handle negotiation of compression algorithms between client and server
+
+    5. Add compression configuration per RPC method
+
+    6. Document CPU vs bandwidth tradeoffs for compression'
+- id: dotnet_0016_exp_029
+  instruction: 'Implement gRPC reflection service in F# ASP.NET Core:
+
+    1. Enable gRPC reflection for service discovery
+
+    2. Create client that dynamically discovers available services
+
+    3. Implement dynamic client invocation based on reflection
+
+    4. Add reflection for streaming methods
+
+    5. Create tooling for service exploration
+
+    6. Document security considerations for enabling reflection in production'
+- id: dotnet_0017_exp_000
+  instruction: Create a .NET Aspire AppHost in F# that orchestrates a weather forecasting microservices system. Include an
+    F# Saturn API for weather data aggregation, a background worker for fetching external weather APIs, PostgreSQL for historical
+    data, and Azure Blob Storage for satellite imagery. Configure service discovery so the API can query both the database
+    and blob storage using Aspire's resource linking. Implement proper error handling when external weather APIs are unavailable.
+- id: dotnet_0017_exp_001
+  instruction: Build an e-commerce order processing system using .NET Aspire with F# services. The AppHost should coordinate
+    an F# Giraffe Orders API, PostgreSQL for order storage, Redis for cart sessions, RabbitMQ for order events, and a Shipping
+    service. Demonstrate how to wire up the Orders API to publish OrderCreated events to RabbitMQ and configure the Shipping
+    service to subscribe to these events using Aspire's messaging abstractions.
+- id: dotnet_0017_exp_002
+  instruction: Design a healthcare patient records system with .NET Aspire featuring an F# API that adheres to HIPAA compliance
+    requirements. Set up PostgreSQL with encrypted connections, configure audit logging through Aspire's telemetry pipeline,
+    and implement health checks that verify database encryption status. Show how to configure connection strings with proper
+    security settings for production healthcare environments.
+- id: dotnet_0017_exp_003
+  instruction: Implement a real-time gaming leaderboard service using .NET Aspire with an F# Giraffe API and Redis for score
+    storage. Configure the AppHost to expose SignalR endpoints for real-time updates, set up Redis pub/sub for score change
+    notifications, and implement circuit breaker patterns for when Redis is temporarily unavailable. Include load testing
+    considerations for handling concurrent player score updates.
+- id: dotnet_0017_exp_004
+  instruction: Set up a fintech transaction processing platform with .NET Aspire orchestrating multiple F# services. Include
+    a TransactionIngestion API, FraudDetection worker service, PostgreSQL for transaction logs, Kafka for event streaming,
+    and Redis for velocity checking. Configure Aspire's service discovery so the FraudDetection service can access both the
+    transaction database and Redis for real-time pattern matching.
+- id: dotnet_0017_exp_005
+  instruction: Create an IoT sensor data ingestion pipeline using .NET Aspire with F# components. The AppHost should manage
+    an MQTT broker, TimescaleDB (PostgreSQL extension) for time-series storage, Redis for recent readings cache, and an F#
+    worker service that processes incoming sensor data. Demonstrate how to configure connection pooling for high-throughput
+    sensor data scenarios.
+- id: dotnet_0017_exp_006
+  instruction: Build a social media content delivery network with .NET Aspire. Create an F# Giraffe API for content serving,
+    configure Redis as a CDN cache layer, PostgreSQL for user content metadata, and Azure CDN integration. Show how Aspire's
+    resource configuration can differentiate between local development (Redis container) and production (Azure CDN) environments.
+- id: dotnet_0017_exp_007
+  instruction: Design a logistics tracking microservices architecture using .NET Aspire with F#. Include PackageTracking API,
+    DeliveryEstimation service, PostgreSQL for package data, Redis for real-time location caching, and RabbitMQ for delivery
+    status events. Implement the saga pattern for coordinating package handoffs between different delivery partners.
+- id: dotnet_0017_exp_008
+  instruction: Implement an educational learning management system with .NET Aspire orchestrating an F# Giraffe API, PostgreSQL
+    for course content, Redis for session management, and a VideoProcessing worker service. Configure OpenTelemetry to track
+    video processing times and student engagement metrics across all services.
+- id: dotnet_0017_exp_009
+  instruction: Create a travel booking orchestration system using .NET Aspire with F# services. The AppHost should coordinate
+    FlightSearch, HotelBooking, and CarRental APIs, each connecting to their respective PostgreSQL databases, with Redis for
+    search result caching. Implement compensating transactions for handling partial booking failures across services.
+- id: dotnet_0017_exp_010
+  instruction: Debug a .NET Aspire application where F# services cannot discover PostgreSQL during integration tests. The
+    services work locally but fail in CI/CD pipelines. Investigate connection string injection timing, container health check
+    configurations, and the DistributedApplicationTestingBuilder setup. Provide solutions for ensuring database containers
+    are fully ready before tests execute.
+- id: dotnet_0017_exp_011
+  instruction: Refactor an existing Docker Compose setup for a microservices application to use .NET Aspire. The current setup
+    includes an F# Giraffe API, PostgreSQL, Redis, and RabbitMQ. Show the migration path, demonstrate how Aspire's service
+    discovery replaces manual network configuration, and explain the benefits for local development workflows.
+- id: dotnet_0017_exp_012
+  instruction: Compare .NET Aspire with Docker Compose for local development of F# microservices. Create a side-by-side implementation
+    showing how each handles service discovery, container lifecycle management, and debugging workflows. Discuss scenarios
+    where Aspire provides advantages and potential limitations.
+- id: dotnet_0017_exp_013
+  instruction: Design a multi-tenant SaaS architecture using .NET Aspire with F# services. Each tenant should have isolated
+    PostgreSQL schemas, separate Redis namespaces, and tenant-specific RabbitMQ queues. Show how to configure the AppHost
+    to support tenant provisioning and demonstrate connection string management for per-tenant database access.
+- id: dotnet_0017_exp_014
+  instruction: Optimize a .NET Aspire F# Giraffe API for high-throughput scenarios. Configure PostgreSQL connection pooling,
+    implement Redis caching for frequently accessed data, set up async endpoints, and tune health check intervals. Demonstrate
+    load testing results showing throughput improvements after optimization.
+- id: dotnet_0017_exp_015
+  instruction: Secure a .NET Aspire deployment for production use with F# services. Configure managed identity for Azure resources,
+    set up Key Vault for secrets management, implement network isolation between services, and configure TLS for all inter-service
+    communication. Show how to transition from development configuration to production security posture.
+- id: dotnet_0017_exp_016
+  instruction: Implement a distributed caching layer using Redis in a .NET Aspire application with F# services. Create cache-aside
+    patterns for the Giraffe API, configure Redis persistence for cache survival across restarts, and implement cache invalidation
+    strategies when underlying PostgreSQL data changes.
+- id: dotnet_0017_exp_017
+  instruction: Build an event-driven architecture using RabbitMQ in .NET Aspire with F# services. Implement a publish-subscribe
+    pattern where an OrderService publishes events and InventoryService, NotificationService, and AnalyticsService subscribe.
+    Configure RabbitMQ exchange types, dead letter queues, and retry policies through Aspire's messaging configuration.
+- id: dotnet_0017_exp_018
+  instruction: Implement comprehensive error handling and resilience in a .NET Aspire F# application. Configure Polly retry
+    policies for database connections, implement circuit breakers for external API calls, set up health checks that verify
+    downstream dependencies, and configure proper logging for error diagnosis in the Aspire dashboard.
+- id: dotnet_0017_exp_019
+  instruction: Customize health check endpoints in a .NET Aspire F# Giraffe API. Implement database connectivity checks, Redis
+    availability verification, RabbitMQ queue health, and custom business logic health indicators. Configure the health check
+    response to include detailed status information for each dependency.
+- id: dotnet_0017_exp_020
+  instruction: Configure OpenTelemetry in a .NET Aspire F# ServiceDefaults project for distributed tracing across microservices.
+    Set up trace propagation between services, configure metric collection for API response times, implement custom spans
+    for business operations, and show how to view and analyze traces in the Aspire dashboard.
+- id: dotnet_0017_exp_021
+  instruction: Design integration testing strategies for a .NET Aspire distributed application with F# services. Use DistributedApplicationTestingBuilder
+    to spin up isolated test environments, configure test data seeding for PostgreSQL, mock external services, and implement
+    test fixtures that properly clean up resources after test execution.
+- id: dotnet_0017_exp_022
+  instruction: Migrate a monolithic F# web application to a microservices architecture using .NET Aspire. Break apart a single
+    Giraffe API into separate OrderService, ProductService, and UserService, each with their own PostgreSQL database. Show
+    how to handle shared data, implement API composition, and maintain transactional consistency during the migration.
+- id: dotnet_0017_exp_023
+  instruction: Configure container resource limits and optimization for .NET Aspire services. Set memory and CPU limits for
+    PostgreSQL, Redis, and F# API containers, configure garbage collection settings for the F# services, and demonstrate how
+    to profile resource usage through the Aspire dashboard.
+- id: dotnet_0017_exp_024
+  instruction: Implement service versioning and backward compatibility in a .NET Aspire application with F# APIs. Deploy multiple
+    versions of an API simultaneously, configure routing for version negotiation, and show how database schema changes can
+    be managed when multiple API versions access the same PostgreSQL database.
+- id: dotnet_0017_exp_025
+  instruction: Design a database migration strategy for PostgreSQL in a .NET Aspire F# application. Configure migrations to
+    run automatically on startup, implement rollback procedures, handle schema changes across multiple services sharing a
+    database, and demonstrate how to test migrations using Aspire's integration testing capabilities.
+- id: dotnet_0017_exp_026
+  instruction: Implement the CQRS pattern in a .NET Aspire F# application. Separate read and write models using different
+    PostgreSQL databases, configure Redis for read model projections, set up RabbitMQ for domain events that trigger projection
+    updates, and show how service discovery connects the appropriate database for each operation type.
+- id: dotnet_0017_exp_027
+  instruction: Configure an API gateway pattern using YARP (Yet Another Reverse Proxy) in a .NET Aspire F# application. Route
+    external requests to internal F# microservices, implement rate limiting, configure request aggregation for frontend clients,
+    and show how the gateway discovers backend services through Aspire's service catalog.
+- id: dotnet_0017_exp_028
+  instruction: Implement observability best practices for a .NET Aspire F# distributed system. Configure structured logging
+    with Serilog, set up distributed tracing with correlation IDs, implement custom metrics for business KPIs, and demonstrate
+    how to create dashboards that provide insights into system health and performance.
+- id: dotnet_0017_exp_029
+  instruction: Prepare a .NET Aspire F# application for production deployment to Azure Container Apps. Configure the AppHost
+    for cloud resource provisioning, set up managed identities for secure resource access, implement deployment slots for
+    zero-downtime updates, and demonstrate the transition from local development to cloud deployment using Aspire's manifest
+    generation.
+- id: dotnet_0018_exp_000
+  instruction: Implement a distributed cache service for a healthcare appointment booking system in F# ASP.NET Core. The cache
+    should store patient appointment slots with Redis. Handle F# discriminated unions for appointment status (Confirmed, Cancelled,
+    Pending, Completed). Implement cache-aside with automatic invalidation when appointments are updated. Include proper error
+    handling for Redis connection failures with fallback to database queries.
+- id: dotnet_0018_exp_001
+  instruction: Create a typed cache wrapper in F# for caching e-commerce product recommendations. Use StackExchange.Redis
+    and serialize F# records containing product IDs, scores, and recommendation metadata. Implement sliding expiration (30
+    minutes) that resets on cache hit. Handle the case where recommendation calculation is expensive and should only be done
+    by one request when cache misses.
+- id: dotnet_0018_exp_002
+  instruction: Debug and fix a cache stampede issue in an F# ASP.NET Core application where multiple concurrent requests for
+    the same user profile are hitting the database simultaneously. Implement proper locking using SemaphoreSlim to ensure
+    only one request fetches from the database while others wait. Include timeout handling for waiting threads.
+- id: dotnet_0018_exp_003
+  instruction: 'Design a multi-layer caching strategy for a fintech transaction history API in F#. Combine in-memory cache
+    for hot data (last 24 hours) with Redis distributed cache for historical data. Implement cache invalidation when new transactions
+    are recorded. Use different TTLs based on transaction age: recent = 1 minute, older = 1 hour.'
+- id: dotnet_0018_exp_004
+  instruction: Implement a Redis-backed session state cache for a social media application in F# ASP.NET Core. Store user
+    session data including F# records for user preferences, notification settings, and activity status. Handle session expiration
+    with Redis key expiration notifications. Ensure thread-safe access for concurrent requests from the same user.
+- id: dotnet_0018_exp_005
+  instruction: Create a cache warming service in F# that pre-populates Redis with frequently accessed data on application
+    startup. Implement priority-based warming for critical data (system configurations, feature flags) before less critical
+    data (static content, translations). Handle partial failures gracefully and log which items failed to warm.
+- id: dotnet_0018_exp_006
+  instruction: Implement a distributed lock mechanism using Redis for a logistics tracking system in F#. Ensure only one instance
+    of a shipment status update processor can run at a time. Handle lock acquisition timeouts and implement proper lock release
+    even in exception scenarios. Include deadlock detection and automatic recovery.
+- id: dotnet_0018_exp_007
+  instruction: 'Build a rate limiter using Redis sliding window algorithm in F# ASP.NET Core. Create a typed wrapper that
+    tracks API request counts per user endpoint combination. Implement different rate limits for different user tiers (Free:
+    100/hour, Premium: 1000/hour, Enterprise: 10000/hour). Return proper HTTP 429 responses with retry-after headers.'
+- id: dotnet_0018_exp_008
+  instruction: Implement a publish/subscribe cache invalidation system in F# where cache invalidation messages are broadcast
+    across multiple application instances. Use Redis Pub/Sub to notify all instances when data changes. Handle message serialization
+    for F# discriminated unions representing different invalidation events (ItemUpdated, ItemDeleted, BulkInvalidation).
+- id: dotnet_0018_exp_009
+  instruction: Create a cache-aside implementation for an IoT device telemetry dashboard in F#. Cache device status summaries
+    with a 15-second TTL due to frequently changing data. Handle the scenario where device data updates arrive via SignalR
+    and need to immediately invalidate relevant cache keys. Implement batch invalidation for device groups.
+- id: dotnet_0018_exp_010
+  instruction: Refactor an existing in-memory cache implementation to use Redis distributed cache in an F# education platform.
+    Maintain backward compatibility with existing cache keys while migrating to a new key naming convention. Implement a dual-write
+    strategy during migration period where both caches are populated but only Redis is read.
+- id: dotnet_0018_exp_011
+  instruction: Implement a secure cache for sensitive user data in F# ASP.NET Core with Redis. Encrypt cached values containing
+    personal information using AES-256 with keys from Azure Key Vault. Handle encryption/decryption transparently in the typed
+    cache wrapper. Ensure encrypted data doesn't exceed Redis value size limits.
+- id: dotnet_0018_exp_012
+  instruction: Create a leaderboard cache using Redis sorted sets for a gaming application in F#. Implement real-time score
+    updates with proper handling of concurrent score submissions. Provide efficient pagination for top players and player
+    rank lookup. Handle the case where a player's score should only increase, never decrease (use ZADD with NX option).
+- id: dotnet_0018_exp_013
+  instruction: Implement a distributed cache with automatic reconnection handling in F# ASP.NET Core. Create a resilient Redis
+    connection wrapper that handles ConnectionRestored and ConnectionFailed events. Implement circuit breaker pattern to stop
+    cache operations during prolonged outages and automatically resume when connection is restored.
+- id: dotnet_0018_exp_014
+  instruction: Build a cache implementation for a real-time collaboration system in F# where document state needs to be cached
+    with optimistic concurrency control. Use Redis WATCH/MULTI/EXEC commands to ensure atomic updates. Handle conflict resolution
+    when multiple users modify the same document simultaneously.
+- id: dotnet_0018_exp_015
+  instruction: Create a time-series data cache for monitoring metrics in F# using Redis sorted sets with timestamps as scores.
+    Implement efficient range queries for time-based data retrieval. Handle data compaction strategies to keep memory usage
+    bounded (auto-expire data older than 24 hours). Support both raw and aggregated metric queries.
+- id: dotnet_0018_exp_016
+  instruction: Implement a cache key generator in F# that creates consistent, collision-free keys for complex query parameters.
+    Handle F# records, lists, and discriminated unions as query parameters. Include namespace prefixing for different cache
+    types and support for cache key versioning to handle schema changes.
+- id: dotnet_0018_exp_017
+  instruction: Design a cache dependency tracking system in F# where cached items depend on other cached items. Implement
+    automatic cascading invalidation when a parent cache entry is invalidated. Handle circular dependency detection and prevention.
+    Support both strong dependencies (invalidate immediately) and weak dependencies (refresh on next access).
+- id: dotnet_0018_exp_018
+  instruction: Implement a cache hit/miss metrics collection system in F# ASP.NET Core using Redis. Track cache performance
+    per endpoint, data type, and time window. Create efficient aggregation queries for dashboard reporting. Handle high-cardinality
+    metrics without overwhelming Redis memory using probabilistic data structures (HyperLogLog for unique keys).
+- id: dotnet_0018_exp_019
+  instruction: Create a distributed cache for localized content in F# ASP.NET Core supporting multiple languages and regions.
+    Implement cache keys that include culture codes. Handle fallback logic where missing regional content falls back to default
+    language. Support bulk invalidation when content is updated in the CMS.
+- id: dotnet_0018_exp_020
+  instruction: Implement a cache for paginated query results in F# where the cache stores result pages independently but invalidates
+    atomically. Handle the case where a user requests page 2 but page 1 isn't cached. Implement predictive caching that warms
+    adjacent pages when a page is accessed.
+- id: dotnet_0018_exp_021
+  instruction: Build a request coalescing cache layer in F# ASP.NET Core that combines multiple identical concurrent requests
+    into a single database query. Use Redis as the distributed coordination mechanism. Handle request deduplication across
+    multiple application instances. Implement proper error handling where one failed request doesn't fail all waiting requests.
+- id: dotnet_0018_exp_022
+  instruction: Implement a stale-while-revalidate caching pattern in F# using Redis. Return stale cached data immediately
+    while triggering a background refresh. Handle the scenario where the refresh fails and stale data should be retained.
+    Implement maximum stale age limits beyond which requests must wait for fresh data.
+- id: dotnet_0018_exp_023
+  instruction: Create a cache implementation with automatic compression for large objects in F# ASP.NET Core. Compress cached
+    values exceeding a size threshold using Gzip before storing in Redis. Handle decompression transparently in the typed
+    cache wrapper. Include compression ratio metrics to identify optimization opportunities.
+- id: dotnet_0018_exp_024
+  instruction: Implement a distributed cache for GraphQL query results in F# ASP.NET Core. Generate cache keys from query
+    strings and variable values. Handle GraphQL-specific concerns like query complexity analysis for TTL decisions. Implement
+    partial cache invalidation when underlying data types change.
+- id: dotnet_0018_exp_025
+  instruction: Build a cache memory pressure handler in F# ASP.NET Core that monitors Redis memory usage and proactively evicts
+    least-recently-used items when approaching memory limits. Implement different eviction policies for different data types
+    (retain critical configuration, evict analytics data first). Handle the case where Redis returns memory errors.
+- id: dotnet_0018_exp_026
+  instruction: Create a typed cache for F# async workflows that caches the results of asynchronous computations. Handle cancellation
+    tokens properly and don't cache cancelled or faulted computations. Implement cache invalidation based on computation input
+    parameters. Support both memoization of pure functions and caching of side-effecting operations with explicit invalidation.
+- id: dotnet_0018_exp_027
+  instruction: Implement a cache warming strategy for a cold start scenario in F# ASP.NET Core deployed to serverless infrastructure.
+    Prioritize warming based on request frequency analytics stored in Redis. Implement lazy warming triggered by first request
+    when full warming isn't complete. Handle timeout constraints of serverless cold starts.
+- id: dotnet_0018_exp_028
+  instruction: Design a multi-tenant caching architecture in F# ASP.NET Core where each tenant's data must be isolated in
+    Redis. Implement tenant-aware cache key prefixes and connection multiplexing options for premium tenants. Handle tenant-specific
+    TTL policies and cache size quotas. Implement cross-tenant cache isolation verification.
+- id: dotnet_0018_exp_029
+  instruction: Create a cache debugging and inspection tool in F# ASP.NET Core that provides endpoints to view cached values,
+    TTL remaining, and cache hit rates. Implement secure access with admin-only authorization. Include the ability to selectively
+    invalidate cache entries by pattern matching on keys. Handle sensitive data masking in inspection results.
+- id: dotnet_0019_exp_000
+  instruction: Create an F# resilience pipeline for a payment processing service that handles credit card transactions through
+    a third-party payment gateway. Implement retry with exponential backoff starting at 500ms, max 3 retries, with a circuit
+    breaker that opens after 3 consecutive failures. Include proper logging of all retry attempts and circuit state transitions.
+    The solution should use Microsoft.Extensions.Resilience and integrate with ASP.NET Core dependency injection.
+- id: dotnet_0019_exp_001
+  instruction: Design a resilience strategy in F# for a healthcare application fetching patient records from multiple hospital
+    systems. Implement a hedging pattern that queries three regional data centers simultaneously and returns the first successful
+    response. Include a 15-second timeout per request and handle HIPAA-compliant error logging that never exposes patient
+    data in logs.
+- id: dotnet_0019_exp_002
+  instruction: Implement a file upload service in F# with resilience patterns for uploading large medical imaging files (DICOM)
+    to cloud storage. Use chunked upload with retry on transient failures, implement a progress-tracking mechanism that survives
+    retries, and add a circuit breaker that prevents uploads when storage quota is exceeded. Configure via appsettings.json
+    with IOptions pattern.
+- id: dotnet_0019_exp_003
+  instruction: Build an F# module for handling IoT device telemetry ingestion with resilience. Devices send heart rate data
+    every 5 seconds. Implement a bulkhead pattern limiting concurrent processing to 100 devices, with retry for throttling
+    errors (429), and a timeout of 2 seconds per batch. Include a fallback that queues failed telemetry for later processing.
+- id: dotnet_0019_exp_004
+  instruction: Create an F# e-commerce cart service with resilience for inventory availability checks across multiple warehouse
+    APIs. Implement retry with decorrelated jitter to prevent thundering herd, circuit breaker per warehouse endpoint, and
+    a fallback that returns "availability unknown" when circuits are open. Use discriminated unions for clean F# error handling.
+- id: dotnet_0019_exp_005
+  instruction: Debug and fix an F# resilience pipeline that is experiencing retry storms during peak traffic. The current
+    implementation retries immediately without backoff. Analyze the issues, implement exponential backoff with jitter, add
+    maximum retry duration caps, and ensure the circuit breaker properly isolates failing downstream services.
+- id: dotnet_0019_exp_006
+  instruction: Design a resilience strategy in F# for a social media notification service that must deliver notifications
+    even during partial outages. Implement a saga pattern with compensating transactions, retry for transient failures with
+    5-second max wait, and a dead-letter queue for notifications that permanently fail after exhausting retries.
+- id: dotnet_0019_exp_007
+  instruction: Implement an F# authentication token refresh mechanism with resilience. Tokens expire after 1 hour. Implement
+    proactive refresh 5 minutes before expiry, retry with exponential backoff for refresh failures, and a fallback to cached
+    tokens when refresh fails. Ensure thread safety for concurrent token access.
+- id: dotnet_0019_exp_008
+  instruction: Create an F# resilience pipeline for a real-time multiplayer game matchmaking service. Implement timeout of
+    3 seconds for player lookups, retry for database connection failures, and a circuit breaker that triggers "degraded mode"
+    where players see bots instead of real opponents. Include metrics collection for Prometheus.
+- id: dotnet_0019_exp_009
+  instruction: Build an F# weather data aggregation service that fetches from 5 different weather APIs. Implement hedging
+    that queries all providers and returns the consensus (majority) response. Include resilience for individual provider failures,
+    timeout of 5 seconds per provider, and a scoring system that tracks provider reliability over time.
+- id: dotnet_0019_exp_010
+  instruction: Implement a resilience pattern in F# for a logistics company's shipping rate calculator that calls carrier
+    APIs (FedEx, UPS, DHL). Create a strategy that tries all carriers in parallel with hedging, returns the cheapest rate,
+    and handles rate limit responses with proper backoff. Include caching of rates for identical routes.
+- id: dotnet_0019_exp_011
+  instruction: Design an F# solution for a banking microservice that processes wire transfers with strict resilience requirements.
+    Implement retry ONLY for idempotent operations, circuit breaker that alerts operations team on state changes, timeout
+    of 30 seconds for regulatory compliance, and comprehensive audit logging of all resilience decisions.
+- id: dotnet_0019_exp_012
+  instruction: Create an F# module for a ride-sharing app's driver matching service with resilience. Implement timeout of
+    2 seconds for driver availability checks, retry with jitter for database failures, circuit breaker that falls back to
+    cached driver locations, and a bulkhead limiting concurrent matching operations to 50.
+- id: dotnet_0019_exp_013
+  instruction: Implement an F# resilience pipeline for a video streaming platform's metadata service. Handle CDN origin failures
+    with retry, implement geographically-distributed hedging (query US-East and US-West simultaneously), and include adaptive
+    timeouts based on video popularity (trending videos get longer timeouts).
+- id: dotnet_0019_exp_014
+  instruction: Build an F# email delivery service with resilience patterns for a marketing platform. Implement retry with
+    exponential backoff for SMTP failures, circuit breaker that pauses sending to domains with high bounce rates, and a rate
+    limiter that respects per-domain sending limits. Use the Result type for clean error propagation.
+- id: dotnet_0019_exp_015
+  instruction: Create an F# resilience strategy for a stock trading platform's real-time quote service. Implement minimal
+    latency overhead (<10ms added), circuit breaker that triggers when exchange API latency exceeds 100ms, and fallback to
+    cached quotes during outages with staleness indicators. Must handle 10,000 requests per second.
+- id: dotnet_0019_exp_016
+  instruction: 'Design an F# resilience pipeline for a machine learning model serving infrastructure. Implement timeout based
+    on model complexity (simple models: 100ms, complex models: 5 seconds), retry for infrastructure failures only (not model
+    errors), and circuit breaker that routes to fallback models when primary fails.'
+- id: dotnet_0019_exp_017
+  instruction: Implement an F# document processing service with resilience for OCR operations on uploaded PDFs. Implement
+    retry for transient cloud API failures, timeout of 60 seconds per page, circuit breaker that queues documents for later
+    processing, and progress tracking that survives retry attempts.
+- id: dotnet_0019_exp_018
+  instruction: Create an F# resilience module for a smart home automation system controlling IoT devices. Implement commands
+    with retry for network issues, timeout of 5 seconds for device responses, circuit breaker per device type, and a fallback
+    to last-known state when devices are unreachable. Handle device-specific error codes.
+- id: dotnet_0019_exp_019
+  instruction: Build an F# cryptocurrency exchange rate aggregator with resilience. Implement hedging across 10 exchange APIs,
+    retry with decorrelated jitter, timeout of 2 seconds per exchange, and a weighted average calculation that excludes outliers
+    and failed responses. Include real-time staleness detection.
+- id: dotnet_0019_exp_020
+  instruction: Design an F# resilience pipeline for a university course registration system handling enrollment spikes. Implement
+    bulkhead limiting concurrent registrations, retry for database deadlocks, circuit breaker that enables "maintenance mode"
+    UI, and a queue-based fallback for overflow requests.
+- id: dotnet_0019_exp_021
+  instruction: Implement an F# service mesh resilience pattern for microservice-to-microservice communication within a Kubernetes
+    cluster. Configure retry budgets (max 20% additional requests), circuit breaker with adaptive thresholds based on error
+    rate, timeout propagation through call chains, and distributed tracing correlation.
+- id: dotnet_0019_exp_022
+  instruction: 'Create an F# resilience strategy for a customer support chatbot calling multiple AI/ML services. Implement
+    timeout per service (intent classification: 500ms, entity extraction: 300ms, response generation: 2 seconds), retry for
+    rate limiting, and fallback to simpler models when advanced models timeout.'
+- id: dotnet_0019_exp_023
+  instruction: Build an F# data pipeline resilience layer for ETL jobs processing daily sales reports. Implement retry with
+    exponential backoff for database connection failures, timeout of 30 minutes per batch, circuit breaker that pauses the
+    entire pipeline, and checkpoint recovery to resume from last successful batch.
+- id: dotnet_0019_exp_024
+  instruction: 'Implement an F# rate limiter combined with resilience patterns for a public API gateway. Enforce per-user
+    rate limits before applying retry, implement circuit breaker per API endpoint, timeout based on endpoint category (search:
+    1s, reports: 30s), and return proper 429 responses with retry-after headers.'
+- id: dotnet_0019_exp_025
+  instruction: Design an F# resilience pipeline for a federated identity provider handling SSO across multiple applications.
+    Implement timeout for identity provider lookups, retry for transient network issues, circuit breaker that enables "local
+    login fallback" mode, and proper handling of SAML response validation failures.
+- id: dotnet_0019_exp_026
+  instruction: Create an F# chaos engineering test harness that validates resilience patterns under simulated failures. Generate
+    network latency, packet loss, and service outages. Verify retry behavior, circuit breaker state transitions, timeout enforcement,
+    and fallback activation. Include assertions for expected behavior.
+- id: dotnet_0019_exp_027
+  instruction: 'Implement an F# resilience pattern for a content delivery network''s origin shield. Implement retry to multiple
+    origins with health scoring, adaptive timeouts based on content type (video: 10s, images: 3s, text: 1s), and a circuit
+    breaker that purges cache when origins fail. Include origin performance metrics.'
+- id: dotnet_0019_exp_028
+  instruction: Build an F# event-driven resilience layer for a message queue consumer processing order events. Implement retry
+    with dead-letter queue after 5 attempts, timeout for message processing (30 seconds), circuit breaker that pauses consumption,
+    and exactly-once processing guarantees using idempotency keys.
+- id: dotnet_0019_exp_029
+  instruction: Design an F# resilience configuration system that allows dynamic updates without service restart. Implement
+    IOptionsMonitor for live configuration changes, validation of new resilience settings before applying, gradual rollout
+    of new timeouts/backoff values, and audit logging of configuration changes.
+- id: dotnet_0020_exp_000
+  instruction: Implement API versioning for a healthcare patient records API using F# Giraffe. Support URL path versioning
+    where /api/v1/patients returns basic patient info (id, name, dateOfBirth) and /api/v2/patients includes additional fields
+    (insuranceProvider, medicalRecordNumber, lastVisitDate). Create a mapping function to convert V2 patients to V1 format
+    with data loss logging. Add rate limiting specifically for V1 endpoints since they're being deprecated.
+- id: dotnet_0020_exp_001
+  instruction: Create a fintech payment processing API with header-based versioning in F# ASP.NET Core Giraffe. Accept "X-API-Version"
+    header with values "2023-01", "2023-06", "2024-01". Each version handles transaction validation differently—V2023-01 allows
+    negative amounts for refunds, V2023-06 requires separate refund endpoints, V2024-01 adds currency conversion. Implement
+    version-specific validation pipelines and ensure failed validations return version-appropriate error codes.
+- id: dotnet_0020_exp_002
+  instruction: Design an e-commerce product catalog API with query string versioning in F# Giraffe. Handle /api/products?version=1
+    and /api/products?version=2. V1 returns products with simple pricing, V2 supports tiered pricing with customer-specific
+    discounts. Implement a fallback mechanism where missing version parameter defaults to latest stable version. Include integration
+    tests verifying both versions return correct HTTP status codes.
+- id: dotnet_0020_exp_003
+  instruction: Build a social media feed API with media type versioning using F# Giraffe. Parse Accept headers like "application/vnd.socialfeed.v1+json"
+    and "application/vnd.socialfeed.v2+json". V1 returns chronological feeds, V2 returns algorithmically sorted feeds with
+    engagement metrics. Handle clients sending invalid media types by returning a 406 Not Acceptable with available content
+    types.
+- id: dotnet_0020_exp_004
+  instruction: 'Implement a logistics shipment tracking API with three versioning strategies in F# Giraffe: URL path (/api/v1/shipments),
+    query string (/api/shipments?api-version=2), and header (X-Shipment-Version: 3). Create a version resolution pipeline
+    that checks all three sources with clear precedence rules. Log which versioning strategy each client uses for analytics.'
+- id: dotnet_0020_exp_005
+  instruction: Create a user authentication API in F# Giraffe where V1 uses JWT tokens and V2 uses OAuth2 with refresh tokens.
+    Implement a migration endpoint that accepts V1 tokens and returns V2 token pairs. Handle the scenario where a client calls
+    V2 endpoints with V1 tokens by returning a 400 with migration instructions in the response body.
+- id: dotnet_0020_exp_006
+  instruction: Implement API versioning for an IoT sensor data API using F# Giraffe with custom version negotiation. V1 returns
+    raw sensor readings, V2 returns aggregated readings with confidence intervals, V3 includes anomaly detection flags. Create
+    a version capability endpoint that lists available fields per version. Handle requests for non-existent versions with
+    404 and a list of supported versions.
+- id: dotnet_0020_exp_007
+  instruction: Design a blog platform API with versioning that supports backward compatibility for mobile apps in F# Giraffe.
+    V1 posts have title and body, V2 posts support markdown body and featured images. Implement a compatibility layer that
+    transforms V2 posts to V1 format when V1 clients request them. Add deprecation warnings in response headers when V1 endpoints
+    are called.
+- id: dotnet_0020_exp_008
+  instruction: Build a notification service API in F# Giraffe with versioning that handles breaking changes gracefully. V1
+    sends notifications immediately, V2 supports scheduled notifications with timezone handling. Create a shared DTO validation
+    module that both versions use but with version-specific rules. Implement request body validation that returns different
+    error messages per version.
+- id: dotnet_0020_exp_009
+  instruction: Implement API versioning for a customer management system using F# Giraffe with database schema awareness.
+    V1 customers have single address, V2 supports multiple addresses with types (billing, shipping, both). Create a repository
+    layer that queries different database views based on API version. Handle the case where V2 data is requested but database
+    migration hasn't completed.
+- id: dotnet_0020_exp_010
+  instruction: Create a real-time chat API with versioning in F# Giraffe using SignalR integration. V1 supports text messages
+    only, V2 adds file attachments and message reactions. Implement a message transformation pipeline that converts V2 messages
+    to V1 format for legacy clients. Handle WebSocket connection upgrades with version negotiation in the handshake.
+- id: dotnet_0020_exp_011
+  instruction: Design an invoice generation API with three versions in F# Giraffe. V1 generates PDF invoices synchronously,
+    V2 generates asynchronously with status polling, V3 adds webhook callbacks for completion. Implement a version-specific
+    routing module that composes different Giraffe route trees. Create a shared invoice calculation engine that all versions
+    use.
+- id: dotnet_0020_exp_012
+  instruction: Implement API versioning for a file storage service using F# Giraffe. V1 supports single file uploads, V2 adds
+    chunked uploads for large files, V3 includes automatic virus scanning. Create version-aware middleware that sets different
+    upload size limits. Handle multipart form data parsing differently per version with appropriate error responses.
+- id: dotnet_0020_exp_013
+  instruction: Build a recommendation engine API with versioning in F# Giraffe where each version uses different algorithms.
+    V1 uses collaborative filtering, V2 uses content-based filtering, V3 uses hybrid approach. Implement a version routing
+    mechanism that directs requests to different ML model endpoints. Add response headers indicating which algorithm was used
+    and confidence scores.
+- id: dotnet_0020_exp_014
+  instruction: Create a booking system API with versioning that handles timezone changes in F# Giraffe. V1 stores times in
+    local timezone, V2 stores in UTC with client timezone support. Implement a conversion service that migrates V1 bookings
+    to V2 format on-demand. Handle daylight saving time edge cases when converting between versions.
+- id: dotnet_0020_exp_015
+  instruction: Implement API versioning for a gaming leaderboard service using F# Giraffe. V1 returns top 100 players, V2
+    supports pagination and filtering by region, V3 adds real-time updates via Server-Sent Events. Create a version detection
+    pipeline that logs client version distribution. Implement circuit breakers specific to each version to isolate failures.
+- id: dotnet_0020_exp_016
+  instruction: Design a weather data API with versioning in F# Giraffe that handles external service changes. V1 fetches from
+    legacy weather provider, V2 uses new provider with different data format. Implement a provider abstraction layer that
+    normalizes data for each API version. Add fallback logic when primary provider is unavailable, returning cached data with
+    age headers.
+- id: dotnet_0020_exp_017
+  instruction: Build a comment system API with versioning in F# Giraffe. V1 supports nested comments with unlimited depth,
+    V2 limits nesting to 3 levels with thread summaries. Implement a recursive flattening function that converts V1 comment
+    trees to V2 format. Handle orphaned comments during conversion with appropriate error messages.
+- id: dotnet_0020_exp_018
+  instruction: Create an inventory management API with versioning in F# Giraffe where V1 tracks quantity only, V2 adds batch
+    tracking and expiration dates. Implement a version-aware cache that stores different representations. Handle concurrent
+    requests to both versions with proper locking mechanisms to prevent race conditions.
+- id: dotnet_0020_exp_019
+  instruction: Implement API versioning for a document signing workflow in F# Giraffe. V1 supports single signer, V2 adds
+    multi-party signing with ordering, V3 includes identity verification steps. Create a state machine that handles different
+    workflow states per version. Implement version-specific webhook payloads for external integrations.
+- id: dotnet_0020_exp_020
+  instruction: Design a search API with versioning in F# Giraffe. V1 uses simple keyword matching, V2 adds fuzzy search and
+    filters, V3 implements semantic search with embeddings. Create a query transformation layer that converts V1 queries to
+    V3 format. Handle empty result sets differently per version with appropriate suggestions.
+- id: dotnet_0020_exp_021
+  instruction: Build a subscription management API with versioning in F# Giraffe. V1 handles monthly/yearly plans, V2 adds
+    usage-based billing and plan addons, V3 supports enterprise custom contracts. Implement a billing calculation module that
+    handles all three plan types. Create a migration path for V1 subscribers to upgrade to V2 plans with prorated billing.
+- id: dotnet_0020_exp_022
+  instruction: Create a task scheduling API with versioning in F# Giraffe. V1 schedules one-time tasks, V2 adds recurring
+    tasks with cron expressions, V3 includes dependencies between tasks. Implement a task execution engine that handles all
+    scheduling patterns. Add version-specific retry policies and dead letter queue handling.
+- id: dotnet_0020_exp_023
+  instruction: Implement API versioning for a configuration management service using F# Giraffe. V1 returns flat key-value
+    pairs, V2 supports nested configuration with environment overrides, V3 adds secrets management integration. Create a configuration
+    resolution pipeline that merges values correctly per version. Handle sensitive data masking differently across versions.
+- id: dotnet_0020_exp_024
+  instruction: Design an analytics reporting API with versioning in F# Giraffe. V1 returns pre-computed daily aggregates,
+    V2 supports custom date ranges with drill-down, V3 adds real-time streaming metrics. Implement a query optimization layer
+    that selects appropriate data sources per version. Add response compression with version-specific compression levels.
+- id: dotnet_0020_exp_025
+  instruction: Build a messaging queue API with versioning in F# Giraffe. V1 provides FIFO queues, V2 adds priority queues
+    and dead letter handling, V3 includes message scheduling and deduplication. Implement a queue management system that routes
+    messages based on version capabilities. Handle poison messages with version-appropriate retry logic.
+- id: dotnet_0020_exp_026
+  instruction: Create a multi-tenant API with versioning in F# Giraffe where different tenants can use different API versions.
+    V1 stores tenant config in separate tables, V2 uses JSON columns with schema validation, V3 supports tenant-specific feature
+    flags. Implement a tenant resolution pipeline that determines available API versions per tenant. Handle tenants transitioning
+    between versions with data migration support.
+- id: dotnet_0020_exp_027
+  instruction: Implement API versioning for a content delivery network API using F# Giraffe. V1 invalidates cache by URL pattern,
+    V2 supports tag-based invalidation, V3 adds predictive prefetching. Create a cache invalidation orchestrator that handles
+    all three methods. Add request coalescing for high-volume invalidation requests per version.
+- id: dotnet_0020_exp_028
+  instruction: Design a fraud detection API with versioning in F# Giraffe. V1 returns binary fraud/legitimate classification,
+    V2 adds risk scores with contributing factors, V3 includes real-time decision explanations. Implement a scoring engine
+    that produces all output formats. Handle regulatory compliance requirements that differ per version with appropriate audit
+    logging.
+- id: dotnet_0020_exp_029
+  instruction: Build a machine learning model serving API with versioning in F# Giraffe. V1 serves model version 1.0 with
+    fixed input schema, V2 adds data preprocessing pipeline, V3 supports custom model endpoints per tenant. Implement a model
+    version registry that maps API versions to model versions. Handle model version rollback scenarios with appropriate API
+    version responses.
+system_prompt: 'You are an expert .NET developer writing F#-first ASP.NET Core applications.
+
+  Show ASP.NET Core patterns from the F# perspective -- use F# syntax, not C#.
+
+  Follow these conventions:
+
+  - Use F# functions and partial application for DI where possible
+
+  - Show idiomatic F# interop with C#-designed ASP.NET Core APIs
+
+  - Include necessary `open` statements
+
+  - Target .NET 9 / ASP.NET Core 9
+
+  - Write concise explanations (2-3 sentences max) before the code
+
+  Be concise. Return only the code and a brief explanation.
+
+  '
+temperature: 0.6

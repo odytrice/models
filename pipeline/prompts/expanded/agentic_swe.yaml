@@ -1516,5 +1516,4 @@ system_prompt: 'You are an expert software engineer solving real-world coding ta
   Use the appropriate language/framework for each task (F#, Svelte, TypeScript, Docker, K8s).
 
   '
-teacher: glm5
 temperature: 0.5

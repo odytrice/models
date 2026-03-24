@@ -791,14 +791,167 @@ After researching unsupervised distillation approaches, decided to add logprob-b
 
 ---
 
+## Logprob Distillation: Dead End
+
+Tested logprobs support across all 3 cloud teacher models (MiniMax M2.7, GLM-5, Kimi K2.5) on Ollama 0.17.1. All returned `logprobs: null`. Investigation confirmed:
+
+- **Ollama cloud models do not return logprobs** -- confirmed by Ollama team member on GitHub issue #13638: "We currently only support logprobs from local models"
+- Local models (e.g., `gpt-oss:20b`) return logprobs correctly on all 3 endpoints (`/api/chat`, `/api/generate`, `/v1/chat/completions`)
+- `logprobs` and `top_logprobs` are top-level request parameters (NOT inside `options`)
+- OpenRouter supports logprobs for GLM-5, Kimi K2.5, and MiniMax M2.5 (not M2.7) at ~$62 total -- rejected to avoid additional cost
+- Full investigation documented in `ollama_logprob_investigation.md`
+
+**Decision**: Abandon logprob distillation. Pivot back to domain-specific teacher SFT with failed QA re-runs using substitute teachers.
+
+---
+
+## Pipeline Refactoring
+
+### Merged `generate_data.py` into `run_generation.py`
+
+Eliminated the two-script subprocess architecture. Previously `run_generation.py` spawned `generate_data.py` as subprocesses -- now everything runs in a single async process:
+
+- **Single `httpx.AsyncClient`** -- shared connection pool instead of N separate pools
+- **Per-teacher semaphores** -- direct concurrency control without subprocess management
+- **Real-time progress tracking** -- `progress` dict updated directly, no file polling
+- **Teacher-agnostic YAMLs** -- prompts no longer contain a `teacher` field; teacher assignment comes from round config
+- **Removed DeepSeek** -- only 3 teachers remain: `minimax`, `glm5`, `kimi`
+- **Added `--summary` flag** -- compact paste-friendly progress output
+- **Verbose mode** uses proper `log.info` level (set via `--verbose`)
+
+### Teacher-Agnostic Expanded YAMLs
+
+Restructured all expanded YAML files in `pipeline/prompts/expanded/`:
+
+- Stripped `teacher` field from all 12 YAML files
+- Deleted 20 redundant teacher-specific variants (`*_expanded_minimax.yaml`, `*_expanded_glm5.yaml`, etc.)
+- Canonical set: 9 original domains + 3 round 3 gap-fills = 12 files, 5,164 total prompts
+- Teacher assignment now lives exclusively in round config YAMLs
+
+### Round 3 Config Updated
+
+Updated `configs/rounds/round3.yaml` to use lowercase teacher keys (`minimax`, `glm5`) and reference the new teacher-agnostic YAML filenames.
+
+---
+
+## Round 3 Seed Expansion
+
+Expanded 20 new curriculum gap-fill seeds via `expand_new_seeds.py --variations 30 --concurrency 3`:
+
+| Domain | Seeds | Expanded | Teacher (for expansion) |
+|--------|-------|----------|------------------------|
+| fsharp_core_r3 | 6 (SRTP, signature files, object expressions, Ports & Adapters, CQRS, FParsec) | 179 | MiniMax M2.7 |
+| fsharp_libraries_r3 | 9 (FsCheck, Expecto, Argu, Dapper.FSharp, Farmer, outbox pattern, RabbitMQ, ETL, Bolero) | 266 | MiniMax M2.7 |
+| dotnet_aspnet_r3 | 5 (gRPC, .NET Aspire, Redis caching, Polly resilience, API versioning) | 150 | GLM-5 |
+| **Total** | **20** | **595** | |
+
+Fixed: Added `glm5` entry to `expand_prompts.py` TEACHERS dict (was missing, would have caused KeyError).
+
+---
+
+## Round 3 Generation -- Complete
+
+595 prompts generated through 2 teachers, 0 failures:
+- MiniMax M2.7: fsharp_core_r3 (179), fsharp_libraries_r3 (266)
+- GLM-5: dotnet_aspnet_r3 (150)
+- Config: `configs/rounds/round3.yaml`, temperature 0.7, concurrency 7
+
+### Verification Results
+
+| Domain | Total | Passed | Failed | Skipped | Pass Rate |
+|--------|-------|--------|--------|---------|-----------|
+| fsharp_core_r3 | 179 | 110 | 66 | 3 | 61.5% |
+| fsharp_libraries_r3 | 266 | 194 | 70 | 2 | 72.9% |
+| dotnet_aspnet_r3 | 150 | 136 | 11 | 3 | 90.7% |
+| **Total** | **595** | **440** | **147** | **8** | **73.9%** |
+
+Common failure patterns:
+- `namespace` keyword in .fsx scripts (signature files, Ports & Adapters seeds) -- not fixable via packages, structural issue
+- `Farmer` namespace not found -- fixed by adding NuGet package, but many Farmer samples had other compile errors
+- Various type errors in object expression samples (seed 0028)
+
+### Bug Fix: Doubled Suffix
+
+Output files were named `fsharp_core_r3_r3.jsonl` (suffix `_r3` from config + `_r3` from output name). Fixed by removing suffix from round3.yaml config. Renamed all affected files.
+
+### NuGet Packages Added to Verify Project
+
+Added 15 new packages to `pipeline/verify/verify.fsproj` for round 3 gap-fill topics:
+- Farmer, StackExchange.Redis, Argu, FsCheck, FsCheck.Xunit, Expecto
+- Dapper, Dapper.FSharp, RabbitMQ.Client, FParsec, Bolero
+- Microsoft.Extensions.Http.Resilience, Asp.Versioning.Http
+- Grpc.AspNetCore (with ExcludeAssets=build to avoid Grpc.Tools F# incompatibility)
+- Google.Protobuf, Grpc.Net.Client
+
+### Updated Dataset Totals (after round 3, before namespace fix)
+
+Dataset at **6,998 samples** (up from 6,558):
+- 6,649 train / 349 validation (per format)
+- ChatML + Mistral instruct formats
+- Dataset card updated with round 3 stats and new domain descriptions
+
+---
+
+## Namespace Routing Fix -- +103 Samples Recovered
+
+The verifier's `needs_project_for_structure()` only checked the first line for `namespace` declarations. Teachers often prepend file path comments (e.g., `// src/Domain/Types.fs`) before the namespace, pushing it to line 2+. Fixed to scan past comments, empty lines, and `#r`/`#load` directives before checking for `namespace`/`module`.
+
+Recovery by file:
+
+| File | Before | After | Recovered |
+|------|--------|-------|-----------|
+| fsharp_core_r3 | 110 | 143 | +33 |
+| fsharp_core_t2 | 600 | 618 | +18 |
+| fsharp_core | 323 | 340 | +17 |
+| fsharp_libraries_r3 | 194 | 207 | +13 |
+| cross_domain | 289 | 300 | +11 |
+| cross_domain_t2 | 296 | 301 | +5 |
+| dotnet_aspnet_r3 | 136 | 139 | +3 |
+| dotnet_aspnet | 242 | 244 | +2 |
+| dotnet_aspnet_t2 | 445 | 446 | +1 |
+| **Total** | **4,304** | **4,407** | **+103** |
+
+Dataset after namespace fix: **6,996 samples** (6,647 train / 349 val). Slight decrease from 6,998 due to deduplication during reformatting.
+
+---
+
+## Substitute Teacher Re-Runs (In Progress)
+
+Extracted 808 failed prompt IDs across all rounds. 806 matched to expanded YAMLs (2 were test IDs). Created 7 substitute teacher YAML files and a round config (`configs/rounds/substitute.yaml`).
+
+### Substitution Strategy
+
+| Domain | Original Teacher | Failures | Substitute | Expected Recovery |
+|--------|-----------------|----------|------------|-------------------|
+| fsharp_core | deepseek | 378 | minimax (76.6% F#) | ~290 |
+| fsharp_core | minimax | 156 | glm5 (70.6% F#) | ~110 |
+| fsharp_libraries | minimax | 158 | glm5 | ~111 |
+| fsharp_libraries | deepseek | 84 | minimax | ~64 |
+| cross_domain | kimi | 16 | minimax | ~12 |
+| dotnet_aspnet | glm5 | 12 | minimax | ~9 |
+| dotnet_aspnet | kimi | 4 | glm5 | ~4 |
+| **Total** | | **808** | | **~600** |
+
+Files created in `pipeline/prompts/expanded/`:
+- `fsharp_core_sub_minimax.yaml` (376 prompts)
+- `fsharp_core_sub_glm5.yaml` (156 prompts)
+- `fsharp_libraries_sub_glm5.yaml` (158 prompts)
+- `fsharp_libraries_sub_minimax.yaml` (84 prompts)
+- `cross_domain_sub_minimax.yaml` (16 prompts)
+- `dotnet_aspnet_sub_minimax.yaml` (12 prompts)
+- `dotnet_aspnet_sub_glm5.yaml` (4 prompts)
+
+Running via `run_generation.bat` with `--verify` flag (generation + verification + formatting).
+
+---
+
 ## Pending Actions
 
-1. **Implement logprob pipeline** -- add `--logprobs` to generate_data.py, multi-teacher config format, training configs
-2. **Expand round 3 seeds** (20 new seeds -> ~600 prompts)
-3. **Generate logprob dataset** -- all ~5,169 prompts x 3 teachers x logprobs (~30-40 hours)
-4. **Format and publish** kenichi-logprob to HuggingFace
-5. **Create training configs** for Kenichi Thinking (Qwen3.5, CE+KL) and Kenichi Flash (Devstral, CE+KL)
-6. **Train both students** on cloud GPU (can run in parallel)
-7. **Evaluate and compare** both variants
-8. **Export** to GGUF/GPTQ for local inference
-9. **Push models** to HuggingFace
+1. **Complete substitute teacher generation** (806 prompts in progress)
+2. **Merge substitute results** into main dataset
+3. **Republish** updated SFT dataset to HuggingFace
+4. **Create training configs** for Kenichi Thinking (Qwen3.5) and Kenichi Flash (Devstral)
+5. **Train both students** on cloud GPU
+6. **Evaluate and compare** both variants
+7. **Export** to GGUF/GPTQ for local inference
+8. **Push models** to HuggingFace

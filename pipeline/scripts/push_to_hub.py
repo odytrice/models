@@ -60,27 +60,28 @@ Both target local inference on 32GB VRAM.
 
 | Metric | Value |
 |--------|-------|
-| Total samples | 6,558 |
-| Train split | 6,231 |
-| Validation split | 327 |
+| Total samples | 6,998 |
+| Train split | 6,649 |
+| Validation split | 349 |
 | Formats | ChatML (Qwen) + Mistral Instruct (Devstral) |
 | F# compiler verified | Yes (all F# samples) |
+| Generation rounds | 3 (default temp + temp 0.9 + curriculum gap fills) |
 
 ## Domain Distribution
 
 | Domain | Samples | % | Description |
 |--------|---------|---|-------------|
-| fsharp_libraries | 1,695 | 25.8% | Giraffe, FsToolkit, Akka.NET, linq2db, Thoth.Json, and 20+ libraries |
-| fsharp_core | 1,003 | 15.3% | DUs, pattern matching, CEs, SRTP, agents, type providers |
-| general_coding | 950 | 14.5% | Algorithms, data structures, design patterns (450 distilled + 500 OpenCodeInstruct) |
-| svelte_typescript | 676 | 10.3% | Svelte 5 runes, SvelteKit 2, TypeScript patterns |
-| dotnet_aspnet | 689 | 10.5% | ASP.NET Core with F#, DI, middleware, auth, health checks |
-| cross_domain | 585 | 8.9% | Full-stack F# + Svelte + Docker integration |
-| docker_kubernetes | 414 | 6.3% | Dockerfiles, K8s manifests, Helm, CI/CD |
-| agentic_swe | 279 | 4.3% | Multi-step debugging, refactoring, migration tasks |
-| long_context | 267 | 4.1% | Full project walkthroughs, multi-file implementations |
+| fsharp_libraries | 1,889 | 27.0% | Giraffe, FsToolkit, Akka.NET, linq2db, Thoth.Json, FsCheck, Expecto, Argu, Dapper.FSharp, Farmer, Bolero, and 20+ libraries |
+| fsharp_core | 1,113 | 15.9% | DUs, pattern matching, CEs, SRTP, agents, type providers, signature files, object expressions, CQRS, FParsec, Ports & Adapters |
+| general_coding | 950 | 13.6% | Algorithms, data structures, design patterns (450 distilled + 500 OpenCodeInstruct) |
+| dotnet_aspnet | 825 | 11.8% | ASP.NET Core with F#, DI, middleware, auth, health checks, gRPC, .NET Aspire, Redis caching, Polly resilience, API versioning |
+| svelte_typescript | 676 | 9.7% | Svelte 5 runes, SvelteKit 2, TypeScript patterns |
+| cross_domain | 585 | 8.4% | Full-stack F# + Svelte + Docker integration |
+| docker_kubernetes | 414 | 5.9% | Dockerfiles, K8s manifests, Helm, CI/CD |
+| agentic_swe | 279 | 4.0% | Multi-step debugging, refactoring, migration tasks |
+| long_context | 267 | 3.8% | Full project walkthroughs, multi-file implementations |
 
-F# total (core + libraries): 2,698 samples (41.1%) -- intentionally high given F#'s scarcity in pre-training data (<0.1% of The Stack v2).
+F# total (core + libraries): 3,002 samples (42.9%) -- intentionally high given F#'s scarcity in pre-training data (<0.1% of The Stack v2).
 
 ## Teacher Models
 
@@ -132,10 +133,11 @@ format_dataset.py (ChatML + Mistral formats)
 6,558 verified training samples
 ```
 
-### Two Generation Rounds
+### Three Generation Rounds
 
 - **Round 1**: Default teacher temperatures (0.4-0.7), original teacher assignments
 - **Round 2**: Temperature 0.9, optimized teacher assignments based on benchmark results
+- **Round 3**: 20 curriculum gap-fill seeds (SRTP, FsCheck, Expecto, gRPC, .NET Aspire, Argu, Redis, Polly, outbox pattern, RabbitMQ, ETL, Bolero, object expressions, signature files, CQRS, FParsec, Ports & Adapters, API versioning, Dapper.FSharp, Farmer)
 
 Running the same prompts at different temperatures with different teachers produces structurally diverse solutions to the same problems, improving student generalization.
 

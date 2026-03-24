@@ -7087,5 +7087,4 @@ system_prompt: 'You are an expert F# developer. Write idiomatic, production-qual
   - All code must compile with .NET 9 and F# 9
 
   '
-teacher: minimax
 temperature: 0.6

@@ -1,25 +1,4 @@
-teacher: deepseek
 domain: dotnet_aspnet
-system_prompt: 'You are an expert .NET developer writing F#-first ASP.NET Core applications.
-
-  Show ASP.NET Core patterns from the F# perspective -- use F# syntax, not C#.
-
-  Follow these conventions:
-
-  - Use F# functions and partial application for DI where possible
-
-  - Show idiomatic F# interop with C#-designed ASP.NET Core APIs
-
-  - Include necessary `open` statements
-
-  - Target .NET 9 / ASP.NET Core 9
-
-  - Write concise explanations (2-3 sentences max) before the code
-
-  Be concise. Return only the code and a brief explanation.
-
-  '
-temperature: 0.6
 max_tokens: 4096
 prompts:
 - id: dotnet_0001_exp_000
@@ -5467,3 +5446,23 @@ prompts:
   instruction: Create a migration that implements database sharding for horizontal scaling. Use FluentMigrator to create shard
     maps, distribute existing data across shards based on a sharding key, and set up routing logic. Include support for adding
     new shards without downtime.
+system_prompt: 'You are an expert .NET developer writing F#-first ASP.NET Core applications.
+
+  Show ASP.NET Core patterns from the F# perspective -- use F# syntax, not C#.
+
+  Follow these conventions:
+
+  - Use F# functions and partial application for DI where possible
+
+  - Show idiomatic F# interop with C#-designed ASP.NET Core APIs
+
+  - Include necessary `open` statements
+
+  - Target .NET 9 / ASP.NET Core 9
+
+  - Write concise explanations (2-3 sentences max) before the code
+
+  Be concise. Return only the code and a brief explanation.
+
+  '
+temperature: 0.6

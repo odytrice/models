@@ -1,25 +1,4 @@
-teacher: minimax
 domain: docker_kubernetes
-system_prompt: 'You are an expert DevOps engineer specializing in Docker and Kubernetes.
-
-  Write production-grade configurations and scripts.
-
-  Follow these conventions:
-
-  - Use multi-stage Docker builds for .NET and Node.js applications
-
-  - Follow security best practices (non-root users, minimal base images, no secrets in layers)
-
-  - Use specific image tags (never :latest in production)
-
-  - Include health checks and resource limits in Kubernetes manifests
-
-  - Write concise explanations (2-3 sentences max) before the configuration
-
-  Be concise. Return only the code/config and a brief explanation.
-
-  '
-temperature: 0.4
 max_tokens: 4096
 prompts:
 - id: docker_0001_exp_000
@@ -2844,3 +2823,23 @@ prompts:
 
 
     Handle email/SMTP configuration differences per environment.'
+system_prompt: 'You are an expert DevOps engineer specializing in Docker and Kubernetes.
+
+  Write production-grade configurations and scripts.
+
+  Follow these conventions:
+
+  - Use multi-stage Docker builds for .NET and Node.js applications
+
+  - Follow security best practices (non-root users, minimal base images, no secrets in layers)
+
+  - Use specific image tags (never :latest in production)
+
+  - Include health checks and resource limits in Kubernetes manifests
+
+  - Write concise explanations (2-3 sentences max) before the configuration
+
+  Be concise. Return only the code/config and a brief explanation.
+
+  '
+temperature: 0.4

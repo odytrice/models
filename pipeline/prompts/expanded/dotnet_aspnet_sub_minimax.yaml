@@ -1,0 +1,79 @@
+domain: dotnet_aspnet
+prompts:
+- id: dotnet_0017_exp_023
+  instruction: Configure container resource limits and optimization for .NET Aspire services. Set memory and CPU limits for
+    PostgreSQL, Redis, and F# API containers, configure garbage collection settings for the F# services, and demonstrate how
+    to profile resource usage through the Aspire dashboard.
+- id: dotnet_0018_exp_006
+  instruction: Implement a distributed lock mechanism using Redis for a logistics tracking system in F#. Ensure only one instance
+    of a shipment status update processor can run at a time. Handle lock acquisition timeouts and implement proper lock release
+    even in exception scenarios. Include deadlock detection and automatic recovery.
+- id: dotnet_0018_exp_014
+  instruction: Build a cache implementation for a real-time collaboration system in F# where document state needs to be cached
+    with optimistic concurrency control. Use Redis WATCH/MULTI/EXEC commands to ensure atomic updates. Handle conflict resolution
+    when multiple users modify the same document simultaneously.
+- id: dotnet_0018_exp_022
+  instruction: Implement a stale-while-revalidate caching pattern in F# using Redis. Return stale cached data immediately
+    while triggering a background refresh. Handle the scenario where the refresh fails and stale data should be retained.
+    Implement maximum stale age limits beyond which requests must wait for fresh data.
+- id: dotnet_0019_exp_016
+  instruction: 'Design an F# resilience pipeline for a machine learning model serving infrastructure. Implement timeout based
+    on model complexity (simple models: 100ms, complex models: 5 seconds), retry for infrastructure failures only (not model
+    errors), and circuit breaker that routes to fallback models when primary fails.'
+- id: dotnet_0019_exp_020
+  instruction: Design an F# resilience pipeline for a university course registration system handling enrollment spikes. Implement
+    bulkhead limiting concurrent registrations, retry for database deadlocks, circuit breaker that enables "maintenance mode"
+    UI, and a queue-based fallback for overflow requests.
+- id: dotnet_0019_exp_023
+  instruction: Build an F# data pipeline resilience layer for ETL jobs processing daily sales reports. Implement retry with
+    exponential backoff for database connection failures, timeout of 30 minutes per batch, circuit breaker that pauses the
+    entire pipeline, and checkpoint recovery to resume from last successful batch.
+- id: dotnet_0019_exp_022
+  instruction: 'Create an F# resilience strategy for a customer support chatbot calling multiple AI/ML services. Implement
+    timeout per service (intent classification: 500ms, entity extraction: 300ms, response generation: 2 seconds), retry for
+    rate limiting, and fallback to simpler models when advanced models timeout.'
+- id: dotnet_0013_exp_000
+  instruction: 'Implement a real-time collaborative document editing system using F# and SignalR. Create a SignalR hub that:
+
+    1. Tracks user cursors and selections across multiple connected clients
+
+    2. Broadcasts text changes with operational transformation to prevent conflicts
+
+    3. Uses JWT tokens for authentication with role-based permissions (viewer/editor)
+
+    4. Includes a Giraffe HTTP endpoint for creating new documents
+
+    5. Show TypeScript/React client code that displays multiple cursors and real-time updates
+
+    Include connection state management and reconnection logic.'
+- id: dotnet_0015_exp_024
+  instruction: Implement a migration that normalizes a legacy database with composite primary keys across multiple tables.
+    Replace composite keys with surrogate keys, update all foreign key relationships, and ensure data consistency throughout
+    the transformation.
+- id: dotnet_0015_exp_017
+  instruction: Implement a migration that converts application-level enums to database lookup tables with foreign key constraints.
+    Migrate existing data to the new lookup tables, preserve referential integrity, and provide backward compatibility views
+    for legacy queries during transition.
+- id: dotnet_0015_exp_010
+  instruction: Write a complex migration that refactors a polymorphic association (using type and id columns) to proper foreign
+    keys with junction tables. Include data migration that preserves all relationships, handles orphaned records, and maintains
+    referential integrity. Add appropriate indexes for performance.
+system_prompt: 'You are an expert .NET developer writing F#-first ASP.NET Core applications.
+
+  Show ASP.NET Core patterns from the F# perspective -- use F# syntax, not C#.
+
+  Follow these conventions:
+
+  - Use F# functions and partial application for DI where possible
+
+  - Show idiomatic F# interop with C#-designed ASP.NET Core APIs
+
+  - Include necessary `open` statements
+
+  - Target .NET 9 / ASP.NET Core 9
+
+  - Write concise explanations (2-3 sentences max) before the code
+
+  Be concise. Return only the code and a brief explanation.
+
+  '

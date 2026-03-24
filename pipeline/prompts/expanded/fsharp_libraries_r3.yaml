@@ -1,0 +1,2354 @@
+domain: fsharp_libraries
+max_tokens: 4096
+prompts:
+- id: fsharp_lib_0033_exp_000
+  instruction: 'Write FsCheck property-based tests using xUnit to verify a user authentication system in a web application.
+    Include:
+
+    1. Custom Arbitrary for generating valid and invalid email addresses
+
+    2. Property tests for password hashing (same input always produces consistent hash, different salts produce different
+    hashes)
+
+    3. Conditional property: tokens should only be generated for valid users ==> returns non-empty token
+
+    4. Model-based testing for a session management system with login/logout operations'
+- id: fsharp_lib_0033_exp_001
+  instruction: 'Implement property-based tests for a financial transaction processing module in F#. Create:
+
+    1. Custom generator for Transaction records (TransactionId, AccountId, Amount, Timestamp, TransactionType)
+
+    2. Shrinker that reduces transaction amounts logically (not randomly)
+
+    3. Properties: idempotency (processing same transaction twice yields same result), commutative balance updates
+
+    4. Conditional property: negative amounts are always rejected ==> returns validation error
+
+    5. Stateful testing for an account balance manager'
+- id: fsharp_lib_0033_exp_002
+  instruction: 'Write FsCheck tests for an F# order processing system in an e-commerce platform. Include:
+
+    1. Custom Arbitrary for Order records with LineItem discriminated unions
+
+    2. Shrinker for nested OrderSummary -> Order -> LineItems structure
+
+    3. Properties: total price equals sum of line items, order ID uniqueness
+
+    4. Conditional properties: discount codes only apply when minimum order value is met
+
+    5. Model-based testing for shopping cart operations (add, remove, update quantity, checkout)
+
+    6. Configure 1000 max tests with replay seed for debugging'
+- id: fsharp_lib_0033_exp_003
+  instruction: 'Create property-based tests using FsCheck and xUnit for a F# event sourcing library. Implement:
+
+    1. Custom generator for DomainEvent discriminated union (Created, Updated, Deleted, Activated events)
+
+    2. Shrinker that produces minimal event sequences that still trigger bugs
+
+    3. Properties: event replay produces same aggregate state, event ordering preserved
+
+    4. Conditional property: timestamp > created_at for all events ==> event is valid
+
+    5. Model-based/stateful testing for aggregate root applying events'
+- id: fsharp_lib_0033_exp_004
+  instruction: 'Write FsCheck tests for a F# email validation and routing service. Create:
+
+    1. Custom generator for EmailMessage records (From, To, Cc, Bcc, Subject, Body, Attachments)
+
+    2. Shrinker that minimizes attachment count while preserving test failures
+
+    3. Properties: valid emails route to correct queue, invalid emails are rejected
+
+    4. Conditional property: emails with empty recipients are quarantined ==> not delivered
+
+    5. Stateful testing for email queue with priority levels'
+- id: fsharp_lib_0033_exp_005
+  instruction: 'Implement FsCheck property-based tests for a F# graph traversal library. Include:
+
+    1. Custom Arbitrary for Graph type with nodes and edges (adjacency list representation)
+
+    2. Custom shrinker for Graph that maintains connectivity
+
+    3. Properties: BFS and DFS find paths when they exist, path length is consistent
+
+    4. Conditional property: connected graphs ==> destination reachable from source
+
+    5. Model-based testing for path caching mechanism'
+- id: fsharp_lib_0033_exp_006
+  instruction: 'Write property-based tests using FsCheck with xUnit for a F# JSON configuration parser. Create:
+
+    1. Custom generator for ConfigSettings record with nested Option types
+
+    2. Shrinker that reduces string lengths and array sizes
+
+    3. Properties: parse -> serialize -> parse round-trip preserves all values
+
+    4. Conditional property: missing required fields ==> returns parse error
+
+    5. Configure verbose output to debug shrinking behavior'
+- id: fsharp_lib_0033_exp_007
+  instruction: 'Implement FsCheck tests for a F# rate limiter library supporting token bucket algorithm. Include:
+
+    1. Custom generator for RateLimitConfig (requests per second, burst capacity, tokens)
+
+    2. Shrinker that reduces time deltas to minimum failing cases
+
+    3. Properties: tokens never go negative, refill respects time elapsed
+
+    4. Conditional property: sufficient tokens available ==> request allowed
+
+    5. Stateful testing for multi-threaded rate limiter scenarios
+
+    6. Use Gen.oneof to generate both allow and deny outcomes'
+- id: fsharp_lib_0033_exp_008
+  instruction: 'Write FsCheck property-based tests for a F# roman numeral converter. Create:
+
+    1. Custom generator using Gen.sized to create valid roman numerals up to configurable length
+
+    2. Shrinker that reduces numeral complexity (fewer subtractive notations)
+
+    3. Properties: convert roman to int and back yields original (round-trip identity)
+
+    4. Conditional property: numeral length < 16 ==> conversion succeeds (valid range check)
+
+    5. Compare implementation against known correct conversion table'
+- id: fsharp_lib_0033_exp_009
+  instruction: 'Implement property-based tests for a F# distributed cache with TTL (time-to-live). Include:
+
+    1. Custom Arbitrary for CacheEntry with expiration timestamp
+
+    2. Shrinker that extends TTL to expose expiration-related bugs
+
+    3. Properties: expired entries are evicted, valid entries are retrievable
+
+    4. Conditional property: key exists and not expired ==> value returned
+
+    5. Model-based testing for cache operations (get, set, delete, expire)
+
+    6. Configure smaller test size (10) for time-dependent tests'
+- id: fsharp_lib_0033_exp_010
+  instruction: 'Write FsCheck tests for a F# CSV parsing and validation library. Create:
+
+    1. Custom generator for CSVRow discriminated union (ValidRow, InvalidRow, EmptyRow)
+
+    2. Shrinker that produces minimal failing CSV (removes columns to isolate issues)
+
+    3. Properties: valid CSV parses to expected column count, type conversions succeed
+
+    4. Conditional property: row has missing required column ==> validation fails
+
+    5. Configure replay with specific seed to reproduce random failures'
+- id: fsharp_lib_0033_exp_011
+  instruction: 'Implement property-based tests using FsCheck for a F# validation library. Include:
+
+    1. Custom generator for Person record (Name, Age, Email, SSN with realistic constraints)
+
+    2. Custom shrinker that maintains validation rule violations
+
+    3. Properties: all valid persons pass validation, invalid persons are rejected
+
+    4. Conditional property: age < 0 ==> returns AgeValidationError
+
+    5. Test combinator composition (and, or, not validators)'
+- id: fsharp_lib_0033_exp_012
+  instruction: 'Write FsCheck property tests for a F# polynomial expression evaluator. Create:
+
+    1. Custom generator for Polynomial discriminated union (Constant, Linear, Quadratic, Custom)
+
+    2. Shrinker that reduces coefficient magnitudes while preserving degree
+
+    3. Properties: evaluate at x=0 returns constant term, differentiation followed by integration recovers original (up to
+    constant)
+
+    4. Conditional property: polynomial degree > 0 ==> derivative degree is one less
+
+    5. Compare naive vs Horner''s method implementation'
+- id: fsharp_lib_0033_exp_013
+  instruction: 'Implement FsCheck tests for a F# URL routing/matching library. Include:
+
+    1. Custom generator for RoutePattern discriminated union (Static, Parameter, Wildcard)
+
+    2. Shrinker for URL strings that preserves pattern match characteristics
+
+    3. Properties: matching route extracts correct parameters, non-matching routes reject
+
+    4. Conditional property: pattern has parameter ==> parameter value extracted
+
+    5. Stateful testing for route registration and matching priority'
+- id: fsharp_lib_0033_exp_014
+  instruction: 'Write property-based tests using FsCheck for a F# message queue producer/consumer. Create:
+
+    1. Custom generator for Message with headers (correlation ID, timestamp, priority, payload)
+
+    2. Shrinker that reduces payload size to minimal reproducing case
+
+    3. Properties: messages published are eventually received, ordering preserved per partition
+
+    4. Conditional property: consumer lag > threshold ==> alerts triggered
+
+    5. Model-based testing for at-least-once delivery semantics'
+- id: fsharp_lib_0033_exp_015
+  instruction: 'Implement FsCheck tests for a F# regular expression builder library. Include:
+
+    1. Custom generator for RegexAST discriminated union (Literal, CharClass, Repetition, Concatenation, Alternation)
+
+    2. Shrinker that minimizes AST depth while preserving matching behavior
+
+    3. Properties: regex matches strings with literal, inverse property (regex inverse matches complement)
+
+    4. Conditional property: repetition count > 0 ==> at least one match for single char
+
+    5. Configure large tests (2000) for complex pattern combinations'
+- id: fsharp_lib_0033_exp_016
+  instruction: 'Write FsCheck property-based tests for a F# inventory management system. Create:
+
+    1. Custom Arbitrary for InventoryItem with SKU, quantity, reorder threshold, supplier
+
+    2. Shrinker that reduces quantities to threshold boundary values
+
+    3. Properties: stock level never goes negative, reorder triggers at correct threshold
+
+    4. Conditional property: quantity < reorderThreshold ==> reorderScheduled
+
+    5. Stateful testing for stock operations (receive, ship, adjust, recount)
+
+    6. Use Gen.two to generate paired inputs for transaction tests'
+- id: fsharp_lib_0033_exp_017
+  instruction: 'Implement FsCheck tests for a F# IP address parsing and manipulation library. Include:
+
+    1. Custom generator for IPv4 and IPv6 address strings and their binary representations
+
+    2. Shrinker that generates boundary cases (0.0.0.0, 255.255.255.255, etc.)
+
+    3. Properties: parse IPv4 string to int and back is identity, subnet calculation correct
+
+    4. Conditional property: octet > 255 ==> invalid IP format error
+
+    5. Compare CIDR notation parsing across implementations'
+- id: fsharp_lib_0033_exp_018
+  instruction: 'Write property-based tests using FsCheck for a F# scheduling algorithm. Create:
+
+    1. Custom generator for Task discriminated union (OneTime, Recurring with Frequency, Dependent)
+
+    2. Shrinker that reduces dependency chains to minimal failing depth
+
+    3. Properties: no circular dependencies, scheduled times don''t overlap for same resource
+
+    4. Conditional property: task has unmet dependencies ==> not scheduled
+
+    5. Model-based testing for task queue with priority and dependency resolution'
+- id: fsharp_lib_0033_exp_019
+  instruction: 'Implement FsCheck tests for a F# credit card number validator (Luhn algorithm). Include:
+
+    1. Custom generator using Gen.map to create valid credit card numbers
+
+    2. Shrinker that changes digits one at a time to find minimal failure
+
+    3. Properties: Luhn checksum validates correctly, different card types recognized by prefix
+
+    4. Conditional property: number fails Luhn ==> invalidCard error returned
+
+    5. Test with specific replay seed to debug edge cases'
+- id: fsharp_lib_0033_exp_020
+  instruction: 'Write FsCheck property-based tests for a F# file path resolver with symlink support. Create:
+
+    1. Custom generator for FileSystemTree discriminated union (File, Directory, SymLink)
+
+    2. Shrinker that removes symlink targets while preserving link structure
+
+    3. Properties: resolve normalizes paths correctly, circular symlinks detected
+
+    4. Conditional property: path contains symlink ==> resolved path differs from input
+
+    5. Stateful testing for directory traversal operations'
+- id: fsharp_lib_0033_exp_021
+  instruction: 'Implement FsCheck tests for a F# state machine definition library. Include:
+
+    1. Custom generator for StateMachine with states, events, and transitions
+
+    2. Shrinker that produces minimal state machines with failing transitions
+
+    3. Properties: valid state transitions succeed, invalid transitions rejected
+
+    4. Conditional property: event not in current state''s allowed events ==> transitionError
+
+    5. Model-based testing for FSM with random event sequences
+
+    6. Configure verbose output to trace state transitions'
+- id: fsharp_lib_0033_exp_022
+  instruction: 'Write property-based tests using FsCheck for a F# time zone conversion library. Create:
+
+    1. Custom generator for ZonedDateTime with timezone offsets and DST transitions
+
+    2. Shrinker that generates boundary times around DST changeovers
+
+    3. Properties: convert to UTC and back to original timezone preserves instant, timezone offset respects DST
+
+    4. Conditional property: time is during DST ==> offset includes DST adjustment
+
+    5. Test historical timezone transitions with specific dates'
+- id: fsharp_lib_0033_exp_023
+  instruction: 'Implement FsCheck tests for a F# command-line argument parser. Include:
+
+    1. Custom generator for CommandLineSpec discriminated union (Flag, Option, Positional, Command)
+
+    2. Shrinker that reduces argument count and string lengths
+
+    3. Properties: valid arguments parse correctly, type conversions validated
+
+    4. Conditional property: required option missing ==> missingRequiredError
+
+    5. Stateful testing for parser with multiple subcommands
+
+    6. Use Gen.three for generating argument name, value, and expected result triples'
+- id: fsharp_lib_0033_exp_024
+  instruction: 'Write FsCheck property-based tests for a F# bloom filter implementation. Include:
+
+    1. Custom generator for BloomFilterConfig (expected elements, false positive rate)
+
+    2. Shrinker that increases element count to expose false positive thresholds
+
+    3. Properties: elements added are always found (no false negatives), false positives bounded by expected rate
+
+    4. Conditional property: element not added ==> probability of being found < threshold
+
+    5. Test with different hash function counts and bit array sizes'
+- id: fsharp_lib_0033_exp_025
+  instruction: 'Implement FsCheck tests for a F# JWT token handling library. Include:
+
+    1. Custom generator for JWTClaims (iss, sub, aud, exp, iat, custom claims as Map)
+
+    2. Shrinker that produces tokens with near-expired timestamps
+
+    3. Properties: valid tokens parse successfully, expired tokens rejected
+
+    4. Conditional property: exp < current time ==> tokenExpired error
+
+    5. Test signature verification with valid and tampered payloads'
+- id: fsharp_lib_0033_exp_026
+  instruction: 'Write property-based tests using FsCheck for a F# circuit breaker pattern implementation. Create:
+
+    1. Custom generator for CircuitBreakerState (Closed, Open, HalfOpen, with failure counts)
+
+    2. Shrinker that reduces time deltas to minimal failure-triggering sequences
+
+    3. Properties: circuit opens after threshold failures, closes after timeout
+
+    4. Conditional property: failureCount >= threshold ==> state is Open
+
+    5. Stateful testing for circuit breaker with success/failure outcomes
+
+    6. Configure small test size (50) for state machine tests'
+- id: fsharp_lib_0033_exp_027
+  instruction: 'Implement FsCheck tests for a F# HTML sanitizer library. Include:
+
+    1. Custom generator for HTMLContent discriminated union (SafeText, AllowedTag, DangerousScript, Attribute)
+
+    2. Shrinker that maximizes dangerous content while minimizing safe content
+
+    3. Properties: safe HTML passes through unchanged, script tags are stripped
+
+    4. Conditional property: content contains <script> ==> dangerous content removed
+
+    5. Test attribute whitelist and URL sanitization'
+- id: fsharp_lib_0033_exp_028
+  instruction: 'Write FsCheck property-based tests for a F# distributed locking mechanism. Create:
+
+    1. Custom generator for LockRequest with resource ID, owner, TTL, and priority
+
+    2. Shrinker that produces minimal lock sequences that cause deadlock conditions
+
+    3. Properties: lock acquisition is mutually exclusive, locks release correctly
+
+    4. Conditional property: lock held by another owner ==> acquire returns denied
+
+    5. Model-based testing for lock lifecycle (acquire, extend, release, expire)
+
+    6. Use Gen.frequency to generate realistic lock acquisition patterns'
+- id: fsharp_lib_0033_exp_029
+  instruction: 'Implement FsCheck tests for a F# semantic versioning parser and comparator. Include:
+
+    1. Custom generator for SemVer with major, minor, patch, pre-release tags, build metadata
+
+    2. Shrinker that reduces version components while preserving ordering
+
+    3. Properties: version comparison is transitive, equal versions compare as equal
+
+    4. Conditional property: pre-release < release version with same major.minor.patch
+
+    5. Test with specific replay seed to debug version ordering edge cases
+
+    6. Configure 500 max tests for comprehensive version combination coverage'
+- id: fsharp_lib_0034_exp_000
+  instruction: Implement a comprehensive Expecto test suite for a patient records system in a healthcare application. Include
+    testList for organizing tests by domain area (demographics, medical history, prescriptions), testAsync for database queries,
+    Expect.wantSome assertions for optional fields, and testProperty for generating random valid SSN patterns using FsCheck.
+- id: fsharp_lib_0034_exp_001
+  instruction: Write a test suite for an IoT device management service using Expecto. Test device registration (testCase),
+    telemetry ingestion with async workflows (testAsync), connection state machine transitions with Expect.equal, and device
+    offline/online scenarios. Include a performance test using Expecto.BenchmarkDotNet to validate 10,000 concurrent device
+    connections.
+- id: fsharp_lib_0034_exp_002
+  instruction: Create a refactored Expecto test suite for a financial transaction processor. Replace sequential tests with
+    parallel execution configuration, add timeout limits for each test, use Expect.throws for invalid transaction scenarios
+    (negative amounts, duplicate IDs), and implement focused tests (ftestCase) to isolate a specific race condition bug in
+    the balance update logic.
+- id: fsharp_lib_0034_exp_003
+  instruction: Design a test suite for an e-commerce recommendation engine. Use property-based testing (testProperty with
+    FsCheck) to validate that recommendations respect category constraints, testAsync for fetching user behavior data, Expect.isOk
+    assertions for API responses, and testList composition to organize tests by recommendation algorithm type (collaborative,
+    content-based, hybrid).
+- id: fsharp_lib_0034_exp_004
+  instruction: 'Implement Expecto tests for a log aggregation service with the following requirements: async ingestion tests
+    (testAsync), filtering tests with pattern matching assertions, timeout configuration for slow log processing, tests for
+    edge cases (empty logs, malformed timestamps, unicode content), and a custom test filter to run only error-level log tests
+    during critical bug investigation.'
+- id: fsharp_lib_0034_exp_005
+  instruction: 'Write a comprehensive test suite for a distributed cache library in F#. Include: testProperty for verifying
+    cache consistency under random eviction patterns using FsCheck, testTask for async cache operations, Expect.throws for
+    invalid cache key scenarios (null, oversized keys), benchmark tests for get/set operations, and pending tests (ptestCase)
+    for planned TTL functionality.'
+- id: fsharp_lib_0034_exp_006
+  instruction: Create a debugging-focused Expecto test suite to isolate and reproduce a memory leak in a data pipeline. Use
+    ftestCase for focused single-test runs, testAsync with explicit resource cleanup assertions, memory profiling hooks, and
+    testList to group related leak suspects. Include tests that intentionally fail to help identify the leak's signature.
+- id: fsharp_lib_0034_exp_007
+  instruction: Implement a test suite for a social media content moderation API. Organize tests by moderation type (image,
+    text, video) using testList, use Expect.wantSome for extracting moderation results, async tests for batch processing,
+    property-based tests for generating edge-case content (extreme lengths, unicode bypass attempts), and configure parallel
+    execution with a custom test environment.
+- id: fsharp_lib_0034_exp_008
+  instruction: 'Write an Expecto test suite for a weather data ingestion and forecasting service. Include: async tests for
+    weather station data collection, Expect.equal with tolerance for floating-point forecast comparisons, FsCheck integration
+    for generating random date ranges, performance tests to validate processing 1M daily records within SLA, and test filters
+    for running only forecast-related tests.'
+- id: fsharp_lib_0034_exp_009
+  instruction: Design a test suite for a multi-tenant SaaS billing system. Test tenant isolation (Expect.equal with tenant-specific
+    assertions), async invoice generation workflows, exception handling tests with Expect.throws for invalid billing scenarios
+    (expired subscriptions, currency mismatches), and a comprehensive testProperty suite for calculating proration amounts
+    under various date scenarios.
+- id: fsharp_lib_0034_exp_010
+  instruction: Implement Expecto tests for a code analysis tool. Use testAsync to run analysis on sample code files, testList
+    to organize by analysis category (complexity, style, security), Expect.isOk for optional warnings, property-based tests
+    with FsCheck for generating syntactically valid but edge-case F# code samples, and focused tests for a specific analysis
+    rule under development.
+- id: fsharp_lib_0034_exp_011
+  instruction: Create a test suite for an authentication and authorization service. Organize with testList by auth method
+    (OAuth, SAML, JWT), testAsync for token validation workflows, Expect.throws for invalid credential scenarios, testProperty
+    for generating and validating random JWT claims, and configure sequential execution for tests that share a test database
+    to avoid race conditions.
+- id: fsharp_lib_0034_exp_012
+  instruction: Write a comprehensive Expecto test suite for a document management system. Include async upload/download tests
+    (testTask), Expect.wantSome for optional metadata extraction, tests for concurrent document operations with race condition
+    detection, FsCheck property tests for document path validation, and performance benchmarks for document indexing operations.
+- id: fsharp_lib_0034_exp_013
+  instruction: Design a refactored test suite that converts legacy synchronous tests to async patterns. Migrate testCase to
+    testAsync for IO operations, testCase to testTask for CPU-bound parallel work, replace custom assertion helpers with Expect
+    module functions, add timeout configurations for migrated tests, and include regression tests (ftestCase) for previously
+    failing edge cases.
+- id: fsharp_lib_0034_exp_014
+  instruction: Implement Expecto tests for a real-time collaboration engine (similar to Google Docs). Test concurrent editing
+    scenarios with testAsync, use Expect.equal for operational transformation validation, property-based tests for random
+    concurrent operations, timeout configuration for sync operations, and focused tests (ftestCase) to debug a specific merge
+    conflict resolution issue.
+- id: fsharp_lib_0034_exp_015
+  instruction: Create a test suite for a financial portfolio management library. Use Expecto with FsCheck to generate random
+    portfolio compositions, Expect.equal with tolerance for floating-point calculations (currency conversion, returns), testAsync
+    for market data fetching, Expect.throws for invalid portfolio operations (negative weights, empty portfolios), and benchmark
+    tests for portfolio rebalancing performance.
+- id: fsharp_lib_0034_exp_016
+  instruction: Write a comprehensive test suite for an ETL pipeline validation library. Organize tests by pipeline stage (extract,
+    transform, load) using testList, testAsync for file-based operations, Expect.wantSome for optional transformation rules,
+    property-based tests for generating edge-case input data, and custom configuration for slow integration tests with increased
+    timeout.
+- id: fsharp_lib_0034_exp_017
+  instruction: Design Expecto tests for a machine learning model inference service. Include async prediction tests, testProperty
+    with FsCheck for generating valid input tensors, Expect.throws for model input validation failures, performance benchmarks
+    for inference latency, and focused tests (ftestCase) for specific edge cases discovered in production model behavior.
+- id: fsharp_lib_0034_exp_018
+  instruction: Implement a test suite for a shipping and logistics optimization system. Use testAsync for route calculation
+    APIs, testList by shipping carrier, Expect.equal for deterministic route comparisons, property-based tests for generating
+    edge-case delivery scenarios (islands, international, hazardous materials), and parallel execution configuration for carrier-specific
+    test groups.
+- id: fsharp_lib_0034_exp_019
+  instruction: Create Expecto tests for a GraphQL API resolver layer. Test async resolver execution, Expect.isOk for optional
+    field resolution, property-based tests for complex query generation, edge case tests for null propagation, circular reference
+    detection, and configure test filters to run only mutation-related tests during development.
+- id: fsharp_lib_0034_exp_020
+  instruction: Write a test suite for a configuration management system. Include tests for configuration merging and precedence
+    (Expect.equal), async configuration loading (testAsync), tests for environment-specific overrides, property-based tests
+    using FsCheck for generating valid configuration schemas, Expect.throws for invalid configuration scenarios, and pending
+    tests (ptestCase) for planned validation rules.
+- id: fsharp_lib_0034_exp_021
+  instruction: Design a test suite for a game leaderboard service. Use testAsync for score submission workflows, testTask
+    for leaderboard queries, Expect.equal for rank ordering validation, property-based tests for generating random high-score
+    scenarios, performance tests for real-time rank calculation with 1M players, and testList organization by game mode.
+- id: fsharp_lib_0034_exp_022
+  instruction: Implement Expecto tests for a message queue consumer library. Test async message processing with testAsync,
+    Expect.throws for poison message scenarios, tests for consumer group coordination, property-based tests for random message
+    sequence validation, timeout configuration for slow message handlers, and focused tests for a specific message type handler.
+- id: fsharp_lib_0034_exp_023
+  instruction: Create a comprehensive test suite for a geospatial data processing library. Organize with testList by operation
+    type (distance, intersection, containment), use testAsync for file-based geospatial data loading, Expect.equal with tolerance
+    for floating-point coordinate calculations, FsCheck integration for generating random valid coordinates, and benchmark
+    tests for polygon intersection performance.
+- id: fsharp_lib_0034_exp_024
+  instruction: Write Expecto tests for a webhook delivery system. Include async delivery tests (testAsync), testTask for concurrent
+    webhook processing, Expect.isOk for successful delivery assertions, tests for retry logic and exponential backoff, property-based
+    tests for generating webhook payloads, and custom configuration to disable parallel execution for tests that mutate shared
+    webhook state.
+- id: fsharp_lib_0034_exp_025
+  instruction: Design a test suite for a DNS resolution library. Use testAsync for DNS query execution, Expect.equal for expected
+    record validation, Expect.throws for invalid domain name scenarios, tests for CNAME chain resolution, property-based tests
+    with FsCheck for generating valid and invalid domain patterns, and timeout configuration for slow DNS responses.
+- id: fsharp_lib_0034_exp_026
+  instruction: Implement Expecto tests for a calendar and scheduling application. Organize tests by feature (event creation,
+    recurrence, availability), use testAsync for calendar API operations, Expect.equal for recurring event expansion, property-based
+    tests for generating complex recurrence patterns, edge case tests for timezone transitions (DST), and focused tests (ftestCase)
+    for a specific scheduling conflict bug.
+- id: fsharp_lib_0034_exp_027
+  instruction: Create a test suite for a feature flag toggle system. Include async flag evaluation tests, testList by flag
+    type (boolean, percentage, user-based), Expect.wantSome for extracting flag values, tests for flag caching and invalidation,
+    property-based tests for percentage rollout validation, and pending tests (ptestCase) for planned A/B testing functionality.
+- id: fsharp_lib_0034_exp_028
+  instruction: Write a comprehensive test suite for a file synchronization service. Use testAsync for sync operations, Expect.equal
+    for file content comparison, tests for conflict detection and resolution strategies, property-based tests for generating
+    random file system states, performance tests for large directory synchronization, and test filters for running only conflict
+    resolution tests during bug investigation.
+- id: fsharp_lib_0035_exp_000
+  instruction: "Build an F# CLI tool for a multi-player game server management system using Argu. \nDefine DUs for commands:\
+    \ `start`, `stop`, `restart`, `status`, `configure`. \nEach command should have relevant arguments (port, max-players,\
+    \ map, difficulty). \nImplement environment variable fallbacks for server credentials. \nInclude custom error messages\
+    \ for common failures (port already in use, insufficient permissions). \nUse pattern matching to dispatch to handler functions\
+    \ that simulate server operations."
+- id: fsharp_lib_0035_exp_001
+  instruction: "Create a F# database migration CLI using Argu with subcommands: `up`, `down`, `status`, `seed`. \nDefine argument\
+    \ DUs with [<Mandatory>] for migration version numbers. \nSupport dry-run mode with `--whatif` flag. \nImplement custom\
+    \ help text explaining migration precedence. \nShow how Argu formats validation errors when invalid version formats are\
+    \ provided. \nInclude undo support with confirmation prompts."
+- id: fsharp_lib_0035_exp_002
+  instruction: "Design an F# IoT device provisioning CLI using Argu. \nCreate subcommands: `register`, `provision`, `decommission`,\
+    \ `list`. \nDevice registration should accept JSON configuration files via [<Unique>] flagged arguments. \nImplement environment\
+    \ variable fallback for API endpoints and auth tokens. \nAdd custom usage examples in help text. \nHandle parse errors\
+    \ gracefully with user-friendly messages."
+- id: fsharp_lib_0035_exp_003
+  instruction: "Build an F# log analysis CLI with Argu supporting commands: `tail`, `search`, `aggregate`, `export`. \nUse\
+    \ DU-based argument definitions with [<AltCommandLine>] for short flags. \nImplement filter arguments for log levels,\
+    \ timestamps, and regex patterns. \nEnvironment variable fallback for log directory paths. \nShow pattern matching dispatch\
+    \ to handlers with result types. \nDemonstrate error formatting when required filters are missing."
+- id: fsharp_lib_0035_exp_004
+  instruction: "Create a F# API testing CLI using Argu for HTTP operations: `get`, `post`, `put`, `delete`, `patch`. \nDefine\
+    \ argument DUs with custom attributes for URL, headers, body payload, and authentication. \nSupport environment variable\
+    \ fallbacks for base URLs and bearer tokens. \nImplement response formatting options (JSON, XML, plain). \nAdd subcommand-specific\
+    \ help text. \nShow how Argu handles invalid URL format errors."
+- id: fsharp_lib_0035_exp_005
+  instruction: "Build a F# configuration management CLI using Argu with subcommands: `get`, `set`, `list`, `validate`. \n\
+    Support dot-notation keys (e.g., `database.connection.timeout`). \nImplement type-safe value setting with DU-based value\
+    \ type arguments. \nEnvironment variable fallback for config file locations. \nCustom error handling for type mismatches\
+    \ (setting string where int expected). \nPattern match on configuration key paths for dispatch."
+- id: fsharp_lib_0035_exp_006
+  instruction: "Design a F# container orchestration CLI using Argu with commands: `scale`, `deploy`, `rollback`, `inspect`.\
+    \ \nDefine arguments for replica counts, image tags, and resource limits. \nImplement environment variable fallbacks for\
+    \ registry credentials and namespace contexts. \nAdd confirmation prompts for destructive operations. \nCustom help text\
+    \ formatting with command grouping. \nDemonstrate Argu error formatting for invalid deployment manifests."
+- id: fsharp_lib_0035_exp_007
+  instruction: "Create a F# file processing pipeline CLI using Argu. \nSubcommands: `process`, `validate`, `transform`, `report`.\
+    \ \nSupport glob patterns and individual file arguments with [<Repeated>] attribute. \nEnvironment variable fallback for\
+    \ output directories. \nImplement progress reporting flags. \nShow pattern matching dispatch based on pipeline stage.\
+    \ \nHandle parse errors when conflicting options are provided."
+- id: fsharp_lib_0035_exp_008
+  instruction: "Build a F# code generation CLI using Argu with commands: `scaffold`, `generate`, `template`. \nDefine DUs\
+    \ for template types and generator modes. \nSupport project path and namespace arguments with environment variable fallbacks.\
+    \ \nImplement custom help text showing available templates. \nPattern match on generator type to select appropriate handler.\
+    \ \nError handling for missing template directories."
+- id: fsharp_lib_0035_exp_009
+  instruction: "Design an F# health monitoring CLI using Argu. \nSubcommands: `check`, `alert`, `dashboard`, `config`. \n\
+    Define arguments for endpoints, thresholds, and notification channels. \nEnvironment variable fallback for API keys and\
+    \ webhook URLs. \nImplement interval and timeout options. \nCustom error messages for connection failures. \nPattern matching\
+    \ dispatch to health check implementations."
+- id: fsharp_lib_0035_exp_010
+  instruction: "Create a F# backup and restore CLI using Argu with commands: `backup`, `restore`, `verify`, `list`. \nDefine\
+    \ argument DUs with [<Mandatory>] for backup paths and destination URIs. \nSupport compression and encryption flags. \n\
+    Environment variable fallbacks for credentials and retention policies. \nCustom help text formatting with usage examples.\
+    \ \nShow Argu parse error formatting for missing required arguments."
+- id: fsharp_lib_0035_exp_011
+  instruction: "Build a F# service mesh configuration CLI using Argu. \nSubcommands: `inject`, `route`, `policy`, `stats`.\
+    \ \nDefine DUs for traffic management rules with [<AltCommandLine>] short flags. \nEnvironment variable fallback for mesh\
+    \ control plane endpoints. \nImplement YAML and JSON output formatting options. \nPattern match on policy types for handler\
+    \ dispatch. \nError handling for invalid rule configurations."
+- id: fsharp_lib_0035_exp_012
+  instruction: "Design a F# machine learning model training CLI using Argu. \nCommands: `train`, `evaluate`, `predict`, `export`.\
+    \ \nDefine argument DUs for model types, hyperparameter spaces, and data sources. \nEnvironment variable fallbacks for\
+    \ dataset paths and cloud storage. \nSupport GPU and distributed training flags. \nCustom help text with training examples.\
+    \ \nPattern matching dispatch based on model framework."
+- id: fsharp_lib_0035_exp_013
+  instruction: "Create a F# security scanning CLI using Argu for vulnerability assessment. \nSubcommands: `scan`, `report`,\
+    \ `baseline`, `ignore`. \nDefine arguments for scan scope, severity thresholds, and output formats. \nEnvironment variable\
+    \ fallback for API tokens and scan targets. \nImplement ignore rule management with custom DU types. \nError handling\
+    \ for malformed CVE identifiers. \nCustom help formatting with security context."
+- id: fsharp_lib_0035_exp_014
+  instruction: "Build a F# documentation generation CLI using Argu. \nCommands: `generate`, `serve`, `validate`, `export`.\
+    \ \nDefine DUs for documentation formats (Markdown, HTML, PDF). \nSupport source path and output directory arguments.\
+    \ \nEnvironment variable fallback for theme configurations. \nPattern match on export format for handler selection. \n\
+    Show Argu error formatting for missing source directories."
+- id: fsharp_lib_0035_exp_015
+  instruction: "Design a F# build pipeline CLI using Argu with commands: `build`, `test`, `package`, `publish`. \nDefine argument\
+    \ DUs for build configurations and platform targets. \nSupport incremental builds with cache directory arguments. \nEnvironment\
+    \ variable fallbacks for artifact repositories. \nCustom help text showing pipeline stage options. \nError handling for\
+    \ circular dependency detection."
+- id: fsharp_lib_0035_exp_016
+  instruction: "Create a F# feature flag management CLI using Argu. \nSubcommands: `enable`, `disable`, `list`, `config`,\
+    \ `evaluate`. \nDefine argument DUs for flag names and targeting rules. \nEnvironment variable fallback for flag service\
+    \ endpoints. \nSupport JSON and YAML flag configuration formats. \nPattern matching dispatch based on flag operation type.\
+    \ \nShow Argu formatting for invalid flag name formats."
+- id: fsharp_lib_0035_exp_017
+  instruction: "Build a F# cache management CLI using Argu. \nCommands: `invalidate`, `warm`, `stats`, `clear`. \nDefine argument\
+    \ DUs for cache keys, patterns, and TTL settings. \nEnvironment variable fallbacks for cache server connections. \nSupport\
+    \ selective invalidation by namespace. \nCustom error handling for connection failures. \nPattern match on cache operation\
+    \ types."
+- id: fsharp_lib_0035_exp_018
+  instruction: "Design a F# certificate management CLI using Argu. \nSubcommands: `generate`, `sign`, `verify`, `renew`, `revoke`.\
+    \ \nDefine argument DUs for certificate types and validity periods. \nEnvironment variable fallbacks for CA certificates\
+    \ and private keys. \nSupport CSR generation and certificate chain operations. \nCustom help text with certificate workflow\
+    \ examples. \nError handling for expired or invalid certificates."
+- id: fsharp_lib_0035_exp_019
+  instruction: "Create a F# webhook testing CLI using Argu. \nCommands: `send`, `record`, `replay`, `inspect`. \nDefine argument\
+    \ DUs for HTTP methods, headers, and payloads. \nEnvironment variable fallbacks for webhook endpoints and auth tokens.\
+    \ \nSupport response matching and diff generation. \nPattern match on operation type for handler dispatch. \nShow Argu\
+    \ error formatting for malformed JSON payloads."
+- id: fsharp_lib_0035_exp_020
+  instruction: "Build a F# ETL pipeline CLI using Argu with commands: `extract`, `transform`, `load`, `run`. \nDefine argument\
+    \ DUs for data sources, transformations, and sink destinations. \nSupport schema validation flags and error handling modes.\
+    \ \nEnvironment variable fallbacks for connection strings. \nCustom help text showing transformation functions. \nPattern\
+    \ matching dispatch based on pipeline stage."
+- id: fsharp_lib_0035_exp_021
+  instruction: "Design a F# rate limiting CLI using Argu. \nSubcommands: `configure`, `test`, `stats`, `reset`. \nDefine argument\
+    \ DUs for rate limit algorithms (token bucket, sliding window). \nEnvironment variable fallbacks for Redis and storage\
+    \ connections. \nSupport threshold configuration and burst settings. \nPattern match on rate limit operations. \nError\
+    \ handling for invalid limit values."
+- id: fsharp_lib_0035_exp_022
+  instruction: "Create a F# A/B testing CLI using Argu. \nCommands: `create`, `activate`, `pause`, `analyze`. \nDefine argument\
+    \ DUs for experiment configurations and targeting criteria. \nEnvironment variable fallbacks for analytics endpoints.\
+    \ \nSupport variant weight arguments. \nCustom help text with targeting examples. \nShow Argu formatting for conflicting\
+    \ experiment settings."
+- id: fsharp_lib_0035_exp_023
+  instruction: "Build a F# search indexing CLI using Argu. \nSubcommands: `index`, `rebuild`, `optimize`, `delete`. \nDefine\
+    \ argument DUs for index names and document types. \nEnvironment variable fallbacks for search service endpoints. \nSupport\
+    \ batch size and concurrent indexing options. \nPattern match on index operations. \nError handling for oversized documents."
+- id: fsharp_lib_0035_exp_024
+  instruction: "Design a F# plugin management CLI using Argu. \nCommands: `install`, `uninstall`, `list`, `update`, `verify`.\
+    \ \nDefine argument DUs for plugin sources and version constraints. \nEnvironment variable fallbacks for plugin registries.\
+    \ \nSupport signature verification flags. \nCustom help text with installation examples. \nPattern matching dispatch based\
+    \ on plugin operation."
+- id: fsharp_lib_0035_exp_025
+  instruction: "Create a F# system migration CLI using Argu. \nSubcommands: `assess`, `migrate`, `rollback`, `verify`. \n\
+    Define argument DUs for source and target system types. \nEnvironment variable fallbacks for migration credentials. \n\
+    Support incremental migration with checkpoint flags. \nError handling for data integrity violations. \nCustom help formatting\
+    \ with migration scenarios."
+- id: fsharp_lib_0035_exp_026
+  instruction: "Build a F# asset compilation CLI using Argu. \nCommands: `compile`, `bundle`, `optimize`, `sprite`. \nDefine\
+    \ argument DUs for asset types (images, fonts, audio). \nEnvironment variable fallbacks for asset directories and CDN\
+    \ URLs. \nSupport output format selection and quality settings. \nPattern match on asset processing type. \nShow Argu\
+    \ error formatting for missing asset files."
+- id: fsharp_lib_0035_exp_027
+  instruction: "Design a F# test execution CLI using Argu. \nSubcommands: `run`, `debug`, `list`, `coverage`, `report`. \n\
+    Define argument DUs for test frameworks and filter expressions. \nEnvironment variable fallbacks for test parallelization\
+    \ settings. \nSupport test tags and test category filtering. \nCustom help text with filter examples. \nError handling\
+    \ for test discovery failures."
+- id: fsharp_lib_0035_exp_028
+  instruction: "Create a F# license management CLI using Argu. \nCommands: `check`, `activate`, `deactivate`, `renew`, `revoke`.\
+    \ \nDefine argument DUs for license types and activation methods. \nEnvironment variable fallbacks for license server\
+    \ endpoints. \nSupport offline activation with machine fingerprints. \nPattern match on license operations. \nShow Argu\
+    \ formatting for invalid license key formats."
+- id: fsharp_lib_0035_exp_029
+  instruction: "Build a F# infrastructure drift detection CLI using Argu. \nSubcommands: `detect`, `plan`, `apply`, `ignore`.\
+    \ \nDefine argument DUs for cloud providers and resource types. \nEnvironment variable fallbacks for cloud credentials.\
+    \ \nSupport state file and remote state comparison. \nCustom help text with drift scenarios. \nError handling for state\
+    \ file corruption. \nPattern matching dispatch based on drift remediation action."
+- id: fsharp_lib_0036_exp_000
+  instruction: Implement a product catalog management system using Dapper.FSharp with PostgreSQL for an e-commerce platform.
+    Define F# record types for Products, Categories, and ProductCategories tables with proper foreign key relationships. Write
+    type-safe queries to fetch products by category, implement pagination with OFFSET/FETCH, and handle nullable fields for
+    product descriptions and images using Option types.
+- id: fsharp_lib_0036_exp_001
+  instruction: Build a healthcare appointment scheduling system using Dapper.FSharp with PostgreSQL. Create F# records for
+    Patients, Doctors, and Appointments tables. Implement type-safe insert operations with date/time validation, write queries
+    to find available appointment slots, and use left joins to get doctor information with their appointment counts. Handle
+    edge cases for double-booking prevention.
+- id: fsharp_lib_0036_exp_002
+  instruction: Create a fintech transaction processing module using Dapper.FSharp with PostgreSQL for a banking application.
+    Define F# records for Accounts, Transactions, and TransactionTypes tables. Implement type-safe debit/credit operations
+    within transactions, write aggregation queries to calculate account balances using SUM, and include proper error handling
+    for insufficient funds scenarios.
+- id: fsharp_lib_0036_exp_003
+  instruction: Design a social media content management system using Dapper.FSharp with PostgreSQL. Define F# record types
+    for Users, Posts, Comments, and Likes tables. Implement complex joins to retrieve posts with comment counts and like totals,
+    write queries using GROUP BY to find most active users, and handle soft deletes for posts using an IsDeleted flag with
+    Option<bool> in F#.
+- id: fsharp_lib_0036_exp_004
+  instruction: Build an IoT sensor data aggregation system using Dapper.FSharp with PostgreSQL. Define F# records for Sensors,
+    Readings, and Locations tables. Implement queries with time-range filtering using DateTime parameters, write aggregation
+    queries using GROUP BY time intervals (hourly, daily), calculate averages and max/min values, and handle high-volume bulk
+    inserts for sensor readings.
+- id: fsharp_lib_0036_exp_005
+  instruction: Implement a university course enrollment system using Dapper.FSharp with PostgreSQL. Define F# records for
+    Students, Courses, Instructors, and Enrollments tables. Write type-safe queries using inner joins to get enrolled students
+    with course details, left joins to find courses without enrolled students, and implement COUNT aggregations for enrollment
+    limits with proper validation.
+- id: fsharp_lib_0036_exp_006
+  instruction: Create a logistics shipment tracking module using Dapper.FSharp with PostgreSQL. Define F# record types for
+    Shipments, Addresses, and StatusHistory tables. Implement update queries for shipment status changes, write queries to
+    track shipment history with timestamps, handle multiple addresses per shipment using composite queries, and wrap status
+    updates and history inserts in a single transaction.
+- id: fsharp_lib_0036_exp_007
+  instruction: Build a gaming platform leaderboard system using Dapper.FSharp with PostgreSQL. Define F# records for Players,
+    Achievements, and LeaderboardEntries tables. Implement ranking queries using window functions (ROW_NUMBER, RANK), write
+    queries to find players within score ranges, handle achievement unlocking with separate achievement-junction operations,
+    and compare query performance with and without covering indexes.
+- id: fsharp_lib_0036_exp_008
+  instruction: Design a content management system for articles and tags using Dapper.FSharp with PostgreSQL. Define F# record
+    types for Articles, Tags, and ArticleTags (many-to-many) tables. Implement type-safe insert operations for articles with
+    automatic tag creation, write queries using inner joins to get articles with all their tags as a single result, and handle
+    tag merging scenarios with duplicate detection.
+- id: fsharp_lib_0036_exp_009
+  instruction: Implement an HR employee directory system using Dapper.FSharp with PostgreSQL. Define F# record types for Employees,
+    Departments, and Salaries tables. Write queries using self-joins to find manager-employee relationships, implement salary
+    band aggregations using GROUP BY department with AVG/MIN/MAX, handle hierarchical department queries recursively, and
+    support employee search by partial name matching.
+- id: fsharp_lib_0036_exp_010
+  instruction: Create a real estate property listing system using Dapper.FSharp with PostgreSQL. Define F# record types for
+    Properties, Listings, Agents, and PropertyImages tables. Implement complex queries joining properties with their latest
+    listing price and agent details, write aggregation queries to get average prices by neighborhood, handle property status
+    transitions (Active → Pending → Sold), and implement search with multiple optional filters using dynamic query building.
+- id: fsharp_lib_0036_exp_011
+  instruction: Build an event management registration system using Dapper.FSharp with PostgreSQL. Define F# record types for
+    Events, Venues, Registrations, and EventSessions tables. Implement queries with complex joins to get event details including
+    venue info and session count, write transactions to handle group registrations with individual confirmations, and handle
+    waitlist operations when capacity is reached.
+- id: fsharp_lib_0036_exp_012
+  instruction: Implement a subscription billing system using Dapper.FSharp with PostgreSQL. Define F# record types for Plans,
+    Subscriptions, Invoices, and Payments tables. Write queries to find active subscriptions with their plan details using
+    inner joins, implement billing aggregation queries with SUM for totals and COUNT for subscription metrics, handle subscription
+    upgrades/downgrades in transactions, and compare this approach with raw SQL performance.
+- id: fsharp_lib_0036_exp_013
+  instruction: Create an inventory management warehouse system using Dapper.FSharp with PostgreSQL. Define F# record types
+    for Warehouses, Products, Inventory, and StockMovements tables. Implement queries with joins to get current stock levels
+    per warehouse, write aggregation queries using GROUP BY for reorder recommendations, handle stock movement operations
+    with transaction safety, and implement optimistic concurrency control using version columns.
+- id: fsharp_lib_0036_exp_014
+  instruction: Build a multi-tenant SaaS organization management system using Dapper.FSharp with PostgreSQL. Define F# record
+    types for Organizations, Users, Roles, and UserRoles tables with tenant isolation using OrganizationId. Implement type-safe
+    queries that automatically filter by tenant, write queries to get user counts and role distributions per organization,
+    handle cross-tenant data isolation in joins, and compare row-level security approaches.
+- id: fsharp_lib_0036_exp_015
+  instruction: Implement a support ticket tracking system using Dapper.FSharp with PostgreSQL. Define F# record types for
+    Tickets, Customers, Agents, and TicketComments tables. Write queries with multiple left joins to get ticket details with
+    customer and assigned agent information, implement status transition validation, handle comment threading with parent
+    references, and wrap ticket state changes with comment creation in a transaction.
+- id: fsharp_lib_0036_exp_016
+  instruction: Create a recipe and meal planning system using Dapper.FSharp with PostgreSQL. Define F# record types for Recipes,
+    Ingredients, NutritionalInfo, and MealPlans tables. Implement queries using inner joins to get recipes with ingredients
+    and nutrition data, write aggregation queries for meal plan calorie/macro totals using GROUP BY and SUM, handle ingredient
+    scaling based on serving size, and compare Option-based null handling with nullable columns.
+- id: fsharp_lib_0036_exp_017
+  instruction: Build an API rate limiting system using Dapper.FSharp with PostgreSQL. Define F# record types for APIKeys,
+    RateLimits, and RequestLogs tables. Implement sliding window rate limiting queries using time-based aggregation, write
+    queries to detect and count requests by API key within windows, handle limit exceeded scenarios, and optimize for high-throughput
+    logging with batch insert operations.
+- id: fsharp_lib_0036_exp_018
+  instruction: Implement a product review moderation system using Dapper.FSharp with PostgreSQL. Define F# record types for
+    Products, Reviews, ReviewVotes, and ModerationQueue tables. Write queries using GROUP BY to calculate average ratings
+    and vote tallies, implement transactions for approval/rejection with status updates, handle flagging operations with audit
+    trail creation, and optimize aggregation queries with materialized views.
+- id: fsharp_lib_0036_exp_019
+  instruction: Create a booking system for rental equipment using Dapper.FSharp with PostgreSQL. Define F# record types for
+    Equipment, Bookings, Customers, and DamageReports tables. Implement availability checking queries with date overlap detection,
+    write transactions for booking creation with payment hold, handle equipment maintenance windows as blocked periods, and
+    implement complex pricing calculations with discounts and surcharges.
+- id: fsharp_lib_0036_exp_020
+  instruction: Build a music streaming playlist management system using Dapper.FSharp with PostgreSQL. Define F# record types
+    for Tracks, Albums, Artists, Playlists, and PlaylistTracks tables. Implement queries using joins to get playlist contents
+    with full track metadata, write aggregation queries for playlist duration totals, handle reordering operations with position
+    tracking, and implement "add to playlist" operations with duplicate detection.
+- id: fsharp_lib_0036_exp_021
+  instruction: Implement a document version control system using Dapper.FSharp with PostgreSQL. Define F# record types for
+    Documents, Versions, Users, and ChangeComments tables. Write queries using joins to get version history with author information,
+    implement transactions for new version creation with change comments, handle version branching scenarios, and compare
+    optimistic vs pessimistic locking for concurrent edit scenarios.
+- id: fsharp_lib_0036_exp_022
+  instruction: Create a sports league statistics system using Dapper.FSharp with PostgreSQL. Define F# record types for Teams,
+    Players, Matches, and PlayerStats tables. Write complex aggregation queries for player statistics (totals, averages, rankings),
+    implement queries using GROUP BY for team standings with computed fields, handle match result transactions with stat updates,
+    and optimize for real-time leaderboard queries with proper indexing strategies.
+- id: fsharp_lib_0036_exp_023
+  instruction: Build a warranty and claims management system using Dapper.FSharp with PostgreSQL. Define F# record types for
+    Products, Warranties, Claims, and ClaimResolutions tables. Implement queries to check warranty validity by date range,
+    write left joins to get claims with resolution details, handle claim status workflow transitions in transactions, and
+    implement audit logging for compliance with resolution notes.
+- id: fsharp_lib_0036_exp_024
+  instruction: Implement a survey and analytics system using Dapper.FSharp with PostgreSQL. Define F# record types for Surveys,
+    Questions, Responses, and ResponseAnswers tables. Write queries with joins to get survey questions and aggregate responses,
+    implement analytics queries using GROUP BY for answer distributions, handle survey completion tracking, and compare F#
+    anonymous records vs tuple-based results for complex aggregations.
+- id: fsharp_lib_0036_exp_025
+  instruction: Create a cryptocurrency portfolio tracking system using Dapper.FSharp with PostgreSQL. Define F# record types
+    for Wallets, Transactions, Assets, and PriceHistory tables. Implement queries using inner joins to get portfolio positions
+    with current values, write aggregation queries for profit/loss calculations, handle multi-asset transactions atomically,
+    and optimize for high-frequency price history insertion with batch operations.
+- id: fsharp_lib_0036_exp_026
+  instruction: Build a conference session scheduling system using Dapper.FSharp with PostgreSQL. Define F# record types for
+    Speakers, Sessions, Rooms, and SessionTags tables. Implement queries with multiple joins to get session details with speaker
+    bios and room assignments, write conflict detection queries for room/time overlaps, handle waitlist management with priority
+    ordering, and compare eager vs lazy loading approaches for related data.
+- id: fsharp_lib_0036_exp_027
+  instruction: Implement an insurance claims processing system using Dapper.FSharp with PostgreSQL. Define F# record types
+    for Policies, Claims, Documents, and ClaimEvents tables. Write queries using left joins to get claims with optional document
+    counts, implement status workflow transitions with event logging, handle document upload transactions, and implement complex
+    validation rules for claim amounts against policy coverage limits.
+- id: fsharp_lib_0036_exp_028
+  instruction: Create a classroom attendance tracking system using Dapper.FSharp with PostgreSQL. Define F# record types for
+    Classes, Students, Sessions, and AttendanceRecords tables. Write queries using joins to get session attendance with student
+    details, implement GROUP BY queries for attendance rate calculations per student/class, handle bulk attendance marking
+    operations, and implement late arrival tracking with automatic status assignment.
+- id: fsharp_lib_0036_exp_029
+  instruction: Build a project management task tracking system using Dapper.FSharp with PostgreSQL. Define F# record types
+    for Projects, Tasks, Assignees, and Comments tables. Implement hierarchical task queries with self-joins for parent-child
+    relationships, write aggregation queries for project progress with completion percentages, handle task dependency resolution,
+    and wrap multi-task status updates in transactions with proper rollback handling.
+- id: fsharp_lib_0037_exp_000
+  instruction: 'Define an Azure infrastructure for a real-time IoT telemetry processing system using Farmer in F#. Include:
+
+    1. IoT Hub with message routing to Event Hub
+
+    2. Stream Analytics job configuration
+
+    3. Cosmos DB for storing processed device readings
+
+    4. Time Series Insights environment
+
+    5. Azure Functions with consumption plan for device command processing
+
+    6. Implement retry policies and circuit breakers in the F# script'
+- id: fsharp_lib_0037_exp_001
+  instruction: 'Create a multi-tenant SaaS application infrastructure using Farmer in F# with these requirements:
+
+    1. App Service for the SaaS web application
+
+    2. Per-tenant Azure SQL elastic pools
+
+    3. Azure AD B2C integration configuration
+
+    4. Shared Key Vault for tenant encryption keys
+
+    5. Usage metering with Application Insights
+
+    6. Tenant isolation using resource groups per customer'
+- id: fsharp_lib_0037_exp_002
+  instruction: 'Design a HIPAA-compliant healthcare data platform using Farmer in F#:
+
+    1. Azure SQL with transparent data encryption and audit logging
+
+    2. Blob storage with immutability policies for medical records
+
+    3. Logic Apps for data workflow orchestration
+
+    4. Event Grid topics for clinical event publishing
+
+    5. Private endpoints for all services
+
+    6. Export an ARM template with compliance tags'
+- id: fsharp_lib_0037_exp_003
+  instruction: 'Implement an event-driven order processing system using Farmer in F#:
+
+    1. Service Bus namespace with topics and subscriptions
+
+    2. Web App for the order management UI
+
+    3. Azure Functions for processing order events
+
+    4. Redis Cache for session state
+
+    5. Dead-letter queue handling configuration
+
+    6. Correlation IDs and message sequencing in the builder pattern'
+- id: fsharp_lib_0037_exp_004
+  instruction: 'Define microservices infrastructure using Farmer in F# with API Management:
+
+    1. API Management instance with OpenAPI import
+
+    2. Multiple App Service instances for different microservices
+
+    3. Internal Load Balancer configuration
+
+    4. Application Insights per service with distributed tracing
+
+    5. Cosmos DB with multi-region writes
+
+    6. Rate limiting and throttling policies'
+- id: fsharp_lib_0037_exp_005
+  instruction: 'Create a data lake and analytics pipeline infrastructure using Farmer in F#:
+
+    1. Data Lake Storage Gen2 with hierarchical namespace
+
+    2. Azure Databricks workspace
+
+    3. Data Factory with pipeline definitions
+
+    4. Synapse Analytics workspace
+
+    5. Event Hub for streaming data ingestion
+
+    6. Power BI Embedded capacity allocation'
+- id: fsharp_lib_0037_exp_006
+  instruction: 'Design a serverless machine learning workflow using Farmer in F#:
+
+    1. Azure Machine Learning workspace with compute clusters
+
+    2. Blob storage for training datasets and model artifacts
+
+    3. Azure Functions for model inference endpoints
+
+    4. Container Instances for batch scoring jobs
+
+    5. Key Vault for model secrets and credentials
+
+    6. Implement A/B testing infrastructure for model deployment'
+- id: fsharp_lib_0037_exp_007
+  instruction: 'Define a media processing pipeline using Farmer in F#:
+
+    1. Azure Media Services account with encoding presets
+
+    2. Web App for content management dashboard
+
+    3. Storage account with CDN integration
+
+    4. Azure Functions triggered by blob uploads
+
+    5. Logic Apps for workflow automation
+
+    6. Digital twins integration for video metadata'
+- id: fsharp_lib_0037_exp_008
+  instruction: 'Create a cost-optimized development environment using Farmer in F#:
+
+    1. Shared App Service Plan for multiple dev apps
+
+    2. Azure SQL elastic database with auto-pause
+
+    3. Development-grade resources with minimal redundancy
+
+    4. Auto-shutdown automation for VMs
+
+    5. Resource tagging strategy for cost allocation
+
+    6. Budget alerts and cost management configuration'
+- id: fsharp_lib_0037_exp_009
+  instruction: 'Implement a disaster recovery topology using Farmer in F#:
+
+    1. Primary region with full infrastructure stack
+
+    2. Secondary region with failover resources
+
+    3. Traffic Manager for global load balancing
+
+    4. Cosmos DB with multi-region replication
+
+    5. SQL Geo-Replication configuration
+
+    6. Storage account with RA-GRS redundancy'
+- id: fsharp_lib_0037_exp_010
+  instruction: 'Design an enterprise integration platform using Farmer in F#:
+
+    1. Logic Apps with enterprise connector configuration
+
+    2. Service Bus with partitioned queues
+
+    3. API Management with OAuth 2.0 backend
+
+    4. Integration Account for B2B messaging
+
+    5. Event Grid for system-wide event distribution
+
+    6. Hybrid Connections for on-premises integration'
+- id: fsharp_lib_0037_exp_011
+  instruction: 'Create a social media analytics platform using Farmer in F#:
+
+    1. Web App with real-time dashboard
+
+    2. Cosmos DB with MongoDB API for social data
+
+    3. Azure Functions for social API webhooks
+
+    4. Cognitive Services for sentiment analysis
+
+    5. Power BI integration for reports
+
+    6. Redis Cache for frequent query results'
+- id: fsharp_lib_0037_exp_012
+  instruction: 'Define gaming backend infrastructure using Farmer in F#:
+
+    1. Game server hosting with Container Instances
+
+    2. SignalR for real-time multiplayer communication
+
+    3. Cosmos DB for player state and match history
+
+    4. Blob storage for game assets
+
+    5. CDN for content delivery optimization
+
+    6. PlayFab integration configuration'
+- id: fsharp_lib_0037_exp_013
+  instruction: 'Implement a fintech transaction processing system using Farmer in F#:
+
+    1. Azure SQL with always encrypted columns
+
+    2. Service Bus with session-enabled queues
+
+    3. Key Vault for payment processor credentials
+
+    4. App Service with private endpoint
+
+    5. Application Insights with custom transaction tracing
+
+    6. Compliance audit logging to dedicated storage'
+- id: fsharp_lib_0037_exp_014
+  instruction: 'Create an edge computing solution using Farmer in F#:
+
+    1. IoT Edge deployment with custom modules
+
+    2. Azure Functions with edge trigger configuration
+
+    3. Blob Storage with edge local caching
+
+    4. Azure SQL Edge in containers
+
+    5. DPS (Device Provisioning Service) integration
+
+    6. Offline synchronization capabilities'
+- id: fsharp_lib_0037_exp_015
+  instruction: 'Design a mobile app backend using Farmer in F#:
+
+    1. App Service with EasyAuth integration
+
+    2. Cosmos DB with MongoDB API
+
+    3. Notification Hubs configuration
+
+    4. Blob storage for media uploads
+
+    5. Azure Functions for serverless APIs
+
+    6. Cognitive Services for image recognition APIs'
+- id: fsharp_lib_0037_exp_016
+  instruction: 'Define a CI/CD-ready infrastructure using Farmer in F#:
+
+    1. App Service deployment slots (dev, staging, prod)
+
+    2. Azure SQL with deployment automation
+
+    3. Resource locks for production environments
+
+    4. Managed identities for CI/CD authentication
+
+    5. Application Insights with deployment correlation
+
+    6. Generate parameterized ARM templates for environments'
+- id: fsharp_lib_0037_exp_017
+  instruction: 'Create a multi-region deployment strategy using Farmer in F#:
+
+    1. Regional App Service instances behind Front Door
+
+    2. Cosmos DB with preferred region configuration
+
+    3. Traffic Manager with failover policies
+
+    4. Regional SQL databases with sync groups
+
+    5. Cross-region storage replication
+
+    6. Latency-based routing configuration'
+- id: fsharp_lib_0037_exp_018
+  instruction: 'Implement network-isolated infrastructure using Farmer in F#:
+
+    1. Virtual Network with subnets for different tiers
+
+    2. App Service with VNet integration
+
+    3. Private endpoints for all data services
+
+    4. Azure SQL with firewall rules
+
+    5. NAT Gateway for outbound connectivity
+
+    6. Network Security Groups configuration'
+- id: fsharp_lib_0037_exp_019
+  instruction: 'Design a SOC 2 compliant e-commerce platform using Farmer in F#:
+
+    1. Web App with WAF and custom domains
+
+    2. Azure SQL with encryption at rest
+
+    3. Payment gateway integration with Key Vault
+
+    4. Redis Cache with TLS encryption
+
+    5. Application Insights with security monitoring
+
+    6. Resource locks and audit logging'
+- id: fsharp_lib_0037_exp_020
+  instruction: 'Create an anomaly detection system using Farmer in F#:
+
+    1. Event Hub for telemetry ingestion
+
+    2. Azure Functions for real-time processing
+
+    3. Cosmos DB for storing detected anomalies
+
+    4. Logic Apps for alert workflows
+
+    5. Machine Learning workspace for model hosting
+
+    6. Dashboard visualization with Azure Boards integration'
+- id: fsharp_lib_0037_exp_021
+  instruction: 'Define a hybrid cloud infrastructure using Farmer in F#:
+
+    1. Azure Arc-enabled resources
+
+    2. VPN Gateway for on-premises connectivity
+
+    3. Azure AD Connect integration
+
+    4. Site Recovery configuration for VMs
+
+    5. Azure Files with sync groups
+
+    6. Custom script extensions for configuration'
+- id: fsharp_lib_0037_exp_022
+  instruction: 'Implement a real-time dashboard infrastructure using Farmer in F#:
+
+    1. App Service with SignalR for live updates
+
+    2. Cosmos DB with change feed
+
+    3. Azure Functions processing background jobs
+
+    4. Power BI Embedded for visualizations
+
+    5. Redis Cache for dashboard data caching
+
+    6. Web PubSub service for scale'
+- id: fsharp_lib_0037_exp_023
+  instruction: 'Design a legacy application modernization path using Farmer in F#:
+
+    1. App Service migration from classic cloud service
+
+    2. Azure SQL with managed instance configuration
+
+    3. Traffic Manager for gradual migration
+
+    4. Application Insights for performance monitoring
+
+    5. Azure AD application proxy configuration
+
+    6. Runbooks for automated migration steps'
+- id: fsharp_lib_0037_exp_024
+  instruction: 'Create a compliance automation framework using Farmer in F#:
+
+    1. Resource groups with mandatory tagging
+
+    2. Policy definitions for resource compliance
+
+    3. Azure SQL with data classification
+
+    4. Storage accounts with legal hold configuration
+
+    5. Defender for Cloud integration
+
+    6. Export compliance reports as ARM outputs'
+- id: fsharp_lib_0037_exp_025
+  instruction: 'Define a high-performance computing infrastructure using Farmer in F#:
+
+    1. Azure CycleCloud for HPC cluster management
+
+    2. Virtual Machine Scale Sets for compute nodes
+
+    3. Avere vFXT for file caching
+
+    4. Blob Storage with high throughput tier
+
+    5. Low Priority VMs for cost optimization
+
+    6. RDMA networking configuration'
+- id: fsharp_lib_0037_exp_026
+  instruction: 'Implement a CQRS-based event sourcing architecture using Farmer in F#:
+
+    1. Event Store Cosmos DB with TTL configuration
+
+    2. Read model Azure SQL with indexed views
+
+    3. Service Bus with duplicate detection
+
+    4. Azure Functions for command and query handlers
+
+    5. Event grid for event distribution
+
+    6. Consistency level configuration per operation type'
+- id: fsharp_lib_0037_exp_027
+  instruction: 'Create a multi-tenant data isolation architecture using Farmer in F#:
+
+    1. Resource Group per tenant pattern
+
+    2. Shared services with RBAC for tenant admins
+
+    3. Cosmos DB with dedicated throughput per database
+
+    4. Key Vault with per-tenant secret scopes
+
+    5. App Insights with custom dimensions for tenant filtering
+
+    6. Cross-tenant reporting with Data Factory'
+- id: fsharp_lib_0037_exp_028
+  instruction: 'Design a progressive web app backend using Farmer in F#:
+
+    1. Static Web App for frontend hosting
+
+    2. Azure Functions API with offline support
+
+    3. Cosmos DB with conflict resolution
+
+    4. Blob storage for file pre-caching
+
+    5. Azure AD B2C for authentication
+
+    6. CDN with dynamic site acceleration'
+- id: fsharp_lib_0037_exp_029
+  instruction: 'Define an observability platform using Farmer in F#:
+
+    1. Application Insights with sampling configuration
+
+    2. Log Analytics workspace with custom tables
+
+    3. Azure Monitor for metrics collection
+
+    4. Service Map dependency visualization
+
+    5. Alert rules with action groups
+
+    6. Workbook dashboards for team collaboration'
+- id: fsharp_lib_0038_exp_000
+  instruction: 'Implement the transactional outbox pattern in F# for a healthcare appointment scheduling system:
+
+    1. Define OutboxMessage type with PatientId, AppointmentId, EventType, NotificationPayload (JSON), CreatedAt, ProcessedAt
+
+    2. Use Marten with PostgreSQL to save AppointmentCreated/Rescheduled/Cancelled events to OutboxMessages in the same transaction
+
+    3. Implement a BackgroundService that polls unprocessed messages every 500ms
+
+    4. Publish to Azure Service Bus using Microsoft.Azure.ServiceBus for SMS/email notifications
+
+    5. Idempotent consumer that tracks ProcessedMessageIds in Redis for fast deduplication
+
+    6. Include retry logic with exponential backoff for failed message publishing'
+- id: fsharp_lib_0038_exp_001
+  instruction: 'Create a high-performance F# outbox implementation for an IoT telemetry system:
+
+    1. Define OutboxMessage with DeviceId, SensorType, Readings (JSON), Timestamp, Status
+
+    2. Use raw SqlBulkCopy for batch inserts to OutboxMessages table to handle 10,000+ events/sec
+
+    3. Implement partitioned polling with multiple worker threads (one per partition)
+
+    4. Use Confluent Kafka producer with exactly-once semantics (transactional.idempotence)
+
+    5. Consumer group with offset tracking in both Kafka and local ProcessedMessages table
+
+    6. Backpressure handling using SemaphoreSlim when outbox table exceeds threshold'
+- id: fsharp_lib_0038_exp_002
+  instruction: 'Implement the outbox pattern in F# using functional composition withRailway Oriented Programming:
+
+    1. Define Result-based OutboxRepository with save, getUnprocessed, markProcessed methods
+
+    2. Domain event types as F# Discriminated Unions mapped to JSON storage
+
+    3. Atomic command handler that wraps aggregate update + outbox insert in a DbTransaction
+
+    4. Implement polling worker as an F# Agent (MailboxProcessor) with configurable interval
+
+    5. Kafka producer as a ResilientPublisher with circuit breaker pattern
+
+    6. Show composition: createOrderCommand >>= saveToOutbox >>= publishToKafka'
+- id: fsharp_lib_0038_exp_003
+  instruction: 'Design a multi-tenant SaaS outbox system in F# with tenant isolation:
+
+    1. OutboxMessage includes TenantId for all queries with mandatory tenant scoping
+
+    2. Row-level security in PostgreSQL using SET app.current_tenant before queries
+
+    3. Per-tenant Kafka topics: outbox-{tenantId} with proper access controls
+
+    4. BackgroundService per tenant with isolated polling intervals
+
+    5. Consumer processes messages only for authorized tenants
+
+    6. Include tenant quota enforcement for message throughput limits'
+- id: fsharp_lib_0038_exp_004
+  instruction: 'Implement and debug a failing outbox consumer in F#:
+
+    1. Set up standard outbox with OutboxMessage type and linq2db integration
+
+    2. Add detailed structured logging (Serilog) with correlation IDs
+
+    3. Implement health checks for outbox lag and consumer group status
+
+    4. Create diagnostic endpoints: /outbox/stats, /outbox/stuck-messages, /outbox/retry
+
+    5. Add metrics using AppMetrics for messages_processed, messages_failed, processing_lag_seconds
+
+    6. Debug scenario: explain how to diagnose and fix a stuck consumer with no error logs'
+- id: fsharp_lib_0038_exp_005
+  instruction: 'Refactor a broken F# order processing service to use the outbox pattern:
+
+    1. Current code uses dual-write: save to Order table then immediately call message broker
+
+    2. Identify and fix race condition where broker fails but order is committed
+
+    3. Extract existing event types into OutboxMessage format
+
+    4. Wrap existing transaction scope to include OutboxMessages table
+
+    5. Add idempotency using OrderEventId as deduplication key
+
+    6. Validate refactoring with integration tests showing consistent behavior'
+- id: fsharp_lib_0038_exp_006
+  instruction: 'Implement event sourcing with outbox pattern in F#:
+
+    1. Define EventRecord with SequenceNumber, StreamId, EventType, Data, Metadata
+
+    2. EventStoreDB for event storage with optimistic concurrency
+
+    3. Outbox populated from in-memory event stream before EventStoreDB commit
+
+    4. Consumer rebuilds read models by replaying events idempotently
+
+    5. Snapshot strategy for long streams to optimize read model projections
+
+    6. Show eventual consistency window and read model staleness handling'
+- id: fsharp_lib_0038_exp_007
+  instruction: 'Create a zero-downtime deployment strategy for F# outbox service:
+
+    1. Define versioned OutboxMessage schema with migration strategy
+
+    2. Implement backward-compatible consumer that handles both v1 and v2 payloads
+
+    3. Blue-green deployment: run old and new consumers simultaneously during migration
+
+    4. Schema migration script for OutboxMessages and ProcessedMessages tables
+
+    5. Rolling deploy with health check verification before routing traffic
+
+    6. Rollback procedure if consumer errors exceed threshold'
+- id: fsharp_lib_0038_exp_008
+  instruction: 'Implement poison message handling in F# outbox pattern:
+
+    1. Configure max retry count (3) and retry interval (1min, 5min, 15min) in OutboxMessage
+
+    2. Move to DeadLetterQueue after exhausting retries with failure reason
+
+    3. Admin API to manually inspect, retry, or discard poison messages
+
+    4. Implement circuit breaker that pauses polling after N consecutive failures
+
+    5. Alert when DeadLetterQueue depth exceeds threshold
+
+    6. Show recovery flow: fix consumer bug -> replay from DLQ -> verify processing'
+- id: fsharp_lib_0038_exp_009
+  instruction: 'Design a CQRS architecture with outbox pattern in F#:
+
+    1. Command side: save aggregates and outbox messages in single transaction
+
+    2. Query side: materialized views updated by outbox consumer
+
+    3. OutboxMessage includes routing metadata: targetView, projectionVersion
+
+    4. Projections as F# Agents processing messages sequentially per aggregate
+
+    5. Consistency guarantees: show staleness window and read-your-writes handling
+
+    6. Compare synchronous vs eventual consistency read models'
+- id: fsharp_lib_0038_exp_010
+  instruction: 'Implement outbox pattern with F# for a gaming leaderboard system:
+
+    1. OutboxMessage with PlayerId, GameSessionId, EventType (ScoreUpdated, AchievementUnlocked), ScorePayload
+
+    2. Redis Sorted Set for real-time leaderboard updated synchronously
+
+    3. Outbox consumer updates persistent PostgreSQL leaderboard tables
+
+    4. Handle out-of-order message delivery for late-arriving events
+
+    5. Idempotency using (PlayerId, GameSessionId, EventSequence) tuple
+
+    6. Performance benchmark: show latency impact of outbox vs direct writes'
+- id: fsharp_lib_0038_exp_011
+  instruction: 'Compare transaction outbox vs change data capture in F#:
+
+    1. Implement identical functionality using both patterns
+
+    2. Outbox: explicit insert to OutboxMessages in same transaction
+
+    3. CDC: PostgreSQL logical replication to Debezium to Kafka
+
+    4. Compare: complexity, latency, delivery guarantees, operational overhead
+
+    5. Benchmark: measure throughput and latency for both approaches
+
+    6. Provide decision matrix for when to use each pattern'
+- id: fsharp_lib_0038_exp_012
+  instruction: 'Implement a distributed saga with outbox pattern in F#:
+
+    1. OrderSaga with steps: ReserveInventory, ProcessPayment, ShipOrder with compensating transactions
+
+    2. Saga state persisted in OutboxMessages with SagaId, CurrentStep, StepsCompleted
+
+    3. BackgroundService polls sagas awaiting execution, not just unprocessed messages
+
+    4. Implement saga timeout detection using CreatedAt + step timeout threshold
+
+    5. Idempotency using (SagaId, StepType) as deduplication key
+
+    6. Handle partial completion: execute compensating transactions for failed steps'
+- id: fsharp_lib_0038_exp_013
+  instruction: 'Create a testable F# outbox implementation with property-based testing:
+
+    1. Implement OutboxRepository as an interface for testability
+
+    2. Property-based tests using FsCheck: generate valid OutboxMessage sequences
+
+    3. Verify idempotency: processing same message twice produces same result
+
+    4. Verify atomicity: command failure never produces orphan outbox message
+
+    5. Generate 1000 random failure scenarios (DB down, broker down, timeout) and verify consistency
+
+    6. Include shrinking for failed test cases to aid debugging'
+- id: fsharp_lib_0038_exp_014
+  instruction: 'Implement F# outbox with PostgreSQL advisory locks for coordination:
+
+    1. Use pg_try_advisory_xact_lock during outbox polling to prevent duplicate processing
+
+    2. OutboxMessage with ProcessingLockId derived from Id % workerCount
+
+    3. Multiple consumer instances safely share same outbox table
+
+    4. Demonstrate lock contention handling and backoff strategies
+
+    5. Compare with Redis-based distributed locks for the same scenario
+
+    6. Measure lock acquisition latency under high concurrency'
+- id: fsharp_lib_0038_exp_015
+  instruction: 'Implement a schema evolution strategy for F# outbox payloads:
+
+    1. Define OutboxMessage with versioned Payload field using JSON with $schema metadata
+
+    2. Implement upcasting functions: V1Event -> V2Event when schema evolves
+
+    3. Consumer handles mixed-version payloads during migration window
+
+    4. Version compatibility matrix: which consumer versions process which payload versions
+
+    5. Include schema registry (Confluent) for payload validation
+
+    6. Rolling schema migration with backward compatibility requirements'
+- id: fsharp_lib_0038_exp_016
+  instruction: 'Design an observable F# outbox system with distributed tracing:
+
+    1. Propagate W3C TraceContext through entire flow: command -> outbox -> poll -> publish -> consume
+
+    2. OutboxMessage includes TraceId, SpanId for correlation
+
+    3. OpenTelemetry integration for traces, metrics, and logs
+
+    4. Visualize end-to-end latency from command to consumer acknowledgment
+
+    5. Detect and alert on: message stuck in outbox > threshold, consumer lag increasing
+
+    6. Implement distributed tracing UI with Span timelines for debugging'
+- id: fsharp_lib_0038_exp_017
+  instruction: 'Implement batch processing optimization for F# outbox:
+
+    1. Poll outbox for up to N messages per iteration (configurable, default 100)
+
+    2. Use batch Kafka producer for efficient network utilization
+
+    3. Consumer processes batches with parallel projection updates
+
+    4. Compare: N=1 (lowest latency) vs N=1000 (highest throughput) tradeoffs
+
+    5. Implement adaptive batching: increase batch size when lag is high
+
+    6. Memory pressure considerations for large batch accumulation'
+- id: fsharp_lib_0038_exp_018
+  instruction: 'Implement F# outbox for event-driven microservices with contract testing:
+
+    1. Define consumer-driven contracts using Pact for OutboxMessage schemas
+
+    2. Producer validates message structure before publishing to Kafka
+
+    3. Consumer verifies payload shape and handles unknown fields gracefully
+
+    4. Contract tests run in CI before deployment
+
+    5. Implement schema validation using F# type providers for JSON schemas
+
+    6. Show contract evolution without breaking existing consumers'
+- id: fsharp_lib_0038_exp_019
+  instruction: 'Create a DevOps-ready F# outbox service for Kubernetes:
+
+    1. Containerize outbox consumer as minimal Linux container
+
+    2. Configure liveness/readiness probes for outbox lag monitoring
+
+    3. Implement graceful shutdown with in-flight message completion
+
+    4. Horizontal Pod Autoscaler based on OutboxMessage table row count
+
+    5. Kubernetes ConfigMap for polling interval, batch size, broker config
+
+    6. Include Helm chart with production-ready defaults'
+- id: fsharp_lib_0038_exp_020
+  instruction: 'Implement secure F# outbox with message-level encryption:
+
+    1. OutboxMessage with encrypted Payload using envelope encryption (DEK wrapped by KEK)
+
+    2. Decrypt payload only in consumer before publishing to Kafka
+
+    3. Support field-level encryption for sensitive data (SSN, credit card)
+
+    4. Key rotation strategy without message re-encryption
+
+    5. Audit logging for message access and decryption attempts
+
+    6. Compliance: GDPR right-to-erasure handling for encrypted payloads'
+- id: fsharp_lib_0038_exp_021
+  instruction: 'Implement F# outbox recovery after network partition:
+
+    1. Design idempotent producer with exactly-once semantics using Kafka transactions
+
+    2. Consumer tracks processed message IDs with at-least-once delivery guarantee
+
+    3. Implement deduplication window: processed messages kept for 7 days
+
+    4. Detect and handle duplicate messages during partition recovery
+
+    5. Compare at-least-once vs exactly-once delivery tradeoffs
+
+    6. Include chaos engineering test scenarios: kill consumer mid-processing'
+- id: fsharp_lib_0038_exp_022
+  instruction: 'Create an F# outbox pattern tutorial with step-by-step implementation:
+
+    1. Start with naive dual-write implementation showing its problems
+
+    2. Step 1: Add OutboxMessages table with same schema as command
+
+    3. Step 2: Modify command handler to use single transaction
+
+    4. Step 3: Implement basic polling BackgroundService
+
+    5. Step 4: Add idempotent consumer with ProcessedMessages table
+
+    6. Step 5: Show integration test proving correctness'
+- id: fsharp_lib_0038_exp_023
+  instruction: 'Implement F# outbox with event ordering guarantees:
+
+    1. OutboxMessage with SequenceNumber per AggregateId for ordering
+
+    2. Consumer processes messages in SequenceNumber order per aggregate
+
+    3. Implement fan-out parallelization while maintaining per-aggregate ordering
+
+    4. Detect gaps in sequence and request retransmission
+
+    5. Handle replay of historical events with correct ordering
+
+    6. Benchmark: throughput impact of ordering requirements'
+- id: fsharp_lib_0038_exp_024
+  instruction: 'Design a polyglot persistence outbox in F# for microservices:
+
+    1. Outbox spans multiple databases: PostgreSQL (orders), MongoDB (inventory)
+
+    2. Implement two-phase commit consideration (eventual consistency preferred)
+
+    3. Separate outbox tables per microservice boundary
+
+    4. Cross-service event correlation using CorrelationId in all messages
+
+    5. Saga coordinator reads from multiple outboxes
+
+    6. Discuss CAP theorem tradeoffs in this architecture'
+- id: fsharp_lib_0038_exp_025
+  instruction: 'Implement a load-tested F# outbox system showing performance limits:
+
+    1. Design outbox capable of 50,000 messages/second throughput
+
+    2. Use connection pooling, batch inserts, parallel consumers
+
+    3. Stress test with simulated broker slowdown
+
+    4. Document: what breaks first (DB, broker, memory, CPU)?
+
+    5. Implement graceful degradation under load
+
+    6. Provide horizontal scaling recommendations'
+- id: fsharp_lib_0038_exp_026
+  instruction: 'Implement F# outbox with event replay and temporal queries:
+
+    1. OutboxMessage with CreatedAt, EventTime (when event occurred), ProcessedAt
+
+    2. Support point-in-time queries: rebuild read model as of specific timestamp
+
+    3. Implement replay API for disaster recovery read model rebuild
+
+    4. Handle schema changes during historical replay
+
+    5. Optimize replay performance for large historical datasets
+
+    6. Show temporal query example: "show orders as they existed 24 hours ago"'
+- id: fsharp_lib_0038_exp_027
+  instruction: 'Create an F# DSL for composing outbox workflows:
+
+    1. Define Computation Expression for OutboxWorkflow: step { save; publish; consume }
+
+    2. Implement workflow combinators: retry, compensate, timeout
+
+    3. Type-safe workflow definition with compile-time validation
+
+    4. Workflow persistence for long-running processes
+
+    5. Example: compose complex order fulfillment as outbox workflow
+
+    6. Show workflow visualization and debugging capabilities'
+- id: fsharp_lib_0039_exp_000
+  instruction: Implement an IoT telemetry consumer in F# that processes device sensor data from RabbitMQ. Use topic exchanges
+    with wildcards for routing messages from thousands of IoT devices. Implement connection recovery with exponential backoff,
+    handle malformed JSON payloads gracefully, and use channel pooling for high-throughput scenarios.
+- id: fsharp_lib_0039_exp_001
+  instruction: Build a message retry pattern in F# using RabbitMQ.Client where failed messages are requeued to a retry exchange
+    with TTL, then routed back to the main queue after exponential backoff delays. Include a circuit breaker to stop consuming
+    when the downstream service is unavailable.
+- id: fsharp_lib_0039_exp_002
+  instruction: Create a priority queue consumer in F# for an order processing system where orders are categorized by priority
+    (VIP, standard, bulk). Configure multiple consumer instances with different prefetch counts and demonstrate how to handle
+    priority message ordering vs throughput tradeoffs.
+- id: fsharp_lib_0039_exp_003
+  instruction: Implement a distributed rate limiter in F# using RabbitMQ as the backing store with atomic operations. Use
+    a sliding window algorithm with per-user quotas, handle race conditions in multi-instance deployments, and include Lua
+    script integration for atomicity.
+- id: fsharp_lib_0039_exp_004
+  instruction: Build a message choreography system in F# where order fulfillment events trigger downstream saga participants
+    through RabbitMQ. Implement compensating transactions for failed steps, track saga state, and ensure exactly-once delivery
+    semantics with idempotent consumers.
+- id: fsharp_lib_0039_exp_005
+  instruction: Create an F# library that wraps RabbitMQ.Client to provide functional pipeline composition for message processing.
+    Include computation expressions for clean consumer setup, automatic connection management, and result type handling for
+    successful/failed message processing outcomes.
+- id: fsharp_lib_0039_exp_006
+  instruction: Implement a message batching consumer in F# that aggregates events within a time window before processing.
+    Use manual acknowledgment with batch commit, handle partial batches on shutdown, and configure prefetch to balance latency
+    and throughput for analytics pipelines.
+- id: fsharp_lib_0039_exp_007
+  instruction: Build a fanout exchange consumer in F# for a notification system where messages must be delivered to multiple
+    independent consumers (email, SMS, push). Implement subscription management, handle consumer crashes with rebalancing,
+    and compare fanout vs individual queue approaches.
+- id: fsharp_lib_0039_exp_008
+  instruction: Create an F# implementation of the outbox pattern using RabbitMQ where database transactions and message publishing
+    are atomic. Include deduplication logic for consumers, transaction coordination with SQL persistence, and recovery from
+    partial failures.
+- id: fsharp_lib_0039_exp_009
+  instruction: Implement a message versioning strategy in F# where consumer can handle multiple versions of message schema
+    simultaneously. Use content-type headers for routing, implement version conversion functions, and demonstrate graceful
+    schema evolution without downtime.
+- id: fsharp_lib_0039_exp_010
+  instruction: Build a F# ASP.NET Core application with multiple IHostedService consumers processing different message types
+    from separate queues. Implement graceful shutdown with in-flight message completion, health check endpoints, and structured
+    logging for message processing metrics.
+- id: fsharp_lib_0039_exp_011
+  instruction: Create a F# implementation of stream processing on top of RabbitMQ for event sourcing. Implement consumer groups,
+    offset tracking, and replay capabilities. Handle backpressure when consumers are slower than producers, and compare with
+    Kafka's consumer group semantics.
+- id: fsharp_lib_0039_exp_012
+  instruction: Implement a delayed/scheduled message system in F# using RabbitMQ TTL and dead-letter exchanges. Support scheduling
+    messages for future delivery with millisecond precision, handle scheduler restarts gracefully, and implement distributed
+    locking for multiple scheduler instances.
+- id: fsharp_lib_0039_exp_013
+  instruction: Build a message auditing system in F# that mirrors all RabbitMQ traffic to a separate audit queue. Use a tracing
+    interceptor to capture publishing and consuming events, store audit records to PostgreSQL, and implement GDPR-compliant
+    data retention policies.
+- id: fsharp_lib_0039_exp_014
+  instruction: Create an F# reactive streams implementation that bridges RabbitMQ with System.Threading.Channels. Implement
+    backpressure handling, memory-bounded buffering, and demonstrate composition of multiple RabbitMQ sources into unified
+    stream processing pipelines.
+- id: fsharp_lib_0039_exp_015
+  instruction: Implement a distributed job scheduler in F# using RabbitMQ for job distribution across worker nodes. Include
+    job priorities, worker affinity rules, sticky sessions for stateful jobs, and a leader election mechanism using RabbitMQ
+    cluster for coordinator failover.
+- id: fsharp_lib_0039_exp_016
+  instruction: Build a webhook delivery system in F# using RabbitMQ with automatic retries, exponential backoff, and dead-letter
+    handling for failed deliveries. Implement delivery receipts, signature verification, and rate limiting per subscriber
+    domain.
+- id: fsharp_lib_0039_exp_017
+  instruction: Create an F# module for chaos engineering that injects failures into RabbitMQ consumers to test system resilience.
+    Implement random connection drops, message processing delays, and exception injection. Measure recovery time and message
+    loss under various failure scenarios.
+- id: fsharp_lib_0039_exp_018
+  instruction: Implement a multi-protocol gateway in F# that receives messages via HTTP/WebSocket and publishes to RabbitMQ.
+    Include request validation, rate limiting per client, message transformation, and graceful degradation when RabbitMQ is
+    unavailable.
+- id: fsharp_lib_0039_exp_019
+  instruction: Build an F# consumer for RabbitMQ Streams that processes messages with ordering guarantees within partitions.
+    Implement partition-aware routing, consumer rebalancing on instance additions/removals, and offset management for exactly-once
+    semantics.
+- id: fsharp_lib_0039_exp_020
+  instruction: Create a CQRS projection updater in F# using RabbitMQ as the event bus. Handle projection rebuilds from event
+    replay, implement optimistic concurrency control, and provide eventual consistency guarantees with conflict resolution
+    strategies.
+- id: fsharp_lib_0039_exp_021
+  instruction: Implement a distributed lock manager in F# backed by RabbitMQ with TTL-based expiration. Include lock renewal
+    mechanisms, prevent deadlocks with timeout, handle lock holder crashes, and benchmark performance against Redis-based
+    implementations.
+- id: fsharp_lib_0039_exp_022
+  instruction: Build an F# health monitoring system that tracks RabbitMQ consumer lag, message throughput, and error rates.
+    Expose Prometheus metrics, trigger alerts on SLA violations, and implement automatic scaling triggers based on queue depth.
+- id: fsharp_lib_0039_exp_023
+  instruction: Create an F# library implementing the transactional inbox pattern for reliable message handling. Include automatic
+    deduplication, in-order processing guarantees, and outbox relay with exactly-once delivery semantics to downstream systems.
+- id: fsharp_lib_0039_exp_024
+  instruction: Implement a message priority escalation system in F# where consumer processing time determines message priority
+    upgrade. Long-running messages get demoted, stuck messages get escalated, and system adapts prefetch based on processing
+    velocity.
+- id: fsharp_lib_0039_exp_025
+  instruction: Build a session-based message router in F# using correlation IDs to maintain conversation state across request/response
+    message pairs. Handle session timeouts, implement session persistence across consumer restarts, and track session metrics.
+- id: fsharp_lib_0039_exp_026
+  instruction: Create an F# implementation of the claim check pattern where large message payloads are stored in object storage
+    and only references are sent through RabbitMQ. Implement automatic payload retrieval, compression for medium-sized payloads,
+    and streaming for very large messages.
+- id: fsharp_lib_0039_exp_027
+  instruction: Implement a circuit breaker pattern in F# for RabbitMQ consumers that monitors downstream service health. Trip
+    the breaker on consecutive failures, implement half-open state for probing recovery, and demonstrate fallback strategies
+    for degraded operation.
+- id: fsharp_lib_0039_exp_028
+  instruction: Build a message schema registry in F# that validates and stores message schemas from RabbitMQ. Include schema
+    evolution rules, backward/forward compatibility checking, and automatic schema migration functions for consumer adaptation.
+- id: fsharp_lib_0039_exp_029
+  instruction: Create an F# implementation of the pipeline pattern for RabbitMQ message processing with configurable stages
+    (validation, transformation, enrichment, routing). Include error handling per stage, stage retry policies, and parallel
+    execution for independent stages.
+- id: fsharp_lib_0040_exp_000
+  instruction: 'Build an ETL pipeline in F# to process healthcare patient records:
+
+    1. Read patient CSV data using FSharp.Data CsvProvider with typed columns for SSN, DOB, diagnosis codes
+
+    2. Validate HIPAA compliance: check SSN format, verify DOB is in past, validate ICD-10 diagnosis codes
+
+    3. Use Result monad with railway-oriented programming to collect all validation errors per patient
+
+    4. Enrich with insurance provider lookup from SQLite database using linq2db
+
+    5. Anonymize sensitive fields (SSN, address) for reporting while preserving referential integrity
+
+    6. Write valid records to PostgreSQL using Npgsql COPY with batch size of 1000
+
+    7. Stream large files with AsyncSeq, keeping memory usage under 500MB'
+- id: fsharp_lib_0040_exp_001
+  instruction: 'Create a real-time IoT sensor data ingestion pipeline in F#:
+
+    1. Read telemetry CSV files from multiple sensors using FSharp.Data CsvProvider
+
+    2. Validate readings: check temperature ranges (-50 to 150°C), humidity (0-100%), timestamp sequencing
+
+    3. Aggregate data points by sensor ID and time window (5-minute buckets)
+
+    4. Detect anomalies using z-score calculation, flag outliers beyond 3 standard deviations
+
+    5. Write aggregated results to PostgreSQL with Npgsql COPY, include anomaly flags
+
+    6. Generate summary: readings processed, anomalies detected, sensors reporting
+
+    7. Handle sensor malfunctions (stuck values, missing data) gracefully with AsyncSeq'
+- id: fsharp_lib_0040_exp_002
+  instruction: 'Implement a financial transaction reconciliation ETL in F#:
+
+    1. Read bank statement CSV using FSharp.Data CsvProvider with decimal precision for amounts
+
+    2. Validate transactions: verify amount doesn''t exceed daily limit, check reference format, validate currency codes
+
+    3. Join with internal ledger database using linq2db to find matches
+
+    4. Categorize each transaction: MATCHED, UNMATCHED_BANK_ONLY, UNMATCHED_LEDGER_ONLY
+
+    5. Write reconciliation results to PostgreSQL using Npgsql COPY protocol
+
+    6. Generate report: match rate percentage, total matched amount, unmatched by category
+
+    7. Handle duplicate transaction detection using hash-based deduplication'
+- id: fsharp_lib_0040_exp_003
+  instruction: 'Build an e-commerce order processing pipeline in F#:
+
+    1. Read order CSV export using FSharp.Data CsvProvider with order ID, customer ID, items, totals
+
+    2. Validate: check customer exists, verify item SKUs are valid, ensure total matches line items
+
+    3. Enrich with customer data (name, address) and product details (price, category) via linq2db joins
+
+    4. Calculate shipping costs based on weight, destination zone, and shipping method
+
+    5. Apply discount rules: VIP customers get 10%, orders over $500 get free shipping
+
+    6. Write processed orders to PostgreSQL using Npgsql COPY with conflict resolution on order ID
+
+    7. Generate summary: orders processed, revenue total, top categories, validation failures'
+- id: fsharp_lib_0040_exp_004
+  instruction: 'Create a data migration ETL in F# for moving legacy system data:
+
+    1. Read data from legacy CSV export using FSharp.Data CsvProvider (may have encoding issues)
+
+    2. Handle encoding: detect UTF-8, Latin-1, or Windows-1252, convert to UTF-8
+
+    3. Map legacy field names to new schema, apply transformation rules
+
+    4. Validate against new schema constraints: required fields, data types, referential integrity
+
+    5. Write to PostgreSQL using Npgsql COPY with explicit column mapping
+
+    6. Generate migration report: records migrated, records failed, mapping statistics
+
+    7. Support resumable processing using checkpoint files for large migrations'
+- id: fsharp_lib_0040_exp_005
+  instruction: 'Build a social media analytics ETL pipeline in F# for user engagement data:
+
+    1. Read engagement CSV (posts, likes, comments, shares) using FSharp.Data CsvProvider
+
+    2. Parse timestamps in multiple formats (ISO 8601, Unix epoch, custom formats)
+
+    3. Calculate engagement metrics: likes per post, comments per like ratio, viral coefficient
+
+    4. Aggregate by user, day, and content category
+
+    5. Detect spam accounts: flag users with >100 posts/day or engagement rate >80%
+
+    6. Write analytics results to PostgreSQL using Npgsql COPY
+
+    7. Generate report: total engagement, top content, spam accounts detected'
+- id: fsharp_lib_0040_exp_006
+  instruction: 'Implement a logistics tracking ETL in F# for shipping data:
+
+    1. Read tracking events CSV using FSharp.Data CsvProvider with tracking number, timestamp, location, status
+
+    2. Validate: verify tracking number format (alphanumeric, 12-20 chars), check status is valid enum
+
+    3. Reconstruct delivery timeline by sorting events chronologically per tracking number
+
+    4. Calculate KPIs: transit time, time at each hub, delivery success rate
+
+    5. Identify delivery exceptions: loops (same location twice), excessive delays, stuck packages
+
+    6. Write to PostgreSQL using Npgsql COPY with UPSERT for updating existing records
+
+    7. Generate operational report: shipments processed, on-time percentage, exception summary'
+- id: fsharp_lib_0040_exp_007
+  instruction: 'Create an ETL pipeline in F# to process education student records:
+
+    1. Read enrollment CSV using FSharp.Data CsvProvider with student ID, course codes, grades
+
+    2. Validate: verify course prerequisites are met, check grade values are valid (A-F, P/F)
+
+    3. Enrich with course catalog data from database (credits, prerequisites, coreqs)
+
+    4. Calculate GPA, total credits earned, academic standing (probation, good standing)
+
+    5. Identify at-risk students: those with failing grades or below 2.0 GPA
+
+    6. Write to PostgreSQL using Npgsql COPY with batch inserts of 500 records
+
+    7. Generate academic report: enrollment statistics, GPA distribution, at-risk student count'
+- id: fsharp_lib_0040_exp_008
+  instruction: 'Build a gaming analytics ETL pipeline in F# for player behavior data:
+
+    1. Read game event logs CSV using FSharp.Data CsvProvider (purchase, level complete, item use, etc.)
+
+    2. Parse JSON payload column using FSharp.Json or Thoth.Json
+
+    3. Validate event schema: required fields present, valid event types, reasonable numeric values
+
+    4. Enrich with player profile data from database (account age, subscription tier, lifetime value)
+
+    5. Calculate engagement metrics: session duration, daily active users, retention curves
+
+    6. Write aggregated metrics to PostgreSQL using Npgsql COPY
+
+    7. Stream large log files with AsyncSeq, processing in chunks of 10000 events'
+- id: fsharp_lib_0040_exp_009
+  instruction: 'Implement a real estate listing ETL in F#:
+
+    1. Read property listings CSV using FSharp.Data CsvProvider with address, price, beds, baths, sqft
+
+    2. Validate: check price range ($10k-$50M), beds/baths reasonable, sqft > 0
+
+    3. Normalize addresses: standardize abbreviations (St->Street), extract ZIP from full address
+
+    4. Calculate derived fields: price per sqft, price per bedroom, age of listing
+
+    5. Join with neighborhood data to enrich with school districts, crime stats
+
+    6. Write to PostgreSQL using Npgsql COPY with ON CONFLICT for updating existing listings
+
+    7. Generate market report: average prices by area, inventory levels, price reductions'
+- id: fsharp_lib_0040_exp_010
+  instruction: 'Build an inventory management ETL in F# for warehouse stock data:
+
+    1. Read inventory CSV using FSharp.Data CsvProvider with SKU, quantity, warehouse, last_updated
+
+    2. Validate: check quantity >= 0, valid warehouse codes, timestamps not in future
+
+    3. Detect stock anomalies: negative quantities, sudden drops >50%, stuck inventory (no updates in 90 days)
+
+    4. Join with product master data to get reorder points, lead times, supplier info
+
+    5. Calculate reorder recommendations: items below reorder point
+
+    6. Write to PostgreSQL using Npgsql COPY
+
+    7. Generate inventory health report: total SKUs, low stock count, stale inventory value'
+- id: fsharp_lib_0040_exp_011
+  instruction: 'Create an ETL pipeline in F# to process event sourcing data:
+
+    1. Read event log CSV using FSharp.Data CsvProvider with aggregate_id, sequence, event_type, payload
+
+    2. Validate sequence numbers are contiguous per aggregate, detect gaps
+
+    3. Deserialize JSON payload using Thoth.Json, validate against event schemas
+
+    4. Reconstruct aggregate state by applying events in order
+
+    5. Detect business rule violations during replay
+
+    6. Write to PostgreSQL using Npgsql COPY with idempotency checks (aggregate_id + sequence as PK)
+
+    7. Generate audit report: events processed, gaps found, rule violations'
+- id: fsharp_lib_0040_exp_012
+  instruction: 'Build an ETL pipeline in F# to debug and fix slow data processing:
+
+    1. Profile existing CSV processing code: identify bottleneck (I/O, parsing, validation, DB writes)
+
+    2. Read CSV using FSharp.Data CsvProvider with performance instrumentation
+
+    3. Implement validation with ChunkEnumerator for batched processing
+
+    4. Add timing metrics to each pipeline stage
+
+    5. Optimize database writes: increase batch size, use COPY, reduce round trips
+
+    6. Implement caching for lookup data to avoid repeated DB queries
+
+    7. Report performance improvements: before/after times for each stage'
+- id: fsharp_lib_0040_exp_013
+  instruction: 'Refactor an imperative F# ETL to functional style:
+
+    1. Convert mutable variable accumulation pattern to Seq.fold/AsyncSeq
+
+    2. Replace null checks with Option types
+
+    3. Convert early-return error handling to Result/Choice monads
+
+    4. Implement railway-oriented programming to collect all errors
+
+    5. Replace for loops with map/filter/reduce operations
+
+    6. Add computation expressions for cleaner async workflow
+
+    7. Demonstrate before/after code comparison with metrics'
+- id: fsharp_lib_0040_exp_014
+  instruction: 'Design a high-concurrency ETL pipeline in F#:
+
+    1. Read CSV using FSharp.Data CsvProvider with partitioned file reading
+
+    2. Implement concurrent validation using F# Agent (MailboxProcessor)
+
+    3. Use SemaphoreSlim to limit concurrent database connections
+
+    4. Process multiple files in parallel with AsyncSeq.ParallelChunked
+
+    5. Handle backpressure: slow consumers, bounded queues
+
+    6. Write to PostgreSQL using Npgsql COPY from multiple workers
+
+    7. Benchmark: throughput with 1, 4, 8, 16 concurrent workers'
+- id: fsharp_lib_0040_exp_015
+  instruction: 'Implement schema evolution handling in F# ETL:
+
+    1. Read CSV with schema version detection (header columns or version column)
+
+    2. Implement schema migration functions for v1->v2, v2->v3, etc.
+
+    3. Apply transformations based on detected schema version
+
+    4. Validate output matches current schema
+
+    5. Handle backward compatibility: add defaults for missing columns
+
+    6. Write to PostgreSQL using Npgsql COPY with schema version tracking
+
+    7. Generate migration report: records by schema version, transformations applied'
+- id: fsharp_lib_0040_exp_016
+  instruction: 'Build a resilient ETL in F# with retry logic and circuit breakers:
+
+    1. Read CSV using FSharp.Data CsvProvider
+
+    2. Implement retry with exponential backoff for transient failures
+
+    3. Add circuit breaker pattern for database calls (Polly library)
+
+    4. Handle partial batch failures: retry failed rows, log permanently failed
+
+    5. Implement idempotent writes using GUID-based request IDs
+
+    6. Write to PostgreSQL using Npgsql COPY with error recovery
+
+    7. Generate operation report: successful rows, retried rows, permanent failures, circuit breaker trips'
+- id: fsharp_lib_0040_exp_017
+  instruction: 'Create an ETL pipeline in F# with data quality scoring:
+
+    1. Read CSV using FSharp.Data CsvProvider
+
+    2. Implement validation rules with severity levels (ERROR, WARNING, INFO)
+
+    3. Calculate data quality score per row (percentage of rules passed)
+
+    4. Calculate quality scores per field, per file, per batch
+
+    5. Route records based on quality: high quality to production, low quality to quarantine
+
+    6. Write to PostgreSQL using Npgsql COPY to separate tables
+
+    7. Generate quality report: overall score, scores by field, rules most frequently violated'
+- id: fsharp_lib_0040_exp_018
+  instruction: 'Implement exactly-once ETL semantics in F#:
+
+    1. Read CSV using FSharp.Data CsvProvider with hash computation per row
+
+    2. Store processed row hashes in tracking table (PostgreSQL)
+
+    3. Check hash existence before processing to skip duplicates
+
+    4. Use database transactions for atomic read-process-write
+
+    5. Implement idempotency keys for database inserts
+
+    6. Write to PostgreSQL using Npgsql COPY with ON CONFLICT DO NOTHING
+
+    7. Generate deduplication report: total rows, duplicates skipped, unique rows written'
+- id: fsharp_lib_0040_exp_019
+  instruction: 'Build an encrypted data ETL pipeline in F# for PII handling:
+
+    1. Read CSV using FSharp.Data CsvProvider with PII columns (email, phone, SSN)
+
+    2. Implement field-level encryption using AES-256 for PII
+
+    3. Validate encrypted values don''t appear in non-PII fields
+
+    4. Store encryption keys securely (environment variables, key vault)
+
+    5. Implement decryption for authorized processing only
+
+    6. Write encrypted data to PostgreSQL using Npgsql COPY
+
+    7. Generate compliance report: records processed, PII fields encrypted, key usage audit'
+- id: fsharp_lib_0040_exp_020
+  instruction: 'Create a multi-tenant SaaS ETL pipeline in F#:
+
+    1. Read CSV using FSharp.Data CsvProvider with tenant_id column
+
+    2. Validate tenant isolation: ensure tenant can only access their data
+
+    3. Apply tenant-specific transformation rules and business logic
+
+    4. Enforce row-level security: tag all records with tenant_id
+
+    5. Implement per-tenant rate limiting and quota enforcement
+
+    6. Write to PostgreSQL using Npgsql COPY with tenant_id in all tables
+
+    7. Generate multi-tenant report: records per tenant, quota usage, tenant-specific errors'
+- id: fsharp_lib_0040_exp_021
+  instruction: 'Build a time-series data processing ETL in F#:
+
+    1. Read time-series CSV using FSharp.Data CsvProvider with timestamp, metric, value columns
+
+    2. Validate timestamp ordering and detect gaps in time series
+
+    3. Handle timezone conversions: normalize all timestamps to UTC
+
+    4. Implement resampling: convert 1-second data to 1-minute averages
+
+    5. Calculate rolling metrics: moving averages, cumulative sums, period-over-period changes
+
+    6. Write to PostgreSQL timescaledb using Npgsql COPY
+
+    7. Generate time-series report: points processed, gaps detected, storage required'
+- id: fsharp_lib_0040_exp_022
+  instruction: 'Implement data versioning in ETL pipeline using F#:
+
+    1. Read CSV using FSharp.Data CsvProvider
+
+    2. Implement SCD Type 2: add valid_from, valid_to, is_current columns
+
+    3. Detect changes: compare incoming data with current version
+
+    4. Create new version rows for changed records, close old versions
+
+    5. Handle natural keys and business keys correctly
+
+    6. Write to PostgreSQL using Npgsql COPY with version tracking
+
+    7. Generate versioning report: new records, updated records, unchanged records, version count per key'
+- id: fsharp_lib_0040_exp_023
+  instruction: 'Build an ETL with rollback capability in F#:
+
+    1. Read CSV using FSharp.Data CsvProvider
+
+    2. Implement batch-level transactions with savepoints
+
+    3. Track all writes with rollback identifiers
+
+    4. Implement compensation actions for each write operation
+
+    5. Handle failures mid-batch: rollback current batch, continue with next
+
+    6. Write to PostgreSQL using Npgsql COPY with transaction management
+
+    7. Generate transaction report: batches committed, batches rolled back, compensation actions executed'
+- id: fsharp_lib_0040_exp_024
+  instruction: 'Create an API aggregation ETL pipeline in F#:
+
+    1. Read CSV with API endpoint configurations using FSharp.Data CsvProvider
+
+    2. Fetch data from multiple REST APIs (with authentication)
+
+    3. Handle rate limiting: implement token bucket algorithm
+
+    4. Merge API responses with CSV data based on key columns
+
+    5. Handle API failures gracefully: use circuit breakers, fallback to cached data
+
+    6. Write aggregated results to PostgreSQL using Npgsql COPY
+
+    7. Generate aggregation report: API calls made, success rate, data merged'
+- id: fsharp_lib_0040_exp_025
+  instruction: 'Build a comparative analysis ETL in F# showing C# vs F# approaches:
+
+    1. Read same CSV using FSharp.Data CsvProvider
+
+    2. Implement validation pipeline in both C# (with LINQ) and F# (with Result)
+
+    3. Compare code complexity: lines of code, cyclomatic complexity
+
+    4. Compare performance: processing speed, memory usage
+
+    5. Compare error handling: how each handles edge cases
+
+    6. Write results to PostgreSQL using Npgsql COPY
+
+    7. Generate comparison report: metrics for both languages, recommendations'
+- id: fsharp_lib_0040_exp_026
+  instruction: 'Implement a partial failure handling ETL in F#:
+
+    1. Read CSV using FSharp.Data CsvProvider
+
+    2. Implement per-row error handling: one bad row doesn''t fail entire batch
+
+    3. Collect all validation errors with detailed messages and row numbers
+
+    4. Process valid rows, collect invalid rows separately
+
+    5. Write valid rows using Npgsql COPY, log invalid rows to error table
+
+    6. Implement retry mechanism for transient database errors
+
+    7. Generate detailed error report: total errors, errors by type, sample error messages'
+- id: fsharp_lib_0040_exp_027
+  instruction: 'Build observability into an ETL pipeline using F#:
+
+    1. Read CSV using FSharp.Data CsvProvider with structured logging
+
+    2. Instrument each pipeline stage with timing and count metrics
+
+    3. Emit structured logs (JSON) for each processing stage
+
+    4. Track row-level lineage: input row -> output row(s) mapping
+
+    5. Implement health checks: database connectivity, disk space, memory usage
+
+    6. Write metrics to PostgreSQL metrics table using Npgsql COPY
+
+    7. Generate observability report: latency percentiles, throughput, resource usage, error rates'
+- id: fsharp_lib_0040_exp_028
+  instruction: 'Create a self-healing ETL pipeline in F#:
+
+    1. Read CSV using FSharp.Data CsvProvider with automatic retry
+
+    2. Implement common data quality fixes: trim whitespace, standardize casing, parse dates
+
+    3. Detect and fix common issues: duplicate whitespace, encoding problems, date format variations
+
+    4. Log all automatic fixes applied with before/after values
+
+    5. Escalate unfixable issues to manual review queue
+
+    6. Write fixed data to PostgreSQL using Npgsql COPY
+
+    7. Generate healing report: fixes applied by category, fixes that helped, issues escalated'
+- id: fsharp_lib_0041_exp_000
+  instruction: Build a real-time hospital patient monitoring dashboard in Bolero/Elmish where nurses can track vital signs
+    (heart rate, blood pressure, SpO2) for multiple patients. Implement WebSocket-style updates via Elmish subscriptions,
+    with visual alerts for critical thresholds and a page for individual patient history charts.
+- id: fsharp_lib_0041_exp_001
+  instruction: Implement a multi-tenant SaaS invoice generator in Bolero with server-side Blazor hosting via Giraffe. Include
+    PDF export capability, recurring invoice templates, payment status tracking, and role-based access control where tenants
+    can only see their own invoices. Handle concurrent invoice number generation with optimistic locking.
+- id: fsharp_lib_0041_exp_002
+  instruction: Create a Blazor WebAssembly chess game using Bolero's Elmish architecture where two players can play against
+    each other. Implement move validation, check/checkmate detection, game history with move replay, and a server-side Elo
+    rating system via Remoting. Add time control with increment logic.
+- id: fsharp_lib_0041_exp_003
+  instruction: Build a CI/CD pipeline configuration editor in Bolero WebAssembly that connects to a Giraffe backend. Users
+    should define stages, jobs, and tasks in a YAML-like DSL with syntax validation, visual dependency graph rendering, and
+    real-time validation feedback. Include template library and variable interpolation.
+- id: fsharp_lib_0041_exp_004
+  instruction: Implement a distributed task scheduler dashboard in Bolero showing cron jobs, their execution history, and
+    current status. Use Elmish subscriptions for real-time log streaming, implement job triggering with manual override, and
+    add a DAG visualization for task dependencies. Include retry policies and failure alerting.
+- id: fsharp_lib_0041_exp_005
+  instruction: Create a Blazor WebAssembly music notation editor using Bolero where composers can create scores with multiple
+    tracks. Implement note placement, rest insertion, time signature changes, tempo markings, and export to MusicXML. Add
+    playback preview via Web Audio API integration and a measure-by-measure navigation system.
+- id: fsharp_lib_0041_exp_006
+  instruction: Build an e-commerce product configurator in Bolero/Elmish for customizable products (like shoes or phones).
+    Implement conditional option visibility based on previous selections, price calculation with dynamic bundling, image preview
+    updates, and a Giraffe-powered quote generation endpoint. Handle out-of-stock constraints.
+- id: fsharp_lib_0041_exp_007
+  instruction: Implement a financial portfolio rebalancer in Bolero that connects to a mock brokerage API. Calculate drift
+    from target allocations, suggest trades to rebalance, and execute simulated trades. Include tax lot optimization, wash
+    sale tracking, and historical performance charts. Handle currency conversion for international holdings.
+- id: fsharp_lib_0041_exp_008
+  instruction: Create a multi-user collaborative markdown editor in Bolero WebAssembly using operational transformation for
+    conflict resolution. Implement real-time cursor presence, comment threads on specific paragraphs, version history with
+    diff view, and export to HTML/PDF. Connect to Giraffe for persistence and user authentication.
+- id: fsharp_lib_0041_exp_009
+  instruction: Build a Blazor WebAssembly satellite ground station interface in Bolero for tracking orbital passes. Calculate
+    pass windows based on TLE data, display elevation charts, and simulate command sequences before transmission. Include
+    a contact log with signal quality metrics and a pass prediction algorithm.
+- id: fsharp_lib_0041_exp_010
+  instruction: Implement a recipe management system in Bolero with ingredient scaling, nutritional calculation, and meal planning.
+    Support recipe sharing with privacy controls, shopping list generation from multiple recipes, and a Giraffe API for user
+    collections. Handle unit conversions and allergen warnings.
+- id: fsharp_lib_0041_exp_011
+  instruction: Create an event-driven microservices architecture visualizer in Bolero showing service dependencies and message
+    flows. Implement real-time health monitoring via subscriptions, click-to-drill-down into individual service logs, and
+    deployment history timeline. Connect to a Giraffe backend that aggregates Kubernetes metrics.
+- id: fsharp_lib_0041_exp_012
+  instruction: Build a genetic sequence analyzer in Bolero/Elmish for basic DNA operations. Implement pattern matching, reverse
+    complement, transcription to RNA, and translation to amino acids. Include sequence alignment visualization, FASTA file
+    import/export, and a gene finding algorithm for ORFs. Handle ambiguous nucleotide codes.
+- id: fsharp_lib_0041_exp_013
+  instruction: Implement a car rental fleet management dashboard in Bolero showing vehicle locations on a map, booking calendars,
+    and maintenance schedules. Use Remoting to update vehicle status in real-time, calculate utilization rates, and generate
+    end-of-day reports. Include pricing rules engine with seasonal adjustments.
+- id: fsharp_lib_0041_exp_014
+  instruction: Create a legal document redlining tool in Bolero WebAssembly where lawyers can track changes across document
+    versions. Implement track changes visualization, comment threads, and approval workflows. Connect to a Giraffe API for
+    document storage with version branching. Handle large document performance with virtualization.
+- id: fsharp_lib_0041_exp_015
+  instruction: Build a real estate property management system in Bolero with tenant tracking, lease renewal alerts, and maintenance
+    request queue. Implement rent calculation with late fee rules, expense categorization, and financial reports. Include
+    property photo galleries with before/after maintenance comparisons. Handle multi-property portfolios.
+- id: fsharp_lib_0041_exp_016
+  instruction: Implement a multiplayer turn-based board game server in F# using Giraffe, with a Bolero WebAssembly client.
+    Support game lobbies, spectator mode, and match history. Use Elmish for client state with optimistic moves, and implement
+    rollback on server rejection. Include ELO matchmaking and friend lists.
+- id: fsharp_lib_0041_exp_017
+  instruction: Create a bug tracking dashboard in Bolero using the Elmish pattern with filters, sorting, and bulk operations.
+    Implement time-based sprint planning, burndown charts, and release scope visualization. Connect to a Giraffe backend with
+    webhook support for GitHub/GitLab integration. Handle offline support with sync queue.
+- id: fsharp_lib_0041_exp_018
+  instruction: Build a restaurant reservation and table management system in Bolero. Implement floor plan visualization, waitlist
+    management with SMS notification simulation, and peak hours analytics. Support multiple dining periods (breakfast, lunch,
+    dinner) with different operating hours. Handle large party requests and blocking tables.
+- id: fsharp_lib_0041_exp_019
+  instruction: Implement a warehouse inventory system in Bolero/Elmish with barcode scanning simulation and location tracking.
+    Support multi-bin locations, pick-and-pack optimization for orders, and cycle counting. Connect to Giraffe for real-time
+    stock synchronization across locations. Handle partial fulfillment and backorder logic.
+- id: fsharp_lib_0041_exp_020
+  instruction: Create a social event RSVP and seating arrangement tool in Bolero. Implement drag-and-drop table seating with
+    compatibility constraints, dietary requirement tracking, and waitlist management. Generate seating charts and guest lists
+    for printing. Include email reminder scheduling via the Giraffe backend.
+- id: fsharp_lib_0041_exp_021
+  instruction: Build a scientific instrument calibration tracker in Bolero with certification expiration alerts and measurement
+    uncertainty calculations. Implement calibration procedures with step-by-step guidance, certificate generation, and audit
+    trail logging. Handle instrument retirement and replacement workflows. Connect to lab management systems via Remoting.
+- id: fsharp_lib_0041_exp_022
+  instruction: Implement a cryptocurrency portfolio tracker in Bolero showing real-time price updates via Elmish subscriptions.
+    Calculate profit/loss across multiple exchanges, implement tax lot selection strategies (FIFO, LIFO, HIFO), and generate
+    tax reports. Handle API rate limiting and connection failures gracefully.
+- id: fsharp_lib_0041_exp_023
+  instruction: Create a conference room booking system in Bolero with conflict detection and recurring reservation support.
+    Implement 15-minute time slot granularity, booking approval workflows for executive rooms, and utilization analytics.
+    Handle all-day events and buffer time between bookings. Include room feature search.
+- id: fsharp_lib_0041_exp_024
+  instruction: Build an educational course content delivery platform in Bolero with progress tracking and assessment scoring.
+    Implement video lesson streaming, interactive quizzes with partial credit, and peer grading for assignments. Support multiple
+    instructor roles and content versioning. Connect to a Giraffe API with CDN-backed media delivery.
+- id: fsharp_lib_0041_exp_025
+  instruction: Implement a manufacturing quality control inspection system in Bolero WebAssembly. Create inspection checklists
+    with pass/fail criteria, attach photos to defect records, and calculate defect rates per batch. Use Remoting to sync inspections
+    to the Giraffe backend with offline support. Handle multi-stage production flows.
+- id: fsharp_lib_0041_exp_026
+  instruction: Create a home automation dashboard in Bolero with device grouping, scheduling, and scene management. Implement
+    real-time device status updates via Elmish subscriptions, energy usage analytics, and rule-based automation (e.g., turn
+    lights on at sunset). Connect to a mock IoT gateway via Remoting with security token handling.
+- id: fsharp_lib_0041_exp_027
+  instruction: Build a grant proposal management system in Bolero for research institutions. Implement multi-stage workflows
+    (draft, review, submit, revision), budget tracking with spending limits, and deadline calendars. Include reviewer assignment
+    with conflict of interest checking. Connect to a Giraffe backend with document attachments.
+- id: fsharp_lib_0041_exp_028
+  instruction: Create an airport flight information display system in Bolero with real-time updates via Elmish subscriptions.
+    Support multiple airports, filtering by airline/destination/status, and delay reasoning. Implement gate change alerts
+    and connecting flight information. Handle large data volumes with virtualization and scheduled refresh.
+- id: fsharp_lib_0041_exp_029
+  instruction: Build a gym membership management system in Bolero with class scheduling, trainer availability, and workout
+    plan tracking. Implement member check-in with access control, attendance analytics, and churn prediction metrics. Support
+    multiple membership tiers with different access levels. Connect to a Giraffe API for billing integration.
+system_prompt: 'You are an expert F# developer specializing in the F# ecosystem.
+
+  Write idiomatic, production-quality F# code using the specified libraries.
+
+  Follow these conventions:
+
+  - Use pipeline operators (|>) for data transformations
+
+  - Prefer immutable data and functional patterns
+
+  - Use computation expressions where the library provides them
+
+  - Include necessary `open` statements at the top
+
+  - Include type annotations on public APIs
+
+  - Write concise explanations (2-3 sentences max) before the code
+
+  - All code must compile with .NET 9 and the latest stable versions of each library
+
+  Be concise. Return only the code and a brief explanation.
+
+  '
+temperature: 0.6

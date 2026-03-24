@@ -47,7 +47,7 @@ OLLAMA_CHAT_URL = "http://localhost:11434/api/chat"
 TEACHERS = {
     "kimi": "kimi-k2.5:cloud",
     "minimax": "minimax-m2.7:cloud",
-    "deepseek": "deepseek-v3.2:cloud",
+    "glm5": "glm-5:cloud",
 }
 
 EXPANSION_SYSTEM_PROMPT = """\

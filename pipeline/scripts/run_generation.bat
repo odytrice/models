@@ -1,4 +1,5 @@
 @echo off
 cd /d "%~dp0"
-python run_generation.py --round-config ../../configs/rounds/round1.yaml --verify %*
+echo === SUBSTITUTE: Re-running 806 failed QA pairs with alternate teachers ===
+python run_generation.py --round-config ../../configs/rounds/substitute.yaml --verify %*
 pause

@@ -1,0 +1,1701 @@
+domain: fsharp_core
+max_tokens: 4096
+prompts:
+- id: fsharp_core_0026_exp_000
+  instruction: 'Implement a generic `measureDistance` function in F# using SRTP that calculates distance between any two geometric
+    types with X and Y coordinates. Include overloads for:
+
+    - Types with `X` and `Y` properties directly accessible
+
+    - Types with `GetX()` and `GetY()` methods
+
+    Compare the approach with defining a common interface.'
+- id: fsharp_core_0026_exp_001
+  instruction: 'Create a custom `Matrix2x2<''T>` type in F# with SRTP-based operations:
+
+    - Addition and subtraction operators using ^T constraints
+
+    - Scalar multiplication
+
+    - Determinant calculation using INumber<''T>
+
+    Benchmark the performance against a non-inline version using BenchmarkDotNet.'
+- id: fsharp_core_0026_exp_002
+  instruction: 'Design a type-safe validation library in F# where you define validation rules as SRTP functions.
+
+    Create `validate` that works on any type with properties decorated with custom attributes.
+
+    Show how SRTP enables compile-time checking vs runtime reflection approaches.'
+- id: fsharp_core_0026_exp_003
+  instruction: 'Implement a generic `deepClone` function in F# using SRTP that works on any serializable type.
+
+    The function should call `.Clone()` if available, fall back to JSON serialization otherwise.
+
+    Handle edge cases where types don''t support either approach.'
+- id: fsharp_core_0026_exp_004
+  instruction: 'Create a unit conversion system in F# using SRTP:
+
+    - Define units (meters, feet, celsius, fahrenheit) as marker types
+
+    - Implement `convert` that works between compatible units
+
+    - Show type-safe dimension checking at compile time vs runtime errors'
+- id: fsharp_core_0026_exp_005
+  instruction: 'Build an F# DSL for building SQL queries using SRTP.
+
+    Implement `select`, `where`, `orderBy` functions that work with any type having property accessors.
+
+    Show how SRTP enables property path resolution without reflection.'
+- id: fsharp_core_0026_exp_006
+  instruction: 'Demonstrate SRTP for implementing the Interpreter pattern in F#.
+
+    Create an expression tree evaluator where `eval` works on any type implementing `Execute()`.
+
+    Compare with traditional object-oriented visitor approach in terms of type safety and performance.'
+- id: fsharp_core_0026_exp_007
+  instruction: 'Implement a generic `batchProcess` function in F# using SRTP that:
+
+    - Accepts any collection of items with an `Id` and `Process()` method
+
+    - Returns results with error handling
+
+    - Shows how SRTP enables duck typing without interface inheritance'
+- id: fsharp_core_0026_exp_008
+  instruction: 'Create a fluent builder pattern implementation in F# using SRTP.
+
+    The builder should work with any type having setter properties, enabling `build<MyType>(...)` syntax.
+
+    Handle optional vs required properties at compile time where possible.'
+- id: fsharp_core_0026_exp_009
+  instruction: 'Implement a type-safe event aggregator in F# using SRTP where:
+
+    - Publishers call `.Publish()` on any event type
+
+    - Subscribers receive strongly-typed callbacks
+
+    - Show how SRTP avoids boxing compared to interface-based approach'
+- id: fsharp_core_0026_exp_010
+  instruction: 'Create a generic caching decorator in F# using SRTP:
+
+    - Wrap any type with a `Compute()` method
+
+    - Add memoization with configurable key generation
+
+    - Handle cache invalidation for mutable types'
+- id: fsharp_core_0026_exp_011
+  instruction: 'Implement F# lenses (functional optics) using SRTP for record types.
+
+    Create `get`, `set`, and `over` functions that work on any record with the specified field.
+
+    Compare performance with reflection-based alternatives.'
+- id: fsharp_core_0026_exp_012
+  instruction: 'Design a pattern matching extension system in F# using SRTP.
+
+    Implement `matchWith` that accepts any type and a list of predicate-function pairs.
+
+    Show how this differs from built-in pattern matching in expressiveness and performance.'
+- id: fsharp_core_0026_exp_013
+  instruction: 'Create a generic resource acquisition pattern in F# using SRTP:
+
+    - Implement `using` that works with any type implementing `.Dispose()`
+
+    - Handle both synchronous and asynchronous disposal
+
+    - Compare with IDisposable interface approach'
+- id: fsharp_core_0026_exp_014
+  instruction: 'Implement a type-safe route matching system for an F# web framework using SRTP.
+
+    Routes should accept handlers with any parameter types that can be parsed from URL segments.
+
+    Show compile-time routing vs runtime routing table approaches.'
+- id: fsharp_core_0026_exp_015
+  instruction: 'Create a generic comparison utility in F# using SRTP:
+
+    - Implement `compareBy` that works on any type with comparable properties
+
+    - Support multi-property sorting
+
+    - Show how SRTP enables inlining for performance-critical comparisons'
+- id: fsharp_core_0026_exp_016
+  instruction: 'Build an F# implementation of the Strategy pattern using SRTP where:
+
+    - Any type with an `Execute()` method can be a strategy
+
+    - Context objects accept strategies via SRTP constraints
+
+    - Demonstrate with sorting strategies (quickSort, mergeSort) working on any comparable collection'
+- id: fsharp_core_0026_exp_017
+  instruction: 'Implement a generic pretty-printing library in F# using SRTP:
+
+    - `format` works on any type with custom `.ToDisplayString()` or falls back to `.ToString()`
+
+    - Handle circular reference detection for graph structures
+
+    - Support indentation levels and custom formatters'
+- id: fsharp_core_0026_exp_018
+  instruction: 'Create an F# implementation of the Observer pattern using SRTP:
+
+    - Subjects notify any observer implementing `.OnNext()` and `.OnError()`
+
+    - Show how SRTP enables compile-time notification type checking
+
+    - Compare with traditional generic IObserver<''T> approach'
+- id: fsharp_core_0026_exp_019
+  instruction: 'Implement a generic memoization system in F# using SRTP:
+
+    - Memoize any function with SRTP constraints on argument types
+
+    - Handle complex argument types with custom equality comparison
+
+    - Show memory usage differences between SRTP and interface-based approaches'
+- id: fsharp_core_0026_exp_020
+  instruction: 'Design a type-safe CSV parsing library in F# using SRTP:
+
+    - Parse CSV rows into any type with property setters
+
+    - Support custom type converters via SRTP
+
+    - Handle missing values and type conversion errors gracefully'
+- id: fsharp_core_0026_exp_021
+  instruction: 'Create a generic diff/patch system in F# using SRTP:
+
+    - Compute differences between any two values with `.Equals()` and `.GetHashCode()`
+
+    - Generate patches that can be applied to original values
+
+    - Show how SRTP enables efficient binary representation comparison'
+- id: fsharp_core_0026_exp_022
+  instruction: 'Implement a finite state machine framework in F# using SRTP:
+
+    - States implement `.CanTransitionTo()` and `.OnEnter()`
+
+    - Transitions work with any state type
+
+    - Show compile-time state transition validation where possible'
+- id: fsharp_core_0026_exp_023
+  instruction: 'Build a generic averaging/aggregation library in F# using SRTP:
+
+    - `average`, `sum`, `weightedAverage` work on any numeric collection
+
+    - Use INumber<''T> for type-safe math operations
+
+    - Handle edge cases (empty collections, NaN, infinity)'
+- id: fsharp_core_0026_exp_024
+  instruction: 'Implement a decorator pattern system in F# using SRTP:
+
+    - Compose any types with `.Before()`, `.After()`, and `.Wrap()` methods
+
+    - Create timing, logging, and retry decorators
+
+    - Show how SRTP enables transparent composition'
+- id: fsharp_core_0026_exp_025
+  instruction: 'Create a generic cloning/copying utility in F# using SRTP:
+
+    - Deep copy any type with `.Clone()` or copy constructor
+
+    - Support patch-based copying (copy with overrides)
+
+    - Handle mutable vs immutable types differently'
+- id: fsharp_core_0026_exp_026
+  instruction: 'Implement a parser combinator library in F# using SRTP:
+
+    - Create `parse<''T>` that works with any input type having character access
+
+    - Combinators (map, seq, alt) work via SRTP constraints
+
+    - Show how this differs from active patterns in flexibility'
+- id: fsharp_core_0026_exp_027
+  instruction: 'Design a type-safe configuration system in F# using SRTP:
+
+    - Load configuration into any type with matching property names
+
+    - Support nested configuration sections
+
+    - Handle missing keys and type mismatches with descriptive errors'
+- id: fsharp_core_0026_exp_028
+  instruction: 'Implement a generic command pattern in F# using SRTP:
+
+    - Commands implement `.Execute()` and `.Undo()`
+
+    - Create composite commands from individual commands
+
+    - Show how SRTP enables command aggregation without inheritance'
+- id: fsharp_core_0026_exp_029
+  instruction: 'Create a generic visitor implementation in F# using SRTP:
+
+    - Visitors implement `.Visit<''T>()` for each type they handle
+
+    - Visitables implement `.Accept(visitor)`
+
+    - Compare double dispatch via SRTP vs traditional OOP approach in type safety and extensibility'
+- id: fsharp_core_0027_exp_000
+  instruction: 'Create a simple F# module `ShoppingCart` with:
+
+    - Internal helper function `calculateDiscount` that validates discount codes
+
+    - Internal helper function `applyTax` that computes tax based on region
+
+    - Public API functions: `addItem`, `removeItem`, `checkout`
+
+    - Write the corresponding .fsi file that exposes only the public API
+
+    - Show how an external module calling the internal functions would fail at compile time'
+- id: fsharp_core_0027_exp_001
+  instruction: 'Design a financial trading library module `TradingEngine` with:
+
+    - Internal state management with mutable references
+
+    - Internal logging and audit trail functions
+
+    - Opaque type `Portfolio` where internal representation is hidden
+
+    - Public functions: `createPortfolio`, `buy`, `sell`, `getBalance`
+
+    - Create the .fsi file with signature entries for all public items
+
+    - Demonstrate that internal mutable state is completely hidden'
+- id: fsharp_core_0027_exp_002
+  instruction: 'Write an F# module `JsonParser` that parses JSON using internal parsing combinators:
+
+    - Internal tokenizer function that splits JSON into tokens
+
+    - Internal recursive descent parser functions
+
+    - Public opaque type `JsonValue` with hidden internal structure
+
+    - Public functions: `parse`, `tryParse`, `serialize`
+
+    - Create the .fsi showing only public signatures
+
+    - Show how a user can work with JsonValue but not construct it directly'
+- id: fsharp_core_0027_exp_003
+  instruction: 'Create an F# module `ConnectionPool` for database connection management:
+
+    - Internal connection creation and validation
+
+    - Internal pool statistics tracking
+
+    - Public API: `acquireConnection`, `releaseConnection`, `withConnection`
+
+    - Write .fsi file with proper signatures
+
+    - Demonstrate a signature mismatch: accidentally declare a function in .fsi that doesn''t exist in .fs
+
+    - Show the compile error and the correct fix'
+- id: fsharp_core_0027_exp_004
+  instruction: 'Design an F# module `RateLimiter` with rate limiting functionality:
+
+    - Internal sliding window implementation
+
+    - Internal token bucket algorithm
+
+    - Opaque type `RateLimitPolicy` hiding implementation details
+
+    - Public API: `createPolicy`, `checkLimit`, `getRemaining`
+
+    - Write comprehensive .fsi file
+
+    - Explain when .fsi files provide more encapsulation than `internal` keyword alone'
+- id: fsharp_core_0027_exp_005
+  instruction: 'Create an F# module `EventStore` for event sourcing:
+
+    - Internal event serialization/deserialization
+
+    - Internal snapshot management
+
+    - Opaque type `Aggregate` with hidden internal state
+
+    - Public functions: `createAggregate`, `applyEvent`, `getEvents`, `rehydrate`
+
+    - Write .fsi file
+
+    - Show how signature files help version the public API separately from implementation'
+- id: fsharp_core_0027_exp_006
+  instruction: 'Write an F# module `Cache` implementing an in-memory cache with TTL:
+
+    - Internal hash map for storage
+
+    - Internal cleanup task for expired entries
+
+    - Opaque type `Cache<''TKey,''TValue>` with hidden implementation
+
+    - Public API: `create`, `get`, `set`, `invalidate`, `clear`
+
+    - Create corresponding .fsi file
+
+    - Demonstrate internal thread-safety mechanisms are hidden from consumers'
+- id: fsharp_core_0027_exp_007
+  instruction: 'Design a module `Authentication` for token-based auth:
+
+    - Internal JWT parsing and validation
+
+    - Internal secret key management
+
+    - Opaque type `Token` hiding JWT structure
+
+    - Public functions: `generateToken`, `validateToken`, `extractClaims`, `revokeToken`
+
+    - Write .fsi file
+
+    - Compare: when would you use .fsi vs marking everything internal?'
+- id: fsharp_core_0027_exp_008
+  instruction: 'Create an F# module `ImageProcessor` with image transformation:
+
+    - Internal bitmap manipulation functions
+
+    - Internal format detection
+
+    - Opaque type `ProcessedImage` hiding raw image data
+
+    - Public API: `load`, `resize`, `crop`, `applyFilter`, `save`
+
+    - Write .fsi file
+
+    - Show signature mismatch when implementation doesn''t match declared signature'
+- id: fsharp_core_0027_exp_009
+  instruction: 'Write an F# module `QueryBuilder` for SQL query construction:
+
+    - Internal query part builders (SELECT, FROM, WHERE)
+
+    - Internal parameter escaping
+
+    - Opaque type `Query` hiding SQL string construction
+
+    - Public functions: `select`, `from`, `where`, `orderBy`, `build`
+
+    - Create .fsi file
+
+    - Demonstrate how opaque types prevent users from bypassing the builder'
+- id: fsharp_core_0027_exp_010
+  instruction: 'Design a module `MetricsCollector` for application monitoring:
+
+    - Internal metric aggregation logic
+
+    - Internal flush to different backends (Prometheus, StatsD)
+
+    - Opaque type `MetricCollector` with hidden implementation
+
+    - Public API: `create`, `increment`, `gauge`, `histogram`, `flush`
+
+    - Write comprehensive .fsi file
+
+    - Show how IntelliSense displays only public API surface'
+- id: fsharp_core_0027_exp_011
+  instruction: 'Create an F# module `WorkflowEngine` for orchestrating async tasks:
+
+    - Internal state machine implementation
+
+    - Internal retry and compensation logic
+
+    - Opaque type `Workflow<''T>` with hidden execution model
+
+    - Public functions: `define`, `execute`, `resume`, `cancel`
+
+    - Write .fsi file
+
+    - Demonstrate signature files as documentation for API consumers'
+- id: fsharp_core_0027_exp_012
+  instruction: 'Write an F# module `Configuration` for typed configuration:
+
+    - Internal config file parsing
+
+    - Internal environment variable overrides
+
+    - Opaque type `Configuration` hiding underlying data structure
+
+    - Public API: `load`, `getString`, `getInt`, `getBool`, `getSection`
+
+    - Create .fsi file
+
+    - Show when using .fsi is better than just using record field privacy'
+- id: fsharp_core_0027_exp_013
+  instruction: 'Design a module `CircuitBreaker` for resilient service calls:
+
+    - Internal state tracking (closed, open, half-open)
+
+    - Internal failure counting and threshold logic
+
+    - Opaque type `CircuitBreaker` with hidden state machine
+
+    - Public functions: `create`, `execute`, `getState`, `reset`
+
+    - Write .fsi file
+
+    - Explain how signature files control binary compatibility'
+- id: fsharp_core_0027_exp_014
+  instruction: 'Create an F# module `StateMachine` for generic state management:
+
+    - Internal transition table implementation
+
+    - Internal event queue
+
+    - Opaque type `''StateMachine` with hidden internal representation
+
+    - Public functions: `create`, `transition`, `subscribe`, `getState`
+
+    - Write .fsi file with generic type signatures
+
+    - Show signature mismatch for generic type constraints'
+- id: fsharp_core_0027_exp_015
+  instruction: 'Write an F# module `TemplateEngine` for text templating:
+
+    - Internal parsing of template syntax
+
+    - Internal variable substitution logic
+
+    - Opaque type `Template` hiding compiled template
+
+    - Public API: `compile`, `render`, `withModel`
+
+    - Create .fsi file
+
+    - Demonstrate how hidden types prevent template injection attacks'
+- id: fsharp_core_0027_exp_016
+  instruction: 'Design a module `PubSub` for message publishing:
+
+    - Internal subscriber management
+
+    - Internal message routing
+
+    - Opaque type `Topic<''T>` with hidden subscription list
+
+    - Public functions: `createTopic`, `publish`, `subscribe`, `unsubscribe`
+
+    - Write .fsi file
+
+    - Compare using .fsi vs F# module partitions with access modifiers'
+- id: fsharp_core_0027_exp_017
+  instruction: 'Create an F# module `FileWatcher` for filesystem monitoring:
+
+    - Internal Win32/Linux API wrappers
+
+    - Internal event buffering and debouncing
+
+    - Opaque type `Watcher` hiding platform-specific details
+
+    - Public API: `create`, `start`, `stop`, `onChanged`
+
+    - Write .fsi file with conditional compilation
+
+    - Show how signatures differ across platforms'
+- id: fsharp_core_0027_exp_018
+  instruction: 'Write an F# module `Lexer` for tokenization used in a compiler:
+
+    - Internal character-by-character parsing
+
+    - Internal keyword recognition
+
+    - Opaque type `Token` with hidden token variant details
+
+    - Public functions: `tokenize`, `tokenizeMany`, `positionOf`
+
+    - Create .fsi file
+
+    - Demonstrate hiding active pattern implementations while exposing results'
+- id: fsharp_core_0027_exp_019
+  instruction: 'Design a module `IdGenerator` for distributed ID generation:
+
+    - Internal snowflake algorithm implementation
+
+    - Internal clock synchronization
+
+    - Opaque type `Id` with hidden 64-bit structure
+
+    - Public functions: `generate`, `parse`, `timestampOf`
+
+    - Write .fsi file
+
+    - Show how opaque types enforce validation at construction'
+- id: fsharp_core_0027_exp_020
+  instruction: 'Create an F# module `ExpressionTree` for building LINQ-like expressions:
+
+    - Internal expression tree node construction
+
+    - Internal expression compilation
+
+    - Opaque type `Expr<''T>` hiding tree structure
+
+    - Public API: `constant`, `parameter`, `lambda`, `invoke`, `compile`
+
+    - Write .fsi file
+
+    - Demonstrate how signature files expose only the builder API'
+- id: fsharp_core_0027_exp_021
+  instruction: 'Write an F# module `RetryPolicy` for automatic retries:
+
+    - Internal backoff calculation (exponential, jitter)
+
+    - Internal exception classification
+
+    - Opaque type `RetryPolicy` with hidden retry state
+
+    - Public functions: `create`, `withMaxRetries`, `withBackoff`, `execute`
+
+    - Create .fsi file
+
+    - Show signature mismatch error due to changed return type'
+- id: fsharp_core_0027_exp_022
+  instruction: 'Design a module `KeyValueStore` for embedded NoSQL storage:
+
+    - Internal B-tree implementation
+
+    - Internal compaction and GC
+
+    - Opaque type `Store` hiding storage engine
+
+    - Public API: `open`, `put`, `get`, `delete`, `rangeQuery`
+
+    - Write .fsi file
+
+    - Explain how .fsi files help maintain API contracts across versions'
+- id: fsharp_core_0027_exp_023
+  instruction: 'Create an F# module `Hashing` for cryptographic operations:
+
+    - Internal block cipher implementation
+
+    - Internal key derivation
+
+    - Opaque type `Hasher` with hidden state
+
+    - Public functions: `createMD5`, `createSHA256`, `hash`, `hmac`
+
+    - Write .fsi file
+
+    - Demonstrate hiding the algorithm details from consumers'
+- id: fsharp_core_0027_exp_024
+  instruction: 'Write an F# module `Scheduler` for cron-like job scheduling:
+
+    - Internal cron expression parsing
+
+    - Internal next-run calculation
+
+    - Opaque type `Schedule` with hidden cron parser state
+
+    - Public functions: `cron`, `daily`, `hourly`, `nextRun`, `matches`
+
+    - Create .fsi file
+
+    - Show how complex internal logic is hidden behind simple API'
+- id: fsharp_core_0027_exp_025
+  instruction: 'Design a module `MessageQueue` for async message processing:
+
+    - Internal queue implementation (lock-free)
+
+    - Internal consumer group management
+
+    - Opaque type `Queue<''T>` hiding queue mechanics
+
+    - Public API: `enqueue`, `dequeue`, `subscribe`, `acknowledge`
+
+    - Write .fsi file
+
+    - Demonstrate signature mismatch when async return types don''t match'
+- id: fsharp_core_0027_exp_026
+  instruction: 'Create an F# module `Validator` for input validation:
+
+    - Internal rule composition
+
+    - Internal error message generation
+
+    - Opaque type `Validator<''T>` with hidden rule list
+
+    - Public functions: `create`, `rule`, `compose`, `validate`
+
+    - Write .fsi file
+
+    - Show how opaque types prevent bypassing validation rules'
+- id: fsharp_core_0027_exp_027
+  instruction: 'Write an F# module `TreeBuilder` for DOM-like tree construction:
+
+    - Internal node allocation and GC
+
+    - Internal parent-child relationship management
+
+    - Opaque type `Node` hiding internal tree structure
+
+    - Public functions: `createElement`, `appendChild`, `removeChild`, `query`
+
+    - Create .fsi file
+
+    - Demonstrate hiding recursive type implementation details'
+- id: fsharp_core_0027_exp_028
+  instruction: 'Design a module `Throttler` for request throttling:
+
+    - Internal token bucket algorithm with precise timing
+
+    - Internal request queuing
+
+    - Opaque type `Throttler` with hidden token state
+
+    - Public API: `create`, `throttle`, `release`, `setRate`
+
+    - Write .fsi file
+
+    - Explain when .fsi files are essential vs when internal keyword suffices'
+- id: fsharp_core_0028_exp_000
+  instruction: Create an F# object expression that implements IDisposable to wrap a file stream with automatic retry logic
+    on close, handling IOException scenarios gracefully.
+- id: fsharp_core_0028_exp_001
+  instruction: Implement a mock IConfigurationService using F# object expressions for unit testing, with support for nested
+    configuration sections, default values, and configuration change notifications via INotifyPropertyChanged.
+- id: fsharp_core_0028_exp_002
+  instruction: Build a custom IComparer<T> using F# object expressions to sort employees by department, then by hire date,
+    then by last name -- handling null values appropriately.
+- id: fsharp_core_0028_exp_003
+  instruction: Create a mock IEmailService with F# object expressions for testing email validation, HTML/plain text body generation,
+    and attachment handling. Include test methods to verify email was sent with correct parameters.
+- id: fsharp_core_0028_exp_004
+  instruction: Implement IAsyncEnumerable<T> using F# object expressions to create a paginated data source that lazily loads
+    records from an API with cancellation token support and configurable page size.
+- id: fsharp_core_0028_exp_005
+  instruction: Compare using F# object expressions vs type extensions vs module functions for interface implementation --
+    provide concrete scenarios where each approach has clear advantages for code organization and testability.
+- id: fsharp_core_0028_exp_006
+  instruction: Build a mock IBlobStorageService using F# object expressions that simulates upload/download with configurable
+    latency, failure rates for chaos testing, and metadata preservation.
+- id: fsharp_core_0028_exp_007
+  instruction: Implement a circuit breaker pattern using object expressions that wraps an IHttpClient, tracking failure counts,
+    implementing half-open state, and automatically resetting after a configurable timeout period.
+- id: fsharp_core_0028_exp_008
+  instruction: Create a mock IMetricsCollector using object expressions implementing IEquatable<T> for metric comparison,
+    supporting counters, gauges, and histograms with percentile calculations for APM testing.
+- id: fsharp_core_0028_exp_009
+  instruction: Implement IObserver<T> and IObservable<T> simultaneously in an F# object expression to create an event bus
+    with topic filtering, subscriber management, and backpressure handling for high-throughput scenarios.
+- id: fsharp_core_0028_exp_010
+  instruction: Build a resource pool manager using F# object expressions that implements IDisposable, managing a pool of database
+    connections with acquire/release semantics, pool exhaustion handling, and health check on checkout.
+- id: fsharp_core_0028_exp_011
+  instruction: Create a mock IWorkflowEngine using object expressions that simulates async workflow execution with configurable
+    delays, failure modes, and state persistence for business process testing.
+- id: fsharp_core_0028_exp_012
+  instruction: Implement a decorator using F# object expressions that adds request/response logging to any existing service
+    interface, including timing metrics and exception handling without modifying the wrapped service.
+- id: fsharp_core_0028_exp_013
+  instruction: Build a mock IFileSystemWatcher using object expressions that generates file system events on a configurable
+    schedule for testing file processing pipelines with reproducible scenarios.
+- id: fsharp_core_0028_exp_014
+  instruction: Implement IFormattable for a custom Currency type supporting multiple locales, decimal precision rules, and
+    currency symbol positioning based on CultureInfo.
+- id: fsharp_core_0028_exp_015
+  instruction: Create an F# object expression implementing IRetryPolicy with exponential backoff, jitter, and circuit breaker
+    integration for resilient service calls.
+- id: fsharp_core_0028_exp_016
+  instruction: Build a mock IGeoLocationService using object expressions that returns configurable coordinates, calculates
+    distances using Haversine formula, and implements IEquatable<Location> for comparison.
+- id: fsharp_core_0028_exp_017
+  instruction: Implement INotifyCollectionChanged for a reactive collection wrapper that batches change notifications and
+    supports virtual scrolling scenarios in a WPF-like environment.
+- id: fsharp_core_0028_exp_018
+  instruction: Create a mock IPermissionService using F# object expressions that evaluates role-based and claim-based permissions,
+    supports permission inheritance, and handles authorization failures gracefully.
+- id: fsharp_core_0028_exp_019
+  instruction: Build a composite ISerializer using object expressions that chains multiple serializers, attempting each in
+    sequence until one succeeds, with error recovery and fallback strategies.
+- id: fsharp_core_0028_exp_020
+  instruction: Implement a throttling object using F# object expressions that limits operation frequency using a token bucket
+    algorithm, with configurable capacity and refill rates for API rate limit simulation.
+- id: fsharp_core_0028_exp_021
+  instruction: Create a mock IDataTransformer<TInput, TOutput> using object expressions that implements mapping rules, null
+    handling, and transformation validation for ETL pipeline testing.
+- id: fsharp_core_0028_exp_022
+  instruction: Implement ICloneable for a complex graph object using F# object expressions with deep copy semantics, handling
+    circular references and maintaining object identity tracking.
+- id: fsharp_core_0028_exp_023
+  instruction: Build a mock IBackgroundTaskQueue using object expressions that supports task prioritization, scheduled execution,
+    cooperative cancellation, and worker thread management.
+- id: fsharp_core_0028_exp_024
+  instruction: Create an adapter using F# object expressions to wrap a legacy synchronous API with modern async interfaces,
+    including SyncOverAsync and AsyncOverSync patterns.
+- id: fsharp_core_0028_exp_025
+  instruction: Implement IXmlSerializable for a discriminated union type in F#, handling XML serialization with namespace
+    prefixes, attribute mappings, and schema validation.
+- id: fsharp_core_0028_exp_026
+  instruction: Build a mock ISearchService using object expressions that supports full-text search with configurable relevance
+    scoring, faceted search, and pagination for e-commerce testing.
+- id: fsharp_core_0028_exp_027
+  instruction: Create a mock ICache<TKey, TValue> using F# object expressions with TTL expiration, cache-aside pattern implementation,
+    and cache stampede prevention using locking.
+- id: fsharp_core_0028_exp_028
+  instruction: Implement a state machine using object expressions that manages connection states (Connecting, Connected, Disconnecting,
+    Disconnected) with valid state transitions, timeout handling, and event notifications.
+- id: fsharp_core_0028_exp_029
+  instruction: Build a mock ISignalRHubProxy using object expressions that simulates real-time communication with configurable
+    connection states, reconnection behavior, and group management for integration testing.
+- id: fsharp_core_0029_exp_000
+  instruction: 'Implement a functional F# library for processing healthcare patient records using Ports & Adapters:
+
+    - Pure domain: Patient aggregate, validation rules (NHS number format, contact details), business invariants
+
+    - Ports as discriminated union types representing capabilities (IPatientRepository, INotificationService)
+
+    - Adapters: SQL Server adapter with stored procedures, in-memory adapter for unit tests
+
+    - Composition root using module signatures and partial application
+
+    - Demonstrate patient record creation flow with validation that crosses multiple bounded contexts'
+- id: fsharp_core_0029_exp_001
+  instruction: 'Refactor a legacy C# ASP.NET application to F# hexagonal architecture focusing on order processing:
+
+    - Extract existing domain logic into pure functions with no framework dependencies
+
+    - Convert repository interfaces to F# function type aliases
+
+    - Implement adapter pattern for Entity Framework vs Dapper (performance comparison)
+
+    - Show migration strategy keeping both implementations running during transition
+
+    - Include rollback mechanism if new implementation fails'
+- id: fsharp_core_0029_exp_002
+  instruction: 'Design a fintech payment processing system in F# using hexagonal architecture with these requirements:
+
+    - Pure domain: Transaction, PaymentMethod, Merchant types; validation for PCI-DSS compliance
+
+    - Ports: ITransactionProcessor, IPaymentGateway, IFraudDetection, INotificationPort
+
+    - Adapters: Stripe adapter, PayPal adapter, custom fraud detection ML adapter
+
+    - Support for idempotency keys and retry logic in adapters
+
+    - Show how to handle partial failures in multi-adapter transactions'
+- id: fsharp_core_0029_exp_003
+  instruction: 'Explain how to implement the functional Options pattern in C# as an alternative to F# discriminated unions:
+
+    - Create a Result<T, TError> type with matching extension methods
+
+    - Show how to compose operations using monadic bind (SelectMany)
+
+    - Compare with F# Result type from a code example using hexagonal ports
+
+    - Demonstrate how C# version requires more ceremony for the same expressiveness
+
+    - Performance comparison of reflection-based vs source-generated approach'
+- id: fsharp_core_0029_exp_004
+  instruction: 'Build an IoT sensor data ingestion system in F# hexagonal architecture:
+
+    - Pure domain: SensorReading, Device, ThresholdAlert types
+
+    - Ports: ISensorRepository, IAlertDispatcher, ITelemetryUpload
+
+    - Adapters: Azure IoT Hub adapter, DynamoDB adapter, Slack webhook adapter
+
+    - Handle device offline scenarios with local queue adapter
+
+    - Show backpressure handling when adapters become slow
+
+    - Memory-bounded stream processing with chunking'
+- id: fsharp_core_0029_exp_005
+  instruction: 'Implement an F# e-commerce cart system using ports and adapters, then compare with:
+
+    - Haskell approach using mtl type classes
+
+    - Scala approach using cake pattern and implicits
+
+    - Each approach''s handling of dependency injection trade-offs
+
+    - Show equivalent code for the same domain scenario in each language
+
+    - Discuss type inference and IDE support differences'
+- id: fsharp_core_0029_exp_006
+  instruction: 'Create a functional F# command-line tool using hexagonal architecture:
+
+    - Pure domain: FileMetadata, TransformRule, ProcessingResult types
+
+    - Ports: IFileSystem, IFormatter, IProgressReporter
+
+    - Adapters: LocalFS, S3 adapter, JSON/XML formatters
+
+    - Composition root with CLI argument parsing wired to ports
+
+    - Show how to test the pure domain by swapping to TestFileSystem adapter
+
+    - Implement dry-run mode that never touches real file system'
+- id: fsharp_core_0029_exp_007
+  instruction: 'Design a multi-tenant SaaS billing system in F# hexagonal architecture:
+
+    - Tenant isolation in pure domain (TenantId, TenantConfig)
+
+    - Ports: ITenantProvider, IBillingAdapter, IUsageTracker
+
+    - Adapters: Stripe multi-tenant, PostgreSQL with row-level security
+
+    - Handle tenant-specific configuration in composition root
+
+    - Show graceful degradation when tenant''s payment method fails
+
+    - Include tenant migration between adapters'
+- id: fsharp_core_0029_exp_008
+  instruction: 'Implement event sourcing in F# hexagonal architecture for a booking system:
+
+    - Pure domain: aggregate root with event sourcing primitives
+
+    - Ports: IEventStore, IProjectionBuilder, ISnapshotStore
+
+    - Adapters: EventStoreDB adapter, Marten adapter, InMemoryEventStore for tests
+
+    - Composition root wires event store to aggregate reconstruction
+
+    - Show how to replay events to build read models
+
+    - Handle event schema evolution with upcasting adapters'
+- id: fsharp_core_0029_exp_009
+  instruction: 'Build a functional F# workflow engine using hexagonal architecture:
+
+    - Pure domain: WorkflowDefinition, WorkflowInstance, Activity types
+
+    - Ports: IWorkflowExecutor, IActivityHandler, IWorkflowPersistence
+
+    - Adapters: Durable Functions adapter, local in-process executor
+
+    - Support for compensating transactions (saga pattern)
+
+    - Show human-in-the-loop activities requiring external input
+
+    - Workflow versioning without breaking running instances'
+- id: fsharp_core_0029_exp_010
+  instruction: 'Refactor a React/TypeScript frontend to use F# compiled to WebAssembly hexagonal design:
+
+    - Pure domain: UIState, UserAction, ViewModel types
+
+    - Ports: IRenderer, ILocalStorage, IApiClient
+
+    - Adapters: DOM adapter, IndexedDB adapter, Fetch adapter
+
+    - Show how Elm architecture maps to ports and adapters
+
+    - Compare bundle size and cold start time with TypeScript version
+
+    - Handle offline-first scenarios with adapter swapping'
+- id: fsharp_core_0029_exp_011
+  instruction: 'Implement CQRS pattern in F# hexagonal architecture for a social media feed:
+
+    - Separate command and query domain models
+
+    - Command ports: IPostService, ICommentService, ILikeService
+
+    - Query ports: IFeedReader, ISearchService, INotificationReader
+
+    - Adapters: Write to PostgreSQL, read from Elasticsearch and Redis
+
+    - Show event bus adapter connecting commands to query side
+
+    - Handle eventual consistency in UI by showing loading states'
+- id: fsharp_core_0029_exp_012
+  instruction: 'Create a functional F# state machine library using ports and adapters:
+
+    - Pure domain: State, Event, Transition type definitions
+
+    - Ports: IStatePersistence, ITransitionLogger, INotificationPort
+
+    - Adapters: FSM adapter, Stateless library adapter, custom graph adapter
+
+    - Show state machine composition (nested states, parallel regions)
+
+    - Handle illegal state transitions as domain errors
+
+    - Generate state diagrams from pure domain definitions'
+- id: fsharp_core_0029_exp_013
+  instruction: 'Design a functional F# ETL pipeline using hexagonal architecture:
+
+    - Pure domain: DataSource, Transformation, DataSink types
+
+    - Ports: ISourceReader, ITransformer, ISinkWriter, ISchemaValidator
+
+    - Adapters: CSV, Parquet, REST API, Database sources
+
+    - Composition root with pipeline builder pattern
+
+    - Show checkpoint/restart capability using adapter swapping
+
+    - Handle schema drift with versioned adapters'
+- id: fsharp_core_0029_exp_014
+  instruction: 'Compare F# discriminated union-based ports with TypeScript interface-based ports:
+
+    - Show equivalent code for a shipping rate calculator scenario
+
+    - Discuss exhaustiveness checking differences
+
+    - Show how F# ports compose with pipe operator vs TypeScript chaining
+
+    - Migration path from TypeScript interfaces to F# functions
+
+    - Performance implication of discriminated unions in hot paths'
+- id: fsharp_core_0029_exp_015
+  instruction: 'Implement a functional F# retry and circuit breaker library using ports:
+
+    - Pure domain: RetryPolicy, CircuitState, BackoffStrategy types
+
+    - Ports: IOperationExecutor, IHealthChecker, IMetricsCollector
+
+    - Adapters: Polly adapter, custom exponential backoff adapter
+
+    - Show how to wrap existing adapters without modifying them
+
+    - Include bulkhead isolation pattern
+
+    - Demonstrate with real-world timeout and rate limit scenarios'
+- id: fsharp_core_0029_exp_016
+  instruction: 'Build a functional F# authentication and authorization system using hexagonal architecture:
+
+    - Pure domain: User, Role, Permission, Claims types
+
+    - Ports: IIdentityProvider, IPasswordHasher, ISessionStore, ITokenGenerator
+
+    - Adapters: OAuth2 adapter, LDAP adapter, JWT adapter
+
+    - Composition root for multi-provider scenarios
+
+    - Show how to test authorization without real identity providers
+
+    - Handle token refresh and session invalidation edge cases'
+- id: fsharp_core_0029_exp_017
+  instruction: 'Design a functional F# distributed caching layer using ports and adapters:
+
+    - Pure domain: CacheEntry, CachePolicy, InvalidationStrategy types
+
+    - Ports: ICacheBackend, ICacheSerializer, ICacheKeyGenerator
+
+    - Adapters: Redis adapter, in-memory adapter, file-system adapter
+
+    - Show cache-aside and read-through patterns
+
+    - Handle cache stampede prevention
+
+    - Demonstrate with rate-limited API integration'
+- id: fsharp_core_0029_exp_018
+  instruction: 'Implement a functional F# scheduling system using hexagonal architecture:
+
+    - Pure domain: Schedule, Job, CronExpression, ExecutionResult types
+
+    - Ports: ISchedulerBackend, IJobExecutor, INotificationService
+
+    - Adapters: Quartz.NET adapter, Hangfire adapter, in-memory scheduler
+
+    - Handle distributed lock acquisition for singleton jobs
+
+    - Show timezone handling and DST transitions
+
+    - Implement job priority and queuing policies'
+- id: fsharp_core_0029_exp_019
+  instruction: 'Create a functional F# testing framework adapter layer:
+
+    - Pure domain: TestCase, TestResult, TestSuite types
+
+    - Ports: ITestRunner, ITestReporter, ITestDataSource
+
+    - Adapters: xUnit adapter, NUnit adapter, Expecto adapter
+
+    - Show test case generation from property-based testing
+
+    - Include coverage reporting adapter
+
+    - Demonstrate test isolation using adapter swapping'
+- id: fsharp_core_0029_exp_020
+  instruction: 'Design a functional F# monitoring and observability system using ports:
+
+    - Pure domain: Metric, Alert, HealthCheck types
+
+    - Ports: IMetricsSink, ITracingBackend, ILogAggregator, IAlertDispatcher
+
+    - Adapters: Prometheus adapter, OpenTelemetry adapter, Datadog adapter
+
+    - Show correlation ID propagation across async boundaries
+
+    - Handle metric cardinality explosion
+
+    - Include alerting adapter with deduplication'
+- id: fsharp_core_0029_exp_021
+  instruction: 'Implement a functional F# workflow for financial reconciliation using hexagonal architecture:
+
+    - Pure domain: Transaction, ReconciliationResult, Discrepancy types
+
+    - Ports: ITransactionSource, IMatchingEngine, IDiscrepancyHandler
+
+    - Adapters: Bank API adapter, internal ledger adapter, email adapter
+
+    - Show fuzzy matching with configurable thresholds
+
+    - Handle manual review workflow for unreconciled items
+
+    - Include audit trail adapter for compliance'
+- id: fsharp_core_0029_exp_022
+  instruction: 'Build a functional F# plugin system using ports and adapters:
+
+    - Pure domain: Plugin, PluginManifest, PluginContext types
+
+    - Ports: IPluginLoader, IPluginExecutor, ISandboxManager
+
+    - Adapters: Assembly plugin adapter, WASM plugin adapter, Remote plugin adapter
+
+    - Show plugin isolation and version compatibility
+
+    - Handle plugin lifecycle (install, update, uninstall)
+
+    - Include security sandboxing adapter'
+- id: fsharp_core_0029_exp_023
+  instruction: 'Design a functional F# data validation library using ports:
+
+    - Pure domain: ValidationRule, ValidationResult, ValidationContext types
+
+    - Ports: IValidator, IErrorFormatter, ISchemaLoader
+
+    - Adapters: JSON Schema adapter, custom rule adapter, localized error adapter
+
+    - Show composition of validation rules
+
+    - Include cross-field validation
+
+    - Handle performance optimization for large datasets'
+- id: fsharp_core_0029_exp_024
+  instruction: 'Implement a functional F# API gateway using hexagonal architecture:
+
+    - Pure domain: Route, Endpoint, RateLimitPolicy types
+
+    - Ports: IUpstreamClient, IAuthenticator, IQuotaManager
+
+    - Adapters: HTTP adapter, gRPC adapter, GraphQL adapter
+
+    - Show request/response transformation adapters
+
+    - Include circuit breaker for upstream failures
+
+    - Handle API versioning strategy'
+- id: fsharp_core_0029_exp_025
+  instruction: 'Create a functional F# message queue processor using ports and adapters:
+
+    - Pure domain: Message, Consumer, Subscription types
+
+    - Ports: IMessageReceiver, IMessageProcessor, IDeadLetterHandler
+
+    - Adapters: RabbitMQ adapter, Azure Service Bus adapter, SQS adapter
+
+    - Show exactly-once processing semantics
+
+    - Handle poison message scenarios
+
+    - Include consumer group coordination'
+- id: fsharp_core_0029_exp_026
+  instruction: 'Design a functional F# configuration management system using hexagonal architecture:
+
+    - Pure domain: ConfigValue, ConfigSource, Environment types
+
+    - Ports: IConfigReader, IConfigValidator, IConfigWatcher
+
+    - Adapters: YAML adapter, environment variable adapter, Vault adapter
+
+    - Show configuration inheritance and override patterns
+
+    - Handle secret rotation without restart
+
+    - Include schema validation with helpful error messages'
+- id: fsharp_core_0029_exp_027
+  instruction: 'Implement a functional F# feature flag system using ports:
+
+    - Pure domain: FeatureFlag, FlagState, TargetingRule types
+
+    - Ports: IFlagProvider, IFlagEvaluator, IAnalyticsTracker
+
+    - Adapters: LaunchDarkly adapter, in-memory adapter, database adapter
+
+    - Show gradual rollout with percentage-based targeting
+
+    - Handle flag dependencies (flag B requires flag A)
+
+    - Include real-time flag update propagation'
+- id: fsharp_core_0029_exp_028
+  instruction: 'Build a functional F# content management system using hexagonal architecture:
+
+    - Pure domain: Content, ContentVersion, WorkflowState types
+
+    - Ports: IContentRepository, IWorkflowEngine, ISearchIndexer
+
+    - Adapters: Azure Blob adapter, PostgreSQL adapter, Elasticsearch adapter
+
+    - Show draft/publish workflow implementation
+
+    - Handle content localization and versioning
+
+    - Include media asset processing adapters'
+- id: fsharp_core_0029_exp_029
+  instruction: 'Design a functional F# financial audit trail system using ports:
+
+    - Pure domain: AuditEntry, AuditContext, AuditAction types
+
+    - Ports: IAuditWriter, IAuditReader, IAuditArchiver
+
+    - Adapters: Append-only database adapter, CloudWatch adapter, SIEM adapter
+
+    - Show tamper-evident logging with hash chaining
+
+    - Handle GDPR right-to-erasure while maintaining audit requirements
+
+    - Include compliance reporting adapter'
+- id: fsharp_core_0030_exp_000
+  instruction: Implement a CQRS banking system in F# for account transactions (Deposit, Withdraw, Transfer, CloseAccount commands)
+    with separate read models for account balance views and transaction history. Use discriminated unions for command validation
+    errors with Result types, and pattern matching for command dispatch. Include overdraft protection business rules in the
+    command handler.
+- id: fsharp_core_0030_exp_001
+  instruction: Implement CQRS for a library book management system in F# where commands are CheckOutBook, ReturnBook, RenewBook,
+    AddNewBook, MarkBookLost. Design separate command and query handlers where the read model includes book availability status,
+    borrower history, and overdue notifications. Include late fee calculation as part of command validation.
+- id: fsharp_core_0030_exp_002
+  instruction: Implement CQRS in F# for an IoT device fleet management system with commands (RegisterDevice, UpdateDeviceConfig,
+    DecommissionDevice, RebootDevice) and queries (GetDeviceStatus, ListDevicesByLocation, GetDeviceHealthMetrics). The command
+    handler should use F# async workflows for long-running device operations, and the read model should aggregate sensor readings.
+- id: fsharp_core_0030_exp_003
+  instruction: Implement CQRS in F# for a patient appointment scheduling system using discriminated unions for commands (BookAppointment,
+    RescheduleAppointment, CancelAppointment, MarkNoShow) and queries (GetAvailableSlots, GetPatientAppointments, GetDoctorSchedule).
+    Include conflict detection for double-booking and F#-style unit of work pattern for database writes.
+- id: fsharp_core_0030_exp_004
+  instruction: Implement CQRS in F# for a social media content moderation system where commands are (SubmitPost, FlagContent,
+    DeletePost, RestorePost, BanUser) and queries include (GetPendingModerationQueue, GetUserPostHistory, GetContentReports).
+    The command side should enforce rate limiting rules, and the read model should maintain denormalized metrics per user.
+- id: fsharp_core_0030_exp_005
+  instruction: Implement CQRS in F# for an insurance claims processing system with commands (SubmitClaim, RequestAdditionalDocs,
+    ApproveClaim, DenyClaim, AppealDecision) and queries (GetClaimStatus, GetClaimsByPolicyHolder, GetClaimsNeedingReview).
+    Use F# validation with applicative functors to combine multiple validation rules for claim submission.
+- id: fsharp_core_0030_exp_006
+  instruction: Implement CQRS in F# for a hotel reservation system where commands are (CreateReservation, ModifyReservation,
+    CancelReservation, CheckIn, CheckOut) and queries include (SearchAvailableRooms, GetGuestHistory, GetRevenueReport). The
+    read model should be optimized for date-range availability queries across multiple properties.
+- id: fsharp_core_0030_exp_007
+  instruction: Implement CQRS in F# for a subscription billing system with commands (Subscribe, Upgrade, Downgrade, Cancel,
+    ApplyCoupon) and queries (GetSubscriptionDetails, ListExpiringSubscriptions, GetRevenueAnalytics). Include proration calculation
+    business logic in the command handler and a read model optimized for billing cycle aggregation.
+- id: fsharp_core_0030_exp_008
+  instruction: Implement CQRS in F# for an e-learning course enrollment system where commands are (EnrollStudent, DropCourse,
+    GradeSubmission, IssueCertificate, ExtendDeadline) and queries include (GetCourseRoster, GetStudentProgress, GetCompletionRates).
+    Use F# mailbox processors to handle high-throughput enrollment commands with ordering guarantees.
+- id: fsharp_core_0030_exp_009
+  instruction: Implement CQRS in F# for a digital wallet system with commands (CreateWallet, AddFunds, SendPayment, RequestPayment,
+    FreezeWallet) and queries (GetBalance, GetTransactionHistory, GetPendingRequests). Include idempotency keys in commands
+    to prevent duplicate transactions and use F# discriminated unions for payment failure reasons.
+- id: fsharp_core_0030_exp_010
+  instruction: Implement CQRS in F# for a real estate property listing system with commands (CreateListing, UpdateListing,
+    MarkSold, WithdrawListing) and queries (SearchByLocation, GetMarketAnalytics, GetAgentPortfolio). The read model should
+    maintain aggregated market statistics and support complex geo-spatial queries for location-based search.
+- id: fsharp_core_0030_exp_011
+  instruction: Implement CQRS in F# for a task/project management system with commands (CreateTask, AssignTask, UpdateProgress,
+    ReopenTask, CloseTask) and queries (GetSprintTasks, GetTeamWorkload, GetOverdueTasks). Use F# EventStore pattern without
+    event sourcing for audit trail but with CQRS separation, and implement optimistic concurrency control for concurrent task
+    updates.
+- id: fsharp_core_0030_exp_012
+  instruction: Implement CQRS in F# for a multi-tenant SaaS organization management system where commands are (CreateOrganization,
+    InviteUser, RemoveUser, UpdatePermissions, UpgradePlan) and queries include (GetOrganizationUsers, GetUsageMetrics, GetBillingHistory).
+    Commands must enforce tenant isolation, and queries should only return data within the current tenant context.
+- id: fsharp_core_0030_exp_013
+  instruction: Implement CQRS in F# for a supply chain shipment tracking system with commands (CreateShipment, UpdateLocation,
+    MarkDelivered, ReportDamage, ReturnToSender) and queries (TrackShipment, GetDeliveryMetrics, GetDelayedShipments). The
+    command handler should validate chain of custody, and the read model should support real-time location updates.
+- id: fsharp_core_0030_exp_014
+  instruction: Implement CQRS in F# for an auction platform with commands (PlaceBid, CancelBid, StartAuction, EndAuction,
+    ClaimItem) and queries (GetActiveAuctions, GetBidHistory, GetUserWatchlist). Include proxy bidding logic and automatic
+    bid extension rules in the command handler with concurrency-safe bid validation.
+- id: fsharp_core_0030_exp_015
+  instruction: Implement CQRS in F# for a fitness tracking system where commands are (LogWorkout, UpdateGoals, ShareActivity,
+    ImportFromDevice) and queries include (GetWeeklySummary, GetProgressCharts, GetFriendActivities). The read model should
+    pre-compute weekly/monthly aggregations and support time-series queries for progress visualization.
+- id: fsharp_core_0030_exp_016
+  instruction: Implement CQRS in F# for a restaurant reservation system with commands (MakeReservation, ModifyReservation,
+    NoShow, WriteReview) and queries (FindAvailableTables, GetReservationStats, GetPopularTimes). Include waitlist management
+    where commands can convert waitlist entries to reservations, and the read model should optimize for party-size and time-slot
+    availability.
+- id: fsharp_core_0030_exp_017
+  instruction: Implement CQRS in F# for a content delivery system where commands are (UploadAsset, DeleteAsset, PublishVersion,
+    DeprecateVersion) and queries include (GetAssetMetadata, SearchAssets, GetVersionHistory). Commands should validate file
+    size limits and content type restrictions, and the read model should maintain CDN cache invalidation state.
+- id: fsharp_core_0030_exp_018
+  instruction: Implement CQRS in F# for a warranty registration system with commands (RegisterProduct, ExtendWarranty, FileClaim,
+    CloseClaim) and queries (GetWarrantyStatus, GetClaimHistory, GetExpiringWarranties). Include serial number validation
+    and purchase date verification in the command handler, and maintain a read model for warranty expiration alerts.
+- id: fsharp_core_0030_exp_019
+  instruction: Implement CQRS in F# for an event ticketing platform with commands (CreateEvent, ReleaseTickets, CancelEvent,
+    RefundTickets) and queries (GetAvailableTickets, GetAttendeeList, GetSalesReport). The command side should handle seat
+    allocation with conflict resolution, and the read model should support complex filtering by event, venue section, and
+    price range.
+- id: fsharp_core_0030_exp_020
+  instruction: Implement CQRS in F# for a car rental fleet management system where commands are (AddVehicle, ReserveVehicle,
+    CheckOut, CheckIn, ReportIncident) and queries include (GetAvailableVehicles, GetFleetUtilization, GetMaintenanceDue).
+    Commands should enforce business rules like minimum rental age and insurance requirements, with read models optimized
+    for availability across locations.
+- id: fsharp_core_0030_exp_021
+  instruction: Implement CQRS in F# for a donation management system with commands (MakeDonation, ScheduleRecurring, CancelRecurring,
+    IssueRefund, AcknowledgeDonation) and queries (GetDonorHistory, GetCampaignTotals, GetTaxReceiptData). Include matching
+    gift validation logic and the read model should support year-end tax reporting aggregation.
+- id: fsharp_core_0030_exp_022
+  instruction: Implement CQRS in F# for an educational transcript system where commands are (AddCourse, RecordGrade, IssueTranscript,
+    UpdateDegree) and queries include (GetTranscript, GetGPA, GetDegreeAudit). Commands should enforce prerequisite rules
+    and grade eligibility, with a read model that computes GPA and generates degree progress reports.
+- id: fsharp_core_0030_exp_023
+  instruction: Implement CQRS in F# for a music streaming playlist management system with commands (CreatePlaylist, AddTrack,
+    RemoveTrack, ReorderTracks, SharePlaylist) and queries (GetPlaylistTracks, GetUserPlaylists, GetRecommendedPlaylists).
+    Include collaborative playlist permissions and conflict resolution for simultaneous edits.
+- id: fsharp_core_0030_exp_024
+  instruction: Implement CQRS in F# for a pet clinic medical records system with commands (RegisterPet, AddVaccination, RecordVisit,
+    PrescribeMedication, UpdateWeight) and queries (GetPetHistory, GetVaccinationDue, GetMedicalSummary). The command handler
+    should validate medication interactions and dosage limits, with read models for wellness reminders and medical alerts.
+- id: fsharp_core_0030_exp_025
+  instruction: Implement CQRS in F# for a warehouse inventory bin management system where commands are (ReceiveInventory,
+    PickInventory, TransferBin, AdjustQuantity, CycleCount) and queries include (GetBinContents, FindProductLocation, GetLowStockAlerts).
+    Include lot/serial number tracking and expiration date validation in commands, with a read model supporting pick-path
+    optimization.
+- id: fsharp_core_0030_exp_026
+  instruction: Implement CQRS in F# for a survey response collection system with commands (CreateSurvey, DistributeSurvey,
+    SubmitResponse, CloseSurvey) and queries (GetResponseSummary, GetQuestionAnalytics, GetCompletionRate). The read model
+    should pre-aggregate response statistics and support real-time result dashboards during active collection periods.
+- id: fsharp_core_0030_exp_027
+  instruction: Implement CQRS in F# for a conference registration system with commands (RegisterAttendee, UpgradeTicket, CancelRegistration,
+    IssueBadge, CheckIn) and queries (GetSessionAttendance, GetDietarySummary, GetCheckInStatus). Commands should enforce
+    capacity limits per session and track waitlist conversions, with read models optimized for day-of check-in performance.
+- id: fsharp_core_0030_exp_028
+  instruction: Implement CQRS in F# for an asset maintenance management system where commands are (ScheduleMaintenance, CompleteMaintenance,
+    ReportFailure, DecommissionAsset) and queries include (GetUpcomingMaintenance, GetAssetDowntime, GetMaintenanceHistory).
+    Include maintenance priority rules and parts inventory validation in the command handler, with a read model for maintenance
+    scheduling and cost analysis.
+- id: fsharp_core_0030_exp_029
+  instruction: Implement CQRS in F# for a user profile and preferences system with commands (UpdateProfile, ChangeEmail, UpdatePreferences,
+    LinkAccount, UnlinkAccount) and queries (GetProfile, GetPreferences, GetLinkedAccounts). Use F# option types throughout
+    for optional fields, with command validation for email uniqueness and preference constraint checking.
+- id: fsharp_core_0031_exp_000
+  instruction: 'Build a parser for game graphics settings using FParsec:
+
+    1. Grammar: key = value pairs, sections [Display], [Quality], [Audio]
+
+    2. Value types: integers (quality levels 0-4), floats (sensitivity/sound volume), booleans (vsync, anti-aliasing), string
+    enums (Low/Medium/High/Ultra)
+
+    3. Use FParsec combinators: pstringCI, spaces, skipMany, manySatisfy
+
+    4. Define an AST as discriminated unions for GraphicsSettings, AudioSettings, DisplaySettings
+
+    5. Provide validation that quality levels are within valid ranges
+
+    6. Write a pretty-printer with formatted output and section headers'
+- id: fsharp_core_0031_exp_001
+  instruction: 'Create a parser for a network firewall rule configuration using FParsec:
+
+    1. Grammar: rule definitions with priority ordering, action (allow/deny), protocol, port ranges, IP masks
+
+    2. Value types: IP addresses with CIDR notation, port ranges (80-443), protocol enum (tcp/udp/icmp/any), integers for
+    priority
+
+    3. Use FParsec combinators: pchar, many1, sepBy1, pipe2, opt
+
+    4. Define an AST as discriminated union: FirewallRule with fields for action, protocol, ports, source, destination
+
+    5. Handle overlapping rules with warning messages
+
+    6. Write a pretty-printer that outputs rules in priority order'
+- id: fsharp_core_0031_exp_002
+  instruction: 'Build a parser for a log4net-style logging configuration using FParsec:
+
+    1. Grammar: hierarchical appenders and loggers, inheritance with appender-ref
+
+    2. Value types: strings, integers (threshold levels), booleans, arrays of strings
+
+    3. Use FParsec combinators: manyTill, between, choice, attempt, many
+
+    4. Define an AST with Appender and Logger discriminated unions, supporting nested appender configurations
+
+    5. Handle circular logger inheritance references with error detection
+
+    6. Write a pretty-printer that maintains the hierarchical structure'
+- id: fsharp_core_0031_exp_003
+  instruction: 'Create a parser for a markdown frontmatter YAML-like syntax using FParsec:
+
+    1. Grammar: key-value pairs between --- markers, nested objects with indentation
+
+    2. Value types: strings, integers, booleans, dates (ISO 8601), arrays of primitives
+
+    3. Use FParsec combinators: skipManyTill, many1, tab, attempt, pipe3
+
+    4. Define an AST as discriminated union for FrontmatterValue (String, Number, Bool, Date, Array, Object)
+
+    5. Support both quoted and unquoted string values with escape sequences
+
+    6. Write a pretty-printer that preserves the --- delimiters'
+- id: fsharp_core_0031_exp_004
+  instruction: 'Build a parser for a Terraform-like variable definition file using FParsec:
+
+    1. Grammar: variable blocks with type annotations, default values, descriptions, validation rules
+
+    2. Value types: strings, integers, floats, booleans, arrays, objects with typed fields, maps
+
+    3. Use FParsec combinators: between, many, sepBy, choice, attempt, pipe2
+
+    4. Define an AST with VariableDefinition discriminated union including type info, default, and constraints
+
+    5. Handle type mismatches in defaults with descriptive errors
+
+    6. Write a pretty-printer that outputs properly formatted HCL-like syntax'
+- id: fsharp_core_0031_exp_005
+  instruction: 'Create a parser for a simple Markdown table dialect using FParsec:
+
+    1. Grammar: pipe-separated columns, header row with separator line, typed cells
+
+    2. Value types: strings, integers, floats, dates, empty cells, cells with alignment markers
+
+    3. Use FParsec combinators: sepBy1, many, many1, anyChar, attempt
+
+    4. Define an AST as Table with headers (list of strings) and rows (list of CellValue lists)
+
+    5. Validate column count consistency across rows
+
+    6. Write a pretty-printer that outputs valid markdown tables with alignment'
+- id: fsharp_core_0031_exp_006
+  instruction: 'Build a parser for a theme/color scheme configuration using FParsec:
+
+    1. Grammar: color definitions with hex values, RGBA values, named colors, color groups
+
+    2. Value types: hex strings (#RGB, #RRGGBB), rgba(r,g,b,a) format, color names
+
+    3. Use FParsec combinators: pstringCI, between, many, choice, regex
+
+    4. Define an AST as discriminated union for Color, ColorGroup with nested color references
+
+    5. Support color variable substitution (${primaryColor} references)
+
+    6. Write a pretty-printer that outputs theme variables in CSS format'
+- id: fsharp_core_0031_exp_007
+  instruction: 'Create a parser for a feature flag/toggle configuration using FParsec:
+
+    1. Grammar: simple feature definitions with boolean states, targeting rules, percentage rollouts
+
+    2. Value types: booleans, integers (percentages), strings (feature names), arrays of targeting rules
+
+    3. Use FParsec combinators: pstring, spaces, many, sepBy, opt
+
+    4. Define an AST with FeatureFlag discriminated union containing name, enabled, and optional rules
+
+    5. Validate percentage values are between 0 and 100
+
+    6. Write a pretty-printer that formats feature flags with comments'
+- id: fsharp_core_0031_exp_008
+  instruction: 'Build a parser for a simple build task configuration using FParsec:
+
+    1. Grammar: task definitions with dependencies, commands, and environment variables
+
+    2. Value types: strings, arrays of strings, key-value maps for environment
+
+    3. Use FParsec combinators: many, sepBy, pipe2, opt, attempt
+
+    4. Define an AST with Task discriminated union including name, dependencies list, and commands
+
+    5. Detect circular task dependencies with clear error messages
+
+    6. Write a pretty-printer that outputs taskfile with proper indentation'
+- id: fsharp_core_0031_exp_009
+  instruction: 'Create a parser for a Docker compose-like service definition using FParsec:
+
+    1. Grammar: service blocks with ports, volumes, environment variables, networks
+
+    2. Value types: strings, integers, arrays, key-value maps, port mappings (host:container)
+
+    3. Use FParsec combinators: manyTill, between, many, sepBy, choice
+
+    4. Define an AST with Service discriminated union for each service configuration
+
+    5. Handle conflicting port mappings gracefully
+
+    6. Write a pretty-printer that produces valid docker-compose syntax'
+- id: fsharp_core_0031_exp_010
+  instruction: 'Build a parser for a monitoring metrics configuration using FParsec:
+
+    1. Grammar: metric definitions with thresholds, aggregation types, and alerting rules
+
+    2. Value types: strings, integers, floats, arrays of thresholds, enums for aggregation types
+
+    3. Use FParsec combinators: pstring, many, sepBy, pipe3, attempt
+
+    4. Define an AST as discriminated union for MetricDefinition with Threshold and AlertRule
+
+    5. Validate threshold ordering (warning < critical)
+
+    6. Write a pretty-printer that formats metrics with proper section grouping'
+- id: fsharp_core_0031_exp_011
+  instruction: 'Create a parser for a simple cron schedule configuration using FParsec:
+
+    1. Grammar: cron expressions with named schedules, timezones, and optional ranges
+
+    2. Value types: cron fields (minute, hour, day, month, weekday), timezone strings, strings
+
+    3. Use FParsec combinators: many1, sepBy, choice, opt, pstringCI
+
+    4. Define an AST with CronSchedule discriminated union including fields and optional timezone
+
+    5. Validate cron field ranges with helpful error messages
+
+    6. Write a pretty-printer that outputs standard 5-field cron format'
+- id: fsharp_core_0031_exp_012
+  instruction: 'Build a parser for an API routing configuration using FParsec:
+
+    1. Grammar: route definitions with HTTP methods, path patterns, middleware chains, handlers
+
+    2. Value types: strings, arrays of strings, method enums (GET, POST, PUT, DELETE), path parameters
+
+    3. Use FParsec combinators: choice, many, sepBy, between, attempt
+
+    4. Define an AST with Route discriminated union containing method, path, middleware, and handler
+
+    5. Detect duplicate route definitions with conflict warnings
+
+    6. Write a pretty-printer that outputs route definitions in route file format'
+- id: fsharp_core_0031_exp_013
+  instruction: 'Create a parser for a simple markup table language using FParsec:
+
+    1. Grammar: cell separators, row definitions, optional cell spanning, alignment markers
+
+    2. Value types: strings with multiline support, integers for span values, alignment enums
+
+    3. Use FParsec combinators: sepBy1, manyTill, many, attempt, anyChar
+
+    4. Define an AST as TableNode with Row and Cell discriminated unions
+
+    5. Validate row column consistency across the table
+
+    6. Write a pretty-printer that preserves original spacing and alignment'
+- id: fsharp_core_0031_exp_014
+  instruction: 'Build a parser for a certificate chain configuration using FParsec:
+
+    1. Grammar: certificate blocks with subject, issuer, validity dates, and optional key info
+
+    2. Value types: strings (distinguished names), dates, fingerprints, enums for key types
+
+    3. Use FParsec combinators: many, between, sepBy, pipe2, opt
+
+    4. Define an AST with Certificate discriminated union including subject, issuer, and validity
+
+    5. Validate certificate chain ordering (leaf to root)
+
+    6. Write a pretty-printer that formats certificates with proper sections'
+- id: fsharp_core_0031_exp_015
+  instruction: 'Create a parser for an access control list (ACL) rules configuration using FParsec:
+
+    1. Grammar: rule definitions with subjects, resources, actions, and effect (allow/deny)
+
+    2. Value types: strings (principals, resources), arrays of actions, enums for effect
+
+    3. Use FParsec combinators: many, sepBy, choice, attempt, pipe3
+
+    4. Define an AST with AclRule discriminated union for each permission
+
+    5. Handle wildcard patterns in subject and resource names
+
+    6. Write a pretty-printer that outputs rules in evaluation order'
+- id: fsharp_core_0031_exp_016
+  instruction: 'Build a parser for a plugin manifest configuration using FParsec:
+
+    1. Grammar: plugin definitions with name, version, dependencies, permissions, entry points
+
+    2. Value types: strings, semver versions, arrays, key-value maps for metadata
+
+    3. Use FParsec combinators: pstring, many, sepBy, between, attempt
+
+    4. Define an AST with PluginManifest discriminated union including all manifest fields
+
+    5. Validate semantic versioning format
+
+    6. Write a pretty-printer that produces valid plugin.json format'
+- id: fsharp_core_0031_exp_017
+  instruction: 'Create a parser for a database migration configuration using FParsec:
+
+    1. Grammar: migration blocks with version, description, up/down SQL, dependencies
+
+    2. Value types: strings (SQL), integers (version), arrays of strings (dependencies)
+
+    3. Use FParsec combinators: manyTill, between, many, sepBy, attempt
+
+    4. Define an AST with Migration discriminated union containing version, up, down, and deps
+
+    5. Validate migration version ordering
+
+    6. Write a pretty-printer that outputs migration files in flyway-style format'
+- id: fsharp_core_0031_exp_018
+  instruction: 'Build a parser for a message queue topic subscription configuration using FParsec:
+
+    1. Grammar: subscription definitions with topics, filters, consumer groups, and dead letter queues
+
+    2. Value types: strings (topic patterns), regex for filters, key-value maps for options
+
+    3. Use FParsec combinators: many, sepBy, choice, opt, attempt
+
+    4. Define an AST with Subscription discriminated union including topic, filter, and options
+
+    5. Validate topic pattern syntax
+
+    6. Write a pretty-printer that formats subscriptions for RabbitMQ/Kafka style'
+- id: fsharp_core_0031_exp_019
+  instruction: 'Create a parser for a simple CSV dialect with type inference using FParsec:
+
+    1. Grammar: header row, data rows, quoted fields, escaped delimiters, comment rows
+
+    2. Value types: strings, integers, floats, booleans, dates with auto-detection
+
+    3. Use FParsec combinators: sepBy1, manyTill, many, attempt, anyChar
+
+    4. Define an AST with CsvDocument discriminated union containing headers and typed rows
+
+    5. Handle malformed rows with partial parsing and error collection
+
+    6. Write a pretty-printer that outputs CSV with inferred types quoted appropriately'
+- id: fsharp_core_0031_exp_020
+  instruction: 'Build a parser for a test suite configuration using FParsec:
+
+    1. Grammar: test definitions with names, tags, fixtures, timeouts, and skip conditions
+
+    2. Value types: strings, arrays of strings (tags), integers (timeout ms), booleans
+
+    3. Use FParsec combinators: many, sepBy, between, choice, pipe2
+
+    4. Define an AST with TestCase discriminated union including all test attributes
+
+    5. Validate tag syntax and fixture references
+
+    6. Write a pretty-printer that produces NUnit/xUnit style configuration'
+- id: fsharp_core_0031_exp_021
+  instruction: 'Create a parser for a benchmark parameters configuration using FParsec:
+
+    1. Grammar: benchmark definitions with iterations, warmup, parameters, and metric names
+
+    2. Value types: strings, integers (iterations), floats (duration), arrays for parameter sets
+
+    3. Use FParsec combinators: many, sepBy, choice, opt, attempt
+
+    4. Define an AST with Benchmark discriminated union containing name, config, and parameters
+
+    5. Validate iteration counts are positive integers
+
+    6. Write a pretty-printer that formats benchmarks for BenchmarkDotNet style'
+- id: fsharp_core_0031_exp_022
+  instruction: 'Build a parser for a GraphQL schema extension configuration using FParsec:
+
+    1. Grammar: type definitions, field definitions, directives, and enum values
+
+    2. Value types: strings, arrays of field definitions, directive annotations, type references
+
+    3. Use FParsec combinators: manyTill, many, sepBy, choice, pipe3
+
+    4. Define an AST with TypeDefinition discriminated union for Object, Input, Enum types
+
+    5. Handle type references and circular type dependencies
+
+    6. Write a pretty-printer that outputs valid GraphQL SDL format'
+- id: fsharp_core_0031_exp_023
+  instruction: 'Create a parser for a localization resource bundle using FParsec:
+
+    1. Grammar: key-value translations with plural forms, contexts, and placeholders
+
+    2. Value types: strings with {placeholder} syntax, arrays for plural variants, context markers
+
+    3. Use FParsec combinators: many, sepBy, manySatisfy, opt, attempt
+
+    4. Define an AST with LocaleEntry discriminated union containing key, translation, and variants
+
+    5. Validate placeholder consistency across plural forms
+
+    6. Write a pretty-printer that outputs RESX/JSON format with proper escaping'
+- id: fsharp_core_0031_exp_024
+  instruction: 'Build a parser for a simple dependency graph specification using FParsec:
+
+    1. Grammar: node definitions with metadata, edge definitions with weights, clusters for grouping
+
+    2. Value types: strings, integers (weights), arrays, key-value maps for node attributes
+
+    3. Use FParsec combinators: many, sepBy, between, pipe2, attempt
+
+    4. Define an AST with GraphNode and GraphEdge discriminated unions
+
+    5. Detect orphan nodes and cycles in the dependency graph
+
+    6. Write a pretty-printer that outputs DOT/GraphViz format'
+- id: fsharp_core_0031_exp_025
+  instruction: 'Create a parser for a feature matrix configuration using FParsec:
+
+    1. Grammar: product definitions, feature toggles per product, plan tiers, and conditions
+
+    2. Value types: strings, booleans, arrays of feature names, enums for plan tiers
+
+    3. Use FParsec combinators: many, sepBy, between, choice, pipe3
+
+    4. Define an AST with FeatureMatrix discriminated union containing products and their features
+
+    5. Validate feature references exist across all products
+
+    6. Write a pretty-printer that formats feature matrices in table format'
+- id: fsharp_core_0031_exp_026
+  instruction: 'Build a parser for an environment variables configuration file using FParsec:
+
+    1. Grammar: variable assignments with optional type hints, conditional assignments, imports
+
+    2. Value types: strings, integers, booleans, arrays, variable interpolation ${VAR} syntax
+
+    3. Use FParsec combinators: manyTill, many, sepBy, choice, opt
+
+    4. Define an AST with EnvVar discriminated union including name, value, and optional condition
+
+    5. Detect cyclic variable dependencies
+
+    6. Write a pretty-printer that produces valid .env file format'
+- id: fsharp_core_0031_exp_027
+  instruction: 'Create a parser for a container orchestration service definition using FParsec:
+
+    1. Grammar: deployment blocks with replicas, resources, health checks, and scaling policies
+
+    2. Value types: strings, integers (replicas, ports), resource specifications (cpu/memory), arrays
+
+    3. Use FParsec combinators: manyTill, many, sepBy, between, pipe3
+
+    4. Define an AST with Deployment discriminated union containing all Kubernetes-like fields
+
+    5. Validate resource limit formats (e.g., "500m" for millicpus)
+
+    6. Write a pretty-printer that outputs Kubernetes manifest YAML format'
+- id: fsharp_core_0031_exp_028
+  instruction: 'Build a parser for a circuit breaker configuration using FParsec:
+
+    1. Grammar: service definitions with failure thresholds, timeout durations, and fallback actions
+
+    2. Value types: integers (counts), floats (durations), strings (fallback names), enums for states
+
+    3. Use FParsec combinators: many, sepBy, choice, opt, attempt
+
+    4. Define an AST with CircuitBreaker discriminated union containing thresholds and policies
+
+    5. Validate duration formats (ms, s, m suffixes)
+
+    6. Write a pretty-printer that formats circuit breaker settings for resilience patterns'
+- id: fsharp_core_0031_exp_029
+  instruction: 'Create a parser for a simple query builder DSL using FParsec:
+
+    1. Grammar: SELECT/FROM/WHERE clauses, logical operators, comparison expressions, aggregations
+
+    2. Value types: strings (column names), integers (limit/offset), expressions (AND/OR/NOT), arrays
+
+    3. Use FParsec combinators: many, pipe3, choice, attempt, manyTill
+
+    4. Define an AST with Query discriminated union for Select, From, Where, OrderBy clauses
+
+    5. Handle nested WHERE conditions with proper operator precedence
+
+    6. Write a pretty-printer that formats queries with proper indentation and capitalization'
+system_prompt: 'You are an expert F# developer. Write idiomatic, production-quality F# code.
+
+  Follow these conventions:
+
+  - Use pipeline operators (|>) for data transformations
+
+  - Prefer immutable data (records, DUs) over mutable state
+
+  - Use pattern matching extensively
+
+  - Use computation expressions where appropriate
+
+  - Include type annotations on public APIs
+
+  - Write concise explanations (2-3 sentences max) before the code
+
+  - All code must compile with .NET 9 and F# 9
+
+  '
+temperature: 0.6

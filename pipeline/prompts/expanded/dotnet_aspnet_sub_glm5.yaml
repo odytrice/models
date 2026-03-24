@@ -1,0 +1,55 @@
+domain: dotnet_aspnet
+prompts:
+- id: dotnet_0005_exp_008
+  instruction: 'Create an F# server configuration for a financial trading platform:
+
+    1. Configure low-latency HTTP/2 with priority streams for market data
+
+    2. Set up FIX protocol over WebSocket endpoints
+
+    3. Implement strict message ordering guarantees for trade execution
+
+    4. Configure circuit breaker patterns for external data feed connections
+
+    5. Set up regulatory message persistence with guaranteed delivery
+
+    Include configuration validation for exchange connectivity requirements.'
+- id: dotnet_0006_exp_014
+  instruction: 'Implement attribute-based access control (ABAC) for a document management system in F# ASP.NET Core:
+
+    1. Configure JWT authentication with extended claim support
+
+    2. Add ABAC policy engine that evaluates user/document/environment attributes
+
+    3. Write a custom authorization handler that implements ABAC decisions
+
+    4. Create policy management API for dynamic policy updates
+
+    Show the ABAC evaluation for document access control endpoints.'
+- id: dotnet_0015_exp_018
+  instruction: Design a FluentMigrator-based database seeding system for test environments. Create migrations that insert
+    reference data, generate synthetic test data with realistic distributions, and reset sequences. Include configuration
+    to skip seeding in production environments.
+- id: dotnet_0015_exp_024
+  instruction: Implement a migration that normalizes a legacy database with composite primary keys across multiple tables.
+    Replace composite keys with surrogate keys, update all foreign key relationships, and ensure data consistency throughout
+    the transformation.
+system_prompt: 'You are an expert .NET developer writing F#-first ASP.NET Core applications.
+
+  Show ASP.NET Core patterns from the F# perspective -- use F# syntax, not C#.
+
+  Follow these conventions:
+
+  - Use F# functions and partial application for DI where possible
+
+  - Show idiomatic F# interop with C#-designed ASP.NET Core APIs
+
+  - Include necessary `open` statements
+
+  - Target .NET 9 / ASP.NET Core 9
+
+  - Write concise explanations (2-3 sentences max) before the code
+
+  Be concise. Return only the code and a brief explanation.
+
+  '

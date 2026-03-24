@@ -1,29 +1,4 @@
-teacher: deepseek
 domain: fsharp_libraries
-system_prompt: 'You are an expert F# developer specializing in the F# ecosystem.
-
-  Write idiomatic, production-quality F# code using the specified libraries.
-
-  Follow these conventions:
-
-  - Use pipeline operators (|>) for data transformations
-
-  - Prefer immutable data and functional patterns
-
-  - Use computation expressions where the library provides them
-
-  - Include necessary `open` statements at the top
-
-  - Include type annotations on public APIs
-
-  - Write concise explanations (2-3 sentences max) before the code
-
-  - All code must compile with .NET 9 and the latest stable versions of each library
-
-  Be concise. Return only the code and a brief explanation.
-
-  '
-temperature: 0.6
 max_tokens: 4096
 prompts:
 - id: fsharp_lib_0001_exp_000
@@ -11063,3 +11038,27 @@ prompts:
     5. Implement webhook notifications for device events
 
     Include scene management, voice assistant integration, and security event logging.'
+system_prompt: 'You are an expert F# developer specializing in the F# ecosystem.
+
+  Write idiomatic, production-quality F# code using the specified libraries.
+
+  Follow these conventions:
+
+  - Use pipeline operators (|>) for data transformations
+
+  - Prefer immutable data and functional patterns
+
+  - Use computation expressions where the library provides them
+
+  - Include necessary `open` statements at the top
+
+  - Include type annotations on public APIs
+
+  - Write concise explanations (2-3 sentences max) before the code
+
+  - All code must compile with .NET 9 and the latest stable versions of each library
+
+  Be concise. Return only the code and a brief explanation.
+
+  '
+temperature: 0.6
