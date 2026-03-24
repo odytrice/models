@@ -1278,9 +1278,35 @@ Datasets:   4.3.0
 
 ---
 
+### Training Launch — Both Models Running
+
+Both models are now training on RunPod A100 80GB SXM pods.
+
+**Kenichi Thinking (Qwen3.5-27B):**
+- 2,835 total steps (7,556 samples × 3 epochs, batch_size=8, no packing compression)
+- 101,449,728 trainable parameters (0.42% of 27B)
+- Model downloaded in ~4 minutes (55.6 GB at 234 MB/s)
+- Training started after tokenization (~30 sec)
+
+**Kenichi Flash (Devstral Small 2, 24B):**
+- 2,835 total steps (same data, same batch config)
+- 101,449,728 trainable parameters (0.42% of 24B)
+- Required `akoumpa/Devstral-Small-2-24B-Instruct-2512-BF16` — both `mistralai/` and `unsloth/` FP8 variants rejected by Unsloth on A100 (compute capability 8.0, FP8 needs 8.9+)
+- Required `TRANSFORMERS_NO_FLEX_ATTENTION=1` and `attn_implementation="eager"` — flex_attention needs torch 2.6+, we have 2.5.0
+- Model already cached from first attempt, loaded in ~7 seconds
+
+### Ollama Modelfiles Created
+- `configs/Modelfile.kenichi-thinking` — ChatML template, Q5_K_M GGUF
+- `configs/Modelfile.kenichi-flash` — Mistral instruct template, Q5_K_M GGUF
+- Both set system prompt: "You are Kenichi, an expert coding assistant..."
+- `num_ctx=131072` (128K context), `temperature=0.6`
+
+---
+
 ## Pending Actions
 
-1. **Complete training** of both students on RunPod (2x A100 80GB)
-2. **Evaluate and compare** both variants on held-out validation set
-3. **Export** to GGUF (Q4_K_M, Q5_K_M, Q8_0) for local inference
-4. **Push models** to HuggingFace
+1. **Wait for training** to complete (~2-3 hours each)
+2. **Merge LoRA + export** to GGUF and push to HuggingFace
+3. **Evaluate and compare** both variants on held-out validation set
+4. **Download GGUFs locally** and test with Ollama on RTX 5090
+5. **Terminate RunPod pods**

@@ -1,0 +1,22 @@
+# Kenichi Flash — Devstral Small 2 (24B) Domain-Specialized
+# Fast agentic coding model for F#, .NET, Svelte 5, TypeScript, Docker, Kubernetes
+#
+# Usage:
+#   ollama create kenichi-flash -f Modelfile.kenichi-flash
+#   ollama run kenichi-flash
+#
+# Download the GGUF first:
+#   huggingface-cli download odytrice/kenichi-flash-GGUF --local-dir ./kenichi-flash
+
+FROM ./kenichi-flash/unsloth.Q5_K_M.gguf
+
+TEMPLATE """{{- if .System }}[SYSTEM_PROMPT] {{ .System }}[/SYSTEM_PROMPT]{{ end }}{{- range .Messages }}{{- if eq .Role "user" }}[INST] {{ .Content }}[/INST]{{ end }}{{- if eq .Role "assistant" }} {{ .Content }}</s>{{ end }}{{- end }}"""
+
+SYSTEM """You are Kenichi, an expert coding assistant specialized in F#, .NET, Svelte 5, SvelteKit, TypeScript, Docker, and Kubernetes. You write clean, idiomatic, and well-structured code with clear explanations."""
+
+PARAMETER temperature 0.6
+PARAMETER top_p 0.95
+PARAMETER top_k 40
+PARAMETER num_ctx 131072
+PARAMETER stop </s>
+PARAMETER stop [INST]
