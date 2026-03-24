@@ -59,12 +59,20 @@ echo "  $(python -c "import torch; print(f'PyTorch {torch.__version__}, CUDA {to
 
 # ── flash-attn ───────────────────────────────────────────────────────
 echo ""
-echo "[3/6] Installing flash-attn (may take a few minutes if building from source)..."
+echo "[3/7] Installing flash-attn (may take a few minutes if building from source)..."
 pip install -q flash-attn --no-build-isolation --no-cache-dir
+
+# ── Qwen3.5 GDN dependencies ────────────────────────────────────────
+echo ""
+echo "[4/7] Installing causal-conv1d + flash-linear-attention (required for Qwen3.5 GDN layers)..."
+# Without these, Qwen3.5's Gated DeltaNet layers fall back to a slow torch
+# implementation that OOMs on long sequences.
+pip install -q causal-conv1d --no-build-isolation --no-cache-dir
+pip install -q flash-linear-attention --no-build-isolation --no-cache-dir
 
 # ── Unsloth + dependencies ───────────────────────────────────────────
 echo ""
-echo "[4/6] Installing Unsloth + dependencies..."
+echo "[5/7] Installing Unsloth + dependencies..."
 
 # Install Unsloth with cu124-ampere-torch250 extras (manages its own version pins)
 pip install "unsloth[cu124-ampere-torch250] @ git+https://github.com/unslothai/unsloth.git"
@@ -77,7 +85,7 @@ pip install -q hf_transfer
 
 # ── Verify GPU ───────────────────────────────────────────────────────
 echo ""
-echo "[5/6] Verifying GPU..."
+echo "[6/7] Verifying GPU..."
 python -c "
 import torch
 print(f'PyTorch:    {torch.__version__}')
@@ -91,7 +99,7 @@ for i in range(torch.cuda.device_count()):
 
 # ── Verify Unsloth ───────────────────────────────────────────────────
 echo ""
-echo "[6/6] Verifying Unsloth..."
+echo "[7/7] Verifying Unsloth..."
 python -c "
 from unsloth import FastLanguageModel
 print('Unsloth:  OK')
