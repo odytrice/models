@@ -1,20 +1,25 @@
-# Kenichi Thinking — 96 GB VRAM Profile (RTX PRO 6000, A100 80GB, H100)
-# Qwen3.5-27B | Q8_0 model | Q8 KV cache | ~256K context (model max)
+# Kenichi Thinking — Full Precision (Mac Studio 256GB, multi-GPU servers)
+# Qwen3.5-27B | F16 model | FP16 KV cache | ~256K context (model max)
 #
-# Near-lossless quality at maximum context. No practical quality difference from F16.
+# True zero quantization. F16 model weights + unquantized FP16 KV cache.
+# No compromises anywhere in the inference pipeline.
+#
+# Memory: ~54 GB model + ~90 GB FP16 KV at 256K = ~144 GB total
+# Requires 192+ GB unified memory (Mac Studio M4 Ultra 256GB recommended)
 #
 # Setup:
 #   1. Download GGUF:
 #      huggingface-cli download odytrice/kenichi-thinking-GGUF --local-dir ./kenichi-thinking
 #
-#   2. Set KV cache quantization (required — add to your shell profile):
-#      export OLLAMA_KV_CACHE_TYPE=q8_0
+#   2. No KV cache quantization needed! Use default FP16:
+#      export OLLAMA_KV_CACHE_TYPE=f16
+#      (or simply don't set OLLAMA_KV_CACHE_TYPE — f16 is the default)
 #
 #   3. Create and run:
-#      ollama create kenichi-thinking:96gb -f Modelfile.kenichi-thinking-96gb
-#      ollama run kenichi-thinking:96gb
+#      ollama create kenichi-thinking:full -f Modelfile.kenichi-thinking-full
+#      ollama run kenichi-thinking:full
 
-FROM ./kenichi-thinking/unsloth.Q8_0.gguf
+FROM ./kenichi-thinking/unsloth.F16.gguf
 
 TEMPLATE """{{- if .System }}<|im_start|>system
 {{ .System }}<|im_end|>

@@ -1,8 +1,11 @@
-# Kenichi Flash — 96 GB VRAM Profile (RTX PRO 6000, A100 80GB, H100)
-# Devstral Small 2 (24B) | Q8_0 model | FP16 KV cache | ~256K context (model max)
+# Kenichi Flash — Full Precision (Mac Studio 256GB, multi-GPU servers)
+# Devstral Small 2 (24B) | F16 model | FP16 KV cache | ~256K context (model max)
 #
-# Near-lossless model with unquantized FP16 KV cache at full context.
-# Model: ~26 GB | FP16 KV at 256K: ~42 GB | Total: ~68 GB → plenty of headroom.
+# True zero quantization. F16 model weights + unquantized FP16 KV cache.
+# No compromises anywhere in the inference pipeline.
+#
+# Memory: ~48 GB model + ~42 GB FP16 KV at 256K = ~90 GB total
+# Fits comfortably in 128+ GB unified memory (Mac Studio M4 Ultra)
 #
 # Setup:
 #   1. Download GGUF:
@@ -13,10 +16,10 @@
 #      (or simply don't set OLLAMA_KV_CACHE_TYPE — f16 is the default)
 #
 #   3. Create and run:
-#      ollama create kenichi-flash:96gb -f Modelfile.kenichi-flash-96gb
-#      ollama run kenichi-flash:96gb
+#      ollama create kenichi-flash:full -f Modelfile.kenichi-flash-full
+#      ollama run kenichi-flash:full
 
-FROM ./kenichi-flash/unsloth.Q8_0.gguf
+FROM ./kenichi-flash/unsloth.F16.gguf
 
 TEMPLATE """{{- if .System }}[SYSTEM_PROMPT] {{ .System }}[/SYSTEM_PROMPT]{{ end }}{{- range .Messages }}{{- if eq .Role "user" }}[INST] {{ .Content }}[/INST]{{ end }}{{- if eq .Role "assistant" }} {{ .Content }}</s>{{ end }}{{- end }}"""
 

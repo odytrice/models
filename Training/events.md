@@ -1307,8 +1307,10 @@ Created 4 Modelfiles targeting specific VRAM capacities. Each selects the optima
 | `kenichi-flash:24gb` | Devstral Small 2 | Q4_K_M | Q8 | ~121K | RTX 4090 |
 | `kenichi-flash:32gb` | Devstral Small 2 | Q5_K_M | Q8 | ~182K | RTX 5090 |
 | `kenichi-flash:48gb` | Devstral Small 2 | Q8_0 | Q8 | ~256K (max) | A6000 Ada |
-| `kenichi-thinking:96gb` | Qwen3.5-27B | **F16** | Q8 | ~233K | RTX PRO 6000 |
-| `kenichi-flash:96gb` | Devstral Small 2 | **F16** | FP16 | ~256K (max) | RTX PRO 6000 |
+| `kenichi-thinking:96gb` | Qwen3.5-27B | Q8_0 | Q8 | ~256K (max) | RTX PRO 6000 |
+| `kenichi-flash:96gb` | Devstral Small 2 | Q8_0 | FP16 | ~256K (max) | RTX PRO 6000 |
+| `kenichi-thinking:full` | Qwen3.5-27B | **F16** | FP16 | ~256K (max) | Mac Studio 256GB |
+| `kenichi-flash:full` | Devstral Small 2 | **F16** | FP16 | ~256K (max) | Mac Studio 256GB |
 
 Key design decisions:
 - **Thinking uses Q4 KV on 24/32/48gb tiers** — 88 layers makes KV cache expensive, Q8 KV doesn't leave enough room
@@ -1316,9 +1318,12 @@ Key design decisions:
 - **48 GB tier** — best quants at full 256K context (model maximum)
   - Thinking: Q5_K_M model + Q4 KV → 322K theoretical, capped at 256K
   - Flash: Q8_0 model + Q8 KV → 268K theoretical, capped at 256K
-- **96 GB tier** — true zero quantization on model weights (F16 GGUF)
-  - Thinking: F16 model (~54 GB) + Q8 KV → ~233K context. FP16 KV at 256K would need 144 GB total — doesn't fit, so Q8 KV is used (negligible quality impact).
-  - Flash: F16 model (~48 GB) + **FP16 KV (no quantization at all)** → ~256K context. 48 GB model + 42 GB FP16 KV = 90 GB, fits in 96 GB. Truly zero quantization end-to-end.
+- **96 GB tier** — near-lossless Q8_0 models at full 256K context
+  - Thinking: Q8_0 model (29 GB) + Q8 KV → 256K context
+  - Flash: Q8_0 model (26 GB) + FP16 KV → 256K context (70 GB free, only 42 GB needed for FP16 KV)
+- **:full tier** — true zero quantization, F16 model + FP16 KV, for Mac Studio 256 GB unified memory
+  - Thinking: F16 (~54 GB) + FP16 KV at 256K (~90 GB) = ~144 GB total
+  - Flash: F16 (~48 GB) + FP16 KV at 256K (~42 GB) = ~90 GB total
 - **Thinking uses Q4_K_M on 24/32gb tiers** — Q5_K_M doesn't leave enough headroom
 - **Flash on 32gb uses Q5_K_M** (better model quality) since there's more headroom
 
@@ -1331,6 +1336,8 @@ Files:
 - `configs/Modelfile.kenichi-flash-32gb`
 - `configs/Modelfile.kenichi-flash-48gb`
 - `configs/Modelfile.kenichi-flash-96gb`
+- `configs/Modelfile.kenichi-thinking-full`
+- `configs/Modelfile.kenichi-flash-full`
 
 Export script (`merge_and_export.py`) updated to produce F16 GGUFs in addition to Q4_K_M, Q5_K_M, Q8_0.
 
