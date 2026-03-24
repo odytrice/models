@@ -124,7 +124,7 @@ def main(data_path: str = None, val_path: str = None, resume: str = None):
         MODEL_NAME,
         dtype=DTYPE,
         device_map="auto",
-        attn_implementation="eager",  # flex_attention needs torch 2.6+
+        attn_implementation="flash_attention_2",  # eager OOMs at 128K; flash_attention_2 is O(n) memory
     )
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
