@@ -1295,11 +1295,30 @@ Both models are now training on RunPod A100 80GB SXM pods.
 - Required `TRANSFORMERS_NO_FLEX_ATTENTION=1` and `attn_implementation="eager"` — flex_attention needs torch 2.6+, we have 2.5.0
 - Model already cached from first attempt, loaded in ~7 seconds
 
-### Ollama Modelfiles Created
-- `configs/Modelfile.kenichi-thinking` — ChatML template, Q5_K_M GGUF
-- `configs/Modelfile.kenichi-flash` — Mistral instruct template, Q5_K_M GGUF
-- Both set system prompt: "You are Kenichi, an expert coding assistant..."
-- `num_ctx=131072` (128K context), `temperature=0.6`
+### VRAM-Targeted Ollama Modelfiles
+
+Created 4 Modelfiles targeting specific VRAM capacities. Each selects the optimal model quantization and context window for the GPU. KV cache quantization is set via the `OLLAMA_KV_CACHE_TYPE` environment variable (global Ollama setting, not per-model).
+
+| Ollama Tag | Model | Model Quant | KV Quant | Context | Target GPU |
+|------------|-------|-------------|----------|---------|------------|
+| `kenichi-thinking:24gb` | Qwen3.5-27B | Q4_K_M | Q4 | ~88K | RTX 4090 |
+| `kenichi-thinking:32gb` | Qwen3.5-27B | Q4_K_M | Q4 | ~177K | RTX 5090 |
+| `kenichi-flash:24gb` | Devstral Small 2 | Q4_K_M | Q8 | ~121K | RTX 4090 |
+| `kenichi-flash:32gb` | Devstral Small 2 | Q5_K_M | Q8 | ~182K | RTX 5090 |
+
+Key design decisions:
+- **Thinking uses Q4 KV on both tiers** — 88 layers makes KV cache expensive, Q8 KV doesn't leave enough room
+- **Flash gets Q8 KV** (better quality) — 40 layers is much cheaper on KV cache
+- **Flash on 5090 uses Q5_K_M** (better model quality) since there's more headroom
+- **Thinking uses Q4_K_M on both tiers** — Q5_K_M doesn't leave enough headroom even on the 5090
+
+Files:
+- `configs/Modelfile.kenichi-thinking-24gb`
+- `configs/Modelfile.kenichi-thinking-32gb`
+- `configs/Modelfile.kenichi-flash-24gb`
+- `configs/Modelfile.kenichi-flash-32gb`
+
+Removed old generic `Modelfile.kenichi-thinking` and `Modelfile.kenichi-flash`.
 
 ---
 
@@ -1308,5 +1327,5 @@ Both models are now training on RunPod A100 80GB SXM pods.
 1. **Wait for training** to complete (~2-3 hours each)
 2. **Merge LoRA + export** to GGUF and push to HuggingFace
 3. **Evaluate and compare** both variants on held-out validation set
-4. **Download GGUFs locally** and test with Ollama on RTX 5090
+4. **Download GGUFs locally** and test with Ollama on RTX 4090 / RTX 5090
 5. **Terminate RunPod pods**

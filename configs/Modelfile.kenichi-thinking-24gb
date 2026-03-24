@@ -1,14 +1,18 @@
-# Kenichi Thinking — Qwen3.5-27B Domain-Specialized
-# Reasoning-first coding model for F#, .NET, Svelte 5, TypeScript, Docker, Kubernetes
+# Kenichi Thinking — 24 GB VRAM Profile (RTX 4090, RTX 3090)
+# Qwen3.5-27B | Q4_K_M model | Q4 KV cache | ~88K context
 #
-# Usage:
-#   ollama create kenichi-thinking -f Modelfile.kenichi-thinking
-#   ollama run kenichi-thinking
+# Setup:
+#   1. Download GGUF:
+#      huggingface-cli download odytrice/kenichi-thinking-GGUF --local-dir ./kenichi-thinking
 #
-# Download the GGUF first:
-#   huggingface-cli download odytrice/kenichi-thinking-GGUF --local-dir ./kenichi-thinking
+#   2. Set KV cache quantization (required — add to your shell profile):
+#      export OLLAMA_KV_CACHE_TYPE=q4_0
+#
+#   3. Create and run:
+#      ollama create kenichi-thinking:24gb -f Modelfile.kenichi-thinking-24gb
+#      ollama run kenichi-thinking:24gb
 
-FROM ./kenichi-thinking/unsloth.Q5_K_M.gguf
+FROM ./kenichi-thinking/unsloth.Q4_K_M.gguf
 
 TEMPLATE """{{- if .System }}<|im_start|>system
 {{ .System }}<|im_end|>
@@ -24,6 +28,6 @@ SYSTEM """You are Kenichi, an expert coding assistant specialized in F#, .NET, S
 PARAMETER temperature 0.6
 PARAMETER top_p 0.95
 PARAMETER top_k 40
-PARAMETER num_ctx 131072
+PARAMETER num_ctx 88000
 PARAMETER stop <|im_end|>
 PARAMETER stop <|im_start|>
