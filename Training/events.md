@@ -1343,11 +1343,31 @@ Export script (`merge_and_export.py`) updated to produce F16 GGUFs in addition t
 
 Removed old generic `Modelfile.kenichi-thinking` and `Modelfile.kenichi-flash`.
 
+### GPU Utilization Issue — Kenichi Thinking Restart
+
+After ~1.5 hours of training, noticed severe GPU underutilization on Kenichi Thinking:
+
+| Metric | Kenichi Thinking | Kenichi Flash |
+|--------|-----------------|---------------|
+| GPU utilization | ~25% | ~85% |
+| Step speed | 45.4 s/step | 6.4 s/step |
+| Steps completed | 118 / 2,835 | 459 / 2,835 |
+| ETA remaining | **34 hours** | **4.2 hours** |
+| Loss | 0.49 | 0.48 |
+
+**Root cause**: `max_seq_length=131072` (128K) with `packing=True` creates mostly-empty attention windows. The median sample is ~4K tokens, so each 128K packed sequence is ~97% padding. With 88 attention layers (vs Flash's 40), this waste is amplified — attention is O(n² × layers).
+
+**Contributing factor**: Flash uses `attn_implementation="eager"` (forced due to flex_attention bug), which may have better GPU utilization patterns on torch 2.5 than the default SDPA path used by Thinking.
+
+**Fix**: Reduced `MAX_SEQ_LENGTH` from 131072 → 32768 (32K). This covers 95.4% of training samples (truncates only 348/7,556). Packing density improves ~4x, expected GPU utilization ~70-90%.
+
+Training stopped at step 118 (epoch 0.12, still in warmup phase) and restarted with the new config. Minimal progress lost.
+
 ---
 
 ## Pending Actions
 
-1. **Wait for training** to complete (~2-3 hours each)
+1. **Wait for training** to complete (~3-4 hours each)
 2. **Merge LoRA + export** to GGUF and push to HuggingFace
 3. **Evaluate and compare** both variants on held-out validation set
 4. **Download GGUFs locally** and test with Ollama on RTX 4090 / RTX 5090
