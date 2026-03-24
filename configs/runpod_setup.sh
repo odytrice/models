@@ -38,15 +38,19 @@ apt-get update -qq && apt-get install -y -qq git-lfs htop nvtop 2>/dev/null || t
 echo ""
 echo "[2/5] Installing Python packages..."
 
-# Unsloth (optimized LoRA training — 2x faster, 30% less VRAM)
 pip install -q --upgrade pip
-pip install -q "unsloth[cu124-ampere-torch250] @ git+https://github.com/unslothai/unsloth.git"
 
-# TRL (SFTTrainer) and datasets
+# Detect PyTorch and CUDA version already on the pod
+echo "  Checking existing PyTorch..."
+python -c "import torch; print(f'  PyTorch {torch.__version__}, CUDA {torch.version.cuda}')"
+
+# Install Unsloth — use pip install (not git clone) to avoid flash-attn build issues.
+# The RunPod image already has PyTorch + CUDA, so we install unsloth on top.
+pip install -q --no-deps unsloth unsloth_zoo
 pip install -q --upgrade trl datasets transformers accelerate peft bitsandbytes
-
-# HuggingFace transfer (fast dataset downloads)
-pip install -q hf_transfer
+pip install -q xformers sentencepiece protobuf hf_transfer
+# flash-attn: install pre-built wheel (avoid building from source)
+pip install -q flash-attn --no-build-isolation
 
 # ── Verify GPU ───────────────────────────────────────────────────────
 echo ""
