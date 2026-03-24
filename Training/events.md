@@ -1303,20 +1303,27 @@ Created 4 Modelfiles targeting specific VRAM capacities. Each selects the optima
 |------------|-------|-------------|----------|---------|------------|
 | `kenichi-thinking:24gb` | Qwen3.5-27B | Q4_K_M | Q4 | ~88K | RTX 4090 |
 | `kenichi-thinking:32gb` | Qwen3.5-27B | Q4_K_M | Q4 | ~177K | RTX 5090 |
+| `kenichi-thinking:48gb` | Qwen3.5-27B | Q5_K_M | Q4 | ~256K (max) | A6000 Ada |
 | `kenichi-flash:24gb` | Devstral Small 2 | Q4_K_M | Q8 | ~121K | RTX 4090 |
 | `kenichi-flash:32gb` | Devstral Small 2 | Q5_K_M | Q8 | ~182K | RTX 5090 |
+| `kenichi-flash:48gb` | Devstral Small 2 | Q8_0 | Q8 | ~256K (max) | A6000 Ada |
 
 Key design decisions:
-- **Thinking uses Q4 KV on both tiers** — 88 layers makes KV cache expensive, Q8 KV doesn't leave enough room
+- **Thinking uses Q4 KV on all tiers** — 88 layers makes KV cache expensive, Q8 KV doesn't leave enough room
 - **Flash gets Q8 KV** (better quality) — 40 layers is much cheaper on KV cache
-- **Flash on 5090 uses Q5_K_M** (better model quality) since there's more headroom
-- **Thinking uses Q4_K_M on both tiers** — Q5_K_M doesn't leave enough headroom even on the 5090
+- **48 GB tier is "unrestrained"** — best possible quants at full 256K context (model maximum)
+  - Thinking: Q5_K_M model (very good quality) + Q4 KV → 322K theoretical, capped at 256K
+  - Flash: Q8_0 model (near-lossless) + Q8 KV → 268K theoretical, capped at 256K
+- **Thinking uses Q4_K_M on 24/32gb tiers** — Q5_K_M doesn't leave enough headroom
+- **Flash on 32gb uses Q5_K_M** (better model quality) since there's more headroom
 
 Files:
 - `configs/Modelfile.kenichi-thinking-24gb`
 - `configs/Modelfile.kenichi-thinking-32gb`
+- `configs/Modelfile.kenichi-thinking-48gb`
 - `configs/Modelfile.kenichi-flash-24gb`
 - `configs/Modelfile.kenichi-flash-32gb`
+- `configs/Modelfile.kenichi-flash-48gb`
 
 Removed old generic `Modelfile.kenichi-thinking` and `Modelfile.kenichi-flash`.
 

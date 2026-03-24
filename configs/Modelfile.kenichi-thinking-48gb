@@ -1,0 +1,33 @@
+# Kenichi Thinking — 48 GB VRAM Profile (RTX A6000 Ada, 2x 24GB)
+# Qwen3.5-27B | Q5_K_M model | Q4 KV cache | ~256K context (model max)
+#
+# Setup:
+#   1. Download GGUF:
+#      huggingface-cli download odytrice/kenichi-thinking-GGUF --local-dir ./kenichi-thinking
+#
+#   2. Set KV cache quantization (required — add to your shell profile):
+#      export OLLAMA_KV_CACHE_TYPE=q4_0
+#
+#   3. Create and run:
+#      ollama create kenichi-thinking:48gb -f Modelfile.kenichi-thinking-48gb
+#      ollama run kenichi-thinking:48gb
+
+FROM ./kenichi-thinking/unsloth.Q5_K_M.gguf
+
+TEMPLATE """{{- if .System }}<|im_start|>system
+{{ .System }}<|im_end|>
+{{ end }}{{- range .Messages }}{{- if eq .Role "user" }}<|im_start|>user
+{{ .Content }}<|im_end|>
+{{ end }}{{- if eq .Role "assistant" }}<|im_start|>assistant
+{{ .Content }}<|im_end|>
+{{ end }}{{- end }}<|im_start|>assistant
+"""
+
+SYSTEM """You are Kenichi, an expert coding assistant specialized in F#, .NET, Svelte 5, SvelteKit, TypeScript, Docker, and Kubernetes. You write clean, idiomatic, and well-structured code with clear explanations."""
+
+PARAMETER temperature 0.6
+PARAMETER top_p 0.95
+PARAMETER top_k 40
+PARAMETER num_ctx 262144
+PARAMETER stop <|im_end|>
+PARAMETER stop <|im_start|>

@@ -1,0 +1,28 @@
+# Kenichi Flash — 48 GB VRAM Profile (RTX A6000 Ada, 2x 24GB)
+# Devstral Small 2 (24B) | Q8_0 model | Q8 KV cache | ~256K context (model max)
+#
+# Near-lossless quality at full context. The best possible local experience.
+#
+# Setup:
+#   1. Download GGUF:
+#      huggingface-cli download odytrice/kenichi-flash-GGUF --local-dir ./kenichi-flash
+#
+#   2. Set KV cache quantization (required — add to your shell profile):
+#      export OLLAMA_KV_CACHE_TYPE=q8_0
+#
+#   3. Create and run:
+#      ollama create kenichi-flash:48gb -f Modelfile.kenichi-flash-48gb
+#      ollama run kenichi-flash:48gb
+
+FROM ./kenichi-flash/unsloth.Q8_0.gguf
+
+TEMPLATE """{{- if .System }}[SYSTEM_PROMPT] {{ .System }}[/SYSTEM_PROMPT]{{ end }}{{- range .Messages }}{{- if eq .Role "user" }}[INST] {{ .Content }}[/INST]{{ end }}{{- if eq .Role "assistant" }} {{ .Content }}</s>{{ end }}{{- end }}"""
+
+SYSTEM """You are Kenichi, an expert coding assistant specialized in F#, .NET, Svelte 5, SvelteKit, TypeScript, Docker, and Kubernetes. You write clean, idiomatic, and well-structured code with clear explanations."""
+
+PARAMETER temperature 0.6
+PARAMETER top_p 0.95
+PARAMETER top_k 40
+PARAMETER num_ctx 262144
+PARAMETER stop </s>
+PARAMETER stop [INST]
