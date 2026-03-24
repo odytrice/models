@@ -34,7 +34,7 @@ from transformers import TrainingArguments
 
 # ── Model Configuration ──────────────────────────────────────────────
 MODEL_NAME = "Qwen/Qwen3.5-27B"
-MAX_SEQ_LENGTH = 32768  # 32K — covers 95.4% of samples, 4x better packing density
+MAX_SEQ_LENGTH = 131072  # 128K — zero truncation, all samples preserved
 LOAD_IN_4BIT = False  # Train in BF16, NOT QLoRA
 DTYPE = None  # Auto-detect (BF16 on A100)
 
