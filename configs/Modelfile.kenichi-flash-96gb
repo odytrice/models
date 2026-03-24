@@ -1,0 +1,30 @@
+# Kenichi Flash — 96 GB VRAM Profile (RTX PRO 6000, A100 80GB, H100)
+# Devstral Small 2 (24B) | Q8_0 model | FP16 KV cache | ~256K context (model max)
+#
+# Zero compromise. Q8_0 model with unquantized FP16 KV cache at full context.
+# 70 GB free after model load — more than enough for 256K with FP16 KV (~42 GB).
+#
+# Setup:
+#   1. Download GGUF:
+#      huggingface-cli download odytrice/kenichi-flash-GGUF --local-dir ./kenichi-flash
+#
+#   2. No KV cache quantization needed! Use default FP16:
+#      export OLLAMA_KV_CACHE_TYPE=f16
+#      (or simply don't set OLLAMA_KV_CACHE_TYPE — f16 is the default)
+#
+#   3. Create and run:
+#      ollama create kenichi-flash:96gb -f Modelfile.kenichi-flash-96gb
+#      ollama run kenichi-flash:96gb
+
+FROM ./kenichi-flash/unsloth.Q8_0.gguf
+
+TEMPLATE """{{- if .System }}[SYSTEM_PROMPT] {{ .System }}[/SYSTEM_PROMPT]{{ end }}{{- range .Messages }}{{- if eq .Role "user" }}[INST] {{ .Content }}[/INST]{{ end }}{{- if eq .Role "assistant" }} {{ .Content }}</s>{{ end }}{{- end }}"""
+
+SYSTEM """You are Kenichi, an expert coding assistant specialized in F#, .NET, Svelte 5, SvelteKit, TypeScript, Docker, and Kubernetes. You write clean, idiomatic, and well-structured code with clear explanations."""
+
+PARAMETER temperature 0.6
+PARAMETER top_p 0.95
+PARAMETER top_k 40
+PARAMETER num_ctx 262144
+PARAMETER stop </s>
+PARAMETER stop [INST]
