@@ -1708,6 +1708,520 @@ prompts:
     3. Implement AsyncOption CE for checking sentiment analysis that may return None
 
     Handle duplicate article detection and implement source credibility scoring.'
+- id: fsharp_lib_0005_exp_001
+  instruction: 'Create an F# healthcare module for patient data access:
+
+    1. A function that retrieves patient records by ID with HIPAA compliance checks
+
+    2. A function that validates the requesting user has appropriate access permissions
+
+    3. A function that redacts sensitive information based on user role
+
+    4. Compose into a single taskResult pipeline that handles both async DB calls and permission errors
+
+    Include error cases for unauthorized access, missing records, and data validation failures.'
+- id: fsharp_lib_0005_exp_006
+  instruction: 'Write an F# weather data processing service:
+
+    1. Fetch weather data from external API (async with retry logic)
+
+    2. Validate data quality and completeness
+
+    3. Transform to standardized format
+
+    4. Use taskResult CE to handle API rate limits, invalid responses, and transformation errors
+
+    Include circuit breaker pattern for external API failures.'
+- id: fsharp_lib_0005_exp_007
+  instruction: 'Implement an F# document processing pipeline:
+
+    1. Load document from cloud storage (async)
+
+    2. Validate file format and size constraints
+
+    3. Extract and sanitize content
+
+    4. Chain operations with taskResult, handling malformed files, size limits, and extraction errors
+
+    Include progress tracking and cancellation token support.'
+- id: fsharp_lib_0006_exp_002
+  instruction: 'Design a fintech transaction processing pipeline:
+
+    1. Use `option { }` CE to: verify account → check balance → validate transaction amount
+
+    2. Transform Option<Result<Transaction, ComplianceError>> to Result<Option<Transaction>, ComplianceError> with traverseResult
+
+    3. Create AsyncOption CE operations for fraud detection APIs that might return no findings
+
+    Ensure thread safety for concurrent transactions and implement retry logic for transient failures.'
+- id: fsharp_lib_0006_exp_005
+  instruction: 'Develop a logistics package tracking system:
+
+    1. Chain operations with `option { }`: find package → get current location → estimate delivery
+
+    2. Use traverseResult for Option<Result<DeliveryRoute, RoutingError>> conversions
+
+    3. Implement AsyncOption CE for weather API calls that may return None for indoor facilities
+
+    Handle GPS coordinate validation and implement fallback routing algorithms.'
+- id: fsharp_lib_0006_exp_003
+  instruction: 'Build a social media content moderation system:
+
+    1. Chain with `option { }`: fetch post → check author status → retrieve moderation history
+
+    2. Convert Option<Result<ModerationDecision, ModerationError>> using traverseResult
+
+    3. Use AsyncOption CE for async image analysis that may return None for clean content
+
+    Handle rate limiting from external APIs and implement caching for frequently accessed data.'
+- id: fsharp_lib_0006_exp_010
+  instruction: 'Create a financial portfolio analysis tool:
+
+    1. Use `option { }` CE: get portfolio → calculate risk → generate recommendations
+
+    2. Apply Option.traverseResult to Option<Result<Analysis, MarketDataError>>
+
+    3. Implement AsyncOption CE for fetching real-time prices that may be missing
+
+    Handle decimal precision for financial calculations and implement audit logging.'
+- id: fsharp_lib_0006_exp_016
+  instruction: 'Design a student grading system:
+
+    1. Use `option { }` CE: find student → get assignments → calculate average
+
+    2. Apply Option.traverseResult to Option<Result<Grade, GradingError>>
+
+    3. Implement AsyncOption CE for fetching extra credit that may not be available
+
+    Handle weighted grade calculations and implement grade curve adjustments.'
+- id: fsharp_lib_0006_exp_013
+  instruction: 'Implement a ride-sharing trip calculation service:
+
+    1. Chain with `option { }`: get rider → find drivers → calculate fare
+
+    2. Use Option.traverseResult for Option<Result<Trip, PricingError>>
+
+    3. Create AsyncOption CE for checking surge pricing that may not apply
+
+    Handle real-time location updates and implement fare splitting between multiple riders.'
+- id: fsharp_lib_0007_exp_012
+  instruction: Implement a digital voting system using Akka.NET actors in F#. Define message unions for VoteCast, TallyRequest,
+    and AuditTrail. Create parent polling station actors with child ballot box actors. Use `spawn` with consistent hashing
+    for voter distribution. Add supervision that stops compromised ballot boxes and notifies election officials. Demonstrate
+    verifiable tallying with the ask pattern and include Byzantine fault tolerance mechanisms.
+- id: fsharp_lib_0007_exp_017
+  instruction: Design a smart grid energy distribution system using Akka.NET actors in F#. Define message types for PowerReading,
+    LoadAdjustment, and GridAlert. Implement parent substation actors with child meter actors. Use the ask pattern for demand-response
+    negotiations. Add supervision that restarts meter readers on sensor faults but escalates critical grid instability. Demonstrate
+    load balancing with predictive algorithms and include failover to backup generators.
+- id: fsharp_lib_0008_exp_007
+  instruction: 'Implement a fraud detection pipeline in C# using Akka.NET Streams and Cluster:
+
+    1. HOCON configuration for cluster with stream materializer settings
+
+    2. TransactionAnalyzer actors that process payment streams
+
+    3. Cluster singleton FraudPatternDetector using machine learning models
+
+    4. Balance workload using cluster-aware stream stages
+
+    5. Handle cluster member status changes to adjust stream parallelism
+
+    Show C# stream graphs and actor implementations with cluster integration.'
+- id: fsharp_lib_0008_exp_015
+  instruction: 'Implement a blockchain transaction validator in C# with Akka.NET:
+
+    1. Cluster configuration with secure remote transport
+
+    2. ValidatorActor using persistent state for blockchain history
+
+    3. Cluster singleton ConsensusManager for proof-of-work/stake
+
+    4. Balancing dispatcher for CPU-intensive validation work
+
+    5. Handle cluster partition events for maintaining consensus
+
+    Show C# code with consensus algorithm and secure transport config.'
+- id: fsharp_lib_0008_exp_017
+  instruction: 'Build a airline reservation system in C# with Akka.NET:
+
+    1. Cluster configuration with persistence plugins for SQL Server
+
+    2. FlightInventory actors with optimistic concurrency control
+
+    3. Cluster singleton BookingCoordinator for transaction management
+
+    4. Consistent hashing router for flight code-based routing
+
+    5. Handle cluster singleton handover during leader election
+
+    Show C# code with SQL persistence and transaction management.'
+- id: fsharp_lib_0008_exp_023
+  instruction: 'Implement a supply chain tracking system in C# with Akka.NET:
+
+    1. Cluster configuration with location-aware node roles
+
+    2. ShipmentTracker actors with Akka.Persistence.Query
+
+    3. Cluster singleton LogisticsOptimizer for route planning
+
+    4. Random router for distributing sensor data
+
+    5. Handle cluster region failure for geographic redundancy
+
+    Show C# code with persistence query and location-aware roles.'
+- id: fsharp_lib_0020_exp_004
+  instruction: Refactor an existing IoT device telemetry ingestion endpoint from using Newtonsoft.Json to FSharp.SystemTextJson.
+    The telemetry data includes discriminated unions for sensor types and optional calibration metadata. Maintain backward
+    compatibility with existing JSON payloads.
+- id: fsharp_lib_0020_exp_017
+  instruction: Design an audit logging system that serializes domain events using FSharp.SystemTextJson with custom converters
+    for sensitive data (like PII in healthcare records) that redacts certain fields during serialization.
+- id: fsharp_lib_0021_exp_001
+  instruction: 'Create a social media sentiment analysis pipeline using FSharp.Control.AsyncSeq:
+
+    1. Stream tweets from Twitter API as an async sequence
+
+    2. Filter for English language tweets using AsyncSeq.filter
+
+    3. Perform sentiment analysis on each tweet (positive/negative/neutral) with AsyncSeq.mapAsync
+
+    4. Batch tweets by sentiment category using AsyncSeq.bufferByCountAndTime
+
+    5. Store sentiment batches in Redis for real-time dashboard updates
+
+    6. Track processing metrics (tweets per minute, sentiment distribution) with AsyncSeq.scan
+
+    7. Handle API rate limiting by implementing exponential backoff retry logic'
+- id: fsharp_lib_0021_exp_002
+  instruction: 'Design a healthcare ETL pipeline for patient records using FSharp.Control.AsyncSeq:
+
+    1. Read HL7 messages from a hospital message queue as an async sequence
+
+    2. Parse and validate HL7 segments with AsyncSeq.mapAsync
+
+    3. Extract and anonymize PHI (Protected Health Information) using AsyncSeq.map
+
+    4. Buffer processed records by ward/department with AsyncSeq.bufferByCountAndTime
+
+    5. Load batches into a HIPAA-compliant data warehouse using AsyncSeq.iterAsync
+
+    6. Implement dead-letter queue for unprocessable messages with AsyncSeq.choose
+
+    7. Ensure exactly-once processing semantics with idempotent writes'
+- id: fsharp_lib_0021_exp_004
+  instruction: 'Implement a log aggregation and analysis system using FSharp.Control.AsyncSeq:
+
+    1. Tail multiple log files concurrently as async sequences and merge them
+
+    2. Parse log entries into structured format with AsyncSeq.mapAsync
+
+    3. Filter for error/warning severity levels using AsyncSeq.filter
+
+    4. Correlate related log entries by requestId using AsyncSeq.groupBy
+
+    5. Buffer correlated logs using AsyncSeq.bufferByCountAndTime
+
+    6. Write to Elasticsearch for indexing using AsyncSeq.iterAsync
+
+    7. Implement log rotation handling and file not found scenarios'
+- id: fsharp_lib_0021_exp_005
+  instruction: 'Create a video processing pipeline for surveillance footage using FSharp.Control.AsyncSeq:
+
+    1. Stream video frames from IP cameras as an async sequence
+
+    2. Decode and resize frames using AsyncSeq.mapAsync
+
+    3. Run object detection on each frame with ML model using AsyncSeq.mapAsync
+
+    4. Buffer detection results by camera ID using AsyncSeq.bufferByCountAndTime
+
+    5. Store processed frames and metadata in cloud storage using AsyncSeq.iterAsync
+
+    6. Implement frame skipping strategy for high-load scenarios with AsyncSeq.sample
+
+    7. Handle camera disconnection and reconnection gracefully'
+- id: fsharp_lib_0021_exp_020
+  instruction: 'Create a music streaming analytics pipeline using FSharp.Control.AsyncSeq:
+
+    1. Read play events from music streaming service as an async sequence
+
+    2. Parse song metadata and user actions using AsyncSeq.mapAsync
+
+    3. Calculate listening patterns and preferences using AsyncSeq.scan
+
+    4. Generate personalized playlists using AsyncSeq.mapAsync
+
+    5. Buffer analytics by region using AsyncSeq.bufferByCountAndTime
+
+    6. Update recommendation engine using AsyncSeq.iterAsync
+
+    7. Handle skipped songs and incomplete plays in analytics'
+- id: fsharp_lib_0021_exp_022
+  instruction: 'Design a content moderation pipeline for user uploads using FSharp.Control.AsyncSeq:
+
+    1. Read uploaded images/videos from storage as an async sequence
+
+    2. Scan for inappropriate content using ML models with AsyncSeq.mapAsync
+
+    3. Extract metadata and perform OCR on images using AsyncSeq.mapAsync
+
+    4. Flag violations based on community guidelines using AsyncSeq.filter
+
+    5. Buffer flagged content for human review using AsyncSeq.bufferByCountAndTime
+
+    6. Update moderation dashboard using AsyncSeq.iterAsync
+
+    7. Handle false positives and appeal processing'
+- id: fsharp_lib_0021_exp_019
+  instruction: 'Build a satellite telemetry processing pipeline using FSharp.Control.AsyncSeq:
+
+    1. Read telemetry packets from ground stations as an async sequence
+
+    2. Decode spacecraft housekeeping data using AsyncSeq.mapAsync
+
+    3. Validate sensor readings against expected ranges using AsyncSeq.filter
+
+    4. Detect anomalies requiring ground intervention with AsyncSeq.map
+
+    5. Buffer telemetry by subsystem using AsyncSeq.bufferByCountAndTime
+
+    6. Store in mission control database using AsyncSeq.iterAsync
+
+    7. Handle data gaps during orbital blackout periods'
+- id: fsharp_lib_0021_exp_025
+  instruction: 'Implement a research paper citation analysis pipeline using FSharp.Control.AsyncSeq:
+
+    1. Read academic papers from arXiv/PubMed as an async sequence
+
+    2. Parse references and citations using AsyncSeq.mapAsync
+
+    3. Extract authors, institutions, and keywords with AsyncSeq.mapAsync
+
+    4. Build citation graph and calculate impact metrics using AsyncSeq.scan
+
+    5. Buffer papers by research field using AsyncSeq.bufferByCountAndTime
+
+    6. Update academic database using AsyncSeq.iterAsync
+
+    7. Handle different citation formats and parsing ambiguities'
+- id: fsharp_lib_0021_exp_028
+  instruction: 'Create a cryptocurrency transaction monitoring pipeline using FSharp.Control.AsyncSeq:
+
+    1. Read blockchain transactions as an async sequence
+
+    2. Parse transaction details and wallet addresses using AsyncSeq.mapAsync
+
+    3. Trace transaction flows through mixer services using AsyncSeq.scan
+
+    4. Flag suspicious patterns (money laundering, darknet markets) with AsyncSeq.filter
+
+    5. Buffer alerts by severity using AsyncSeq.bufferByCountAndTime
+
+    6. Report to financial authorities using AsyncSeq.iterAsync
+
+    7. Handle blockchain forks and unconfirmed transactions'
+- id: fsharp_lib_0022_exp_007
+  instruction: 'Build a log streaming dashboard for system monitoring:
+
+    1. Create an AsyncSeq that tails application log files
+
+    2. Stream log entries as SSE with severity filtering
+
+    3. Implement log rotation detection and seamless file switching
+
+    4. Add search filtering via query parameters
+
+    5. Handle large log volumes with client-side back-pressure'
+- id: fsharp_lib_0022_exp_010
+  instruction: 'Build a multiplayer game state synchronizer:
+
+    1. Create an AsyncSeq from game engine state updates
+
+    2. Stream player positions, scores, and game events as SSE
+
+    3. Implement delta compression to send only changed state
+
+    4. Add client prediction reconciliation support
+
+    5. Handle network latency with timestamped events'
+- id: fsharp_lib_0022_exp_022
+  instruction: 'Develop an event sourcing CQRS event stream:
+
+    1. Create an AsyncSeq from an event store append operations
+
+    2. Stream domain events as SSE with version numbers
+
+    3. Implement event replay from specific version numbers
+
+    4. Add projection updates and materialized view refreshes
+
+    5. Handle event schema evolution and compatibility'
+- id: fsharp_lib_0022_exp_021
+  instruction: 'Build a real-time language translation stream:
+
+    1. Create an AsyncSeq from speech-to-text and translation services
+
+    2. Stream translated text segments as SSE with confidence scores
+
+    3. Implement partial results and correction updates
+
+    4. Add support for multiple target languages
+
+    5. Handle translation service latency and timeouts'
+- id: fsharp_lib_0022_exp_026
+  instruction: 'Develop an audio streaming metadata companion:
+
+    1. Create an AsyncSeq from audio analysis and metadata
+
+    2. Stream song information, lyrics, and artist details as SSE
+
+    3. Implement beat detection and mood analysis
+
+    4. Add support for playlists and queue management
+
+    5. Handle audio format variations and metadata quality'
+- id: fsharp_lib_0025_exp_009
+  instruction: 'Write F# unit tests using Expecto with golden master testing:
+
+    1. Compare output against saved "golden" files
+
+    2. Update golden files when output intentionally changes
+
+    3. Handle binary and text golden files differently
+
+    4. Golden tests for serialization/deserialization round trips
+
+    5. Version control considerations for golden files
+
+    Show a complete test module for a PDF report generation service.'
+- id: fsharp_lib_0025_exp_019
+  instruction: 'Write F# unit tests using MsTest with test categorization:
+
+    1. Unit tests vs integration tests vs end-to-end tests
+
+    2. Fast tests vs slow tests
+
+    3. Tests requiring specific hardware (GPU, etc.)
+
+    4. Tests requiring network access
+
+    5. Flaky test detection and handling
+
+    Show a complete test module for an image processing service.'
+- id: fsharp_lib_0025_exp_017
+  instruction: 'Write F# unit tests using Expecto with stress testing scenarios:
+
+    1. Tests with high volume of concurrent requests
+
+    2. Tests with randomized input fuzzing
+
+    3. Tests for memory leak detection
+
+    4. Tests for resource exhaustion scenarios
+
+    5. Tests with configurable load profiles
+
+    Show a complete test module for a message queue consumer.'
+- id: fsharp_lib_0025_exp_022
+  instruction: 'Write F# unit tests using Expecto with behavioral testing (BDD style):
+
+    1. Tests organized with Given/When/Then structure
+
+    2. Tests with human-readable scenario names
+
+    3. Tests with context inheritance (background steps)
+
+    4. Tests with example tables for scenarios
+
+    5. Integration with Gherkin-style feature files
+
+    Show a complete test module for a user onboarding workflow.'
+- id: fsharp_lib_0025_exp_027
+  instruction: 'Write F# unit tests using Expecto with benchmark testing:
+
+    1. Tests that measure and compare algorithm performance
+
+    2. Tests with configurable iteration counts
+
+    3. Tests that produce benchmark reports
+
+    4. Tests for memory allocation patterns
+
+    5. Tests with garbage collection analysis
+
+    Show a complete test module for a graph traversal algorithm.'
+- id: fsharp_lib_0025_exp_024
+  instruction: 'Write F# unit tests using NUnit with test retry and flakiness handling:
+
+    1. Tests that retry on transient failures
+
+    2. Tests with configurable retry count and delay
+
+    3. Tests that mark themselves as inconclusive on certain conditions
+
+    4. Tests that skip themselves in specific environments
+
+    5. Tests with custom retry logic based on exception types
+
+    Show a complete test module for a distributed cache client.'
+- id: fsharp_lib_0026_exp_023
+  instruction: 'Develop a laboratory information management system (LIMS):
+
+    1. Model Sample, Test, Result, Instrument with scientific metadata
+
+    2. Configure database schema comparison for deployment validation
+
+    3. Write queries for sample chain of custody tracking
+
+    4. Implement data integrity checks with database constraints
+
+    5. Analyze performance of complex joins with multiple navigation properties'
+- id: fsharp_lib_0026_exp_028
+  instruction: 'Create a farming/agriculture management system:
+
+    1. Design Field, Crop, Planting, Harvest with environmental data
+
+    2. Configure database collation for case-insensitive crop variety names
+
+    3. Write seasonal analysis queries with date range calculations
+
+    4. Implement data archiving strategies for historical records
+
+    5. Compare database vendor-specific features utilization'
+- id: fsharp_lib_0026_exp_026
+  instruction: 'Develop a digital asset management system:
+
+    1. Design Asset, Collection, Metadata, Permission with versioning
+
+    2. Configure blob storage integration with database references
+
+    3. Write recursive queries for collection hierarchy navigation
+
+    4. Implement search across multiple metadata fields with ranking
+
+    5. Compare database transaction patterns for batch operations'
+- id: fsharp_lib_0029_exp_013
+  instruction: 'Build OpenAPI documentation for a video streaming service API:
+
+    1. Create endpoints for video catalog, playback sessions, user watch history, and recommendations
+
+    2. Define Video schema with encoding profiles, subtitle tracks, chapters, and content ratings
+
+    3. Add DRM license acquisition endpoints with device-specific authentication
+
+    4. Configure Swagger UI with adaptive bitrate streaming examples (HLS, DASH)
+
+    5. Generate Flutter/Dart API client for cross-platform mobile applications
+
+    Include content regional restrictions and parental control settings.'
+- id: fsharp_lib_0031_exp_006
+  instruction: 'Create an F# logging aggregator that batches application logs and uploads them to MinIO.
+
+    Features: daily bucket rotation, compressed log file streaming upload, presigned URL generation for log analysis tools,
+    and bucket policies allowing read access to monitoring services.
+
+    Implement taskResult CE with batch error handling and dead letter queue for failed uploads.'
 system_prompt: 'You are an expert F# developer specializing in the F# ecosystem.
 
   Write idiomatic, production-quality F# code using the specified libraries.

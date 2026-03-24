@@ -5883,7 +5883,10 @@ prompts:
 
     4. Include error handling for sensor malfunctions and missing data
 
-    5. Compare with Python data structures for interoperability'
+    5. Compare with Python data structures for interoperability
+
+
+    Implement all code in F#.'
 - id: fsharp_core_0022_exp_012
   instruction: 'Build a user authentication token system using struct records.
 

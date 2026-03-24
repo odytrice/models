@@ -3,7 +3,7 @@ prompts:
 - id: cross_0006_exp_000
   instruction: 'Implement a HIPAA-compliant CI/CD pipeline for a healthcare patient records system:
 
-    - GitLab CI: Build a C# FHIR API (.NET 8) with unit tests and integration tests against a PostgreSQL container
+    - GitLab CI: Build a F# FHIR API (.NET 8) with unit tests and integration tests against a PostgreSQL container
 
     - GitLab CI: Build a React TypeScript frontend with accessibility (a11y) testing
 
@@ -20,13 +20,19 @@ prompts:
     - Health checks: Custom readiness probes checking FHIR endpoint conformance
 
     Show the complete `.gitlab-ci.yml`, Kubernetes manifests with Istio VirtualService, and FluentMigrator configuration with
-    transaction rollback on failure.'
+    transaction rollback on failure.
+
+
+    Implement all code in F#.'
 - id: cross_0007_exp_006
   instruction: 'Debug a production memory leak in Akka.NET actors: Analyze a scenario where message processing causes Gen
     2 heap growth due to captured closures in HttpHandler chains. Provide diagnostic steps using dotnet-counters and heap
     dumps. Implement the fix using the "Warbler" pattern to prevent closure allocations. Show how to implement bounded mailbox
     queues to prevent out-of-memory errors under load. Include unit tests using Akka.NET TestKit to reproduce the memory leak
-    and verify the fix.'
+    and verify the fix.
+
+
+    Implement all code in F#.'
 - id: cross_0010_exp_004
   instruction: 'Debug and fix an Akka.NET cluster sharding memory leak:
 
@@ -86,7 +92,7 @@ prompts:
 - id: cross_0006_exp_000
   instruction: 'Implement a HIPAA-compliant CI/CD pipeline for a healthcare patient records system:
 
-    - GitLab CI: Build a C# FHIR API (.NET 8) with unit tests and integration tests against a PostgreSQL container
+    - GitLab CI: Build a F# FHIR API (.NET 8) with unit tests and integration tests against a PostgreSQL container
 
     - GitLab CI: Build a React TypeScript frontend with accessibility (a11y) testing
 
@@ -103,7 +109,10 @@ prompts:
     - Health checks: Custom readiness probes checking FHIR endpoint conformance
 
     Show the complete `.gitlab-ci.yml`, Kubernetes manifests with Istio VirtualService, and FluentMigrator configuration with
-    transaction rollback on failure.'
+    transaction rollback on failure.
+
+
+    Implement all code in F#.'
 - id: cross_0006_exp_001
   instruction: 'Design a zero-downtime database migration strategy for a high-traffic e-commerce platform using FluentMigrator:
 
@@ -160,11 +169,14 @@ prompts:
     2 heap growth due to captured closures in HttpHandler chains. Provide diagnostic steps using dotnet-counters and heap
     dumps. Implement the fix using the "Warbler" pattern to prevent closure allocations. Show how to implement bounded mailbox
     queues to prevent out-of-memory errors under load. Include unit tests using Akka.NET TestKit to reproduce the memory leak
-    and verify the fix.'
+    and verify the fix.
+
+
+    Implement all code in F#.'
 - id: cross_0010_exp_022
   instruction: 'Create a weather data processing grid:
 
-    - C#: SensorStation actors grouped by geographic region
+    - F#: SensorStation actors grouped by geographic region
 
     - Cluster: Sharding by station ID, rebalancing on node join/leave
 
@@ -174,7 +186,10 @@ prompts:
 
     - Data: Akka.Persistence for station calibration history
 
-    Show the cluster sharding setup and regional aggregation logic.'
+    Show the cluster sharding setup and regional aggregation logic.
+
+
+    Implement all code in F#.'
 - id: cross_0010_exp_020
   instruction: 'Design a blockchain transaction validator network:
 
@@ -193,7 +208,8 @@ prompts:
   instruction: "Create a Roslyn code generator that produces compile-time optimized logging methods for Serilog, eliminating\
     \ runtime reflection and boxing. \nGenerate source code from message templates at build time. \nImplement analyzer warnings\
     \ for incorrect parameter counts in template strings. \nAdd code fixes for automatic template extraction from string concatenation.\
-    \ \nBenchmark against traditional Serilog usage showing IL size and execution speed improvements."
+    \ \nBenchmark against traditional Serilog usage showing IL size and execution speed improvements.\n\nImplement all code\
+    \ in F#."
 - id: cross_0010_exp_007
   instruction: 'Create a file processing pipeline with backpressure management:
 

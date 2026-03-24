@@ -63,6 +63,27 @@ NUGET_INDICATORS = [
     "open Microsoft.Extensions",
     "open Xunit",
     "open System.Reactive",
+    # Round 3 gap-fill libraries
+    "open Farmer",
+    "open Argu",
+    "open FsCheck",
+    "open Expecto",
+    "open RabbitMQ",
+    "open Dapper",
+    "open FParsec",
+    "open Bolero",
+    "open StackExchange",
+    "open Grpc",
+    "open Google.Protobuf",
+    # Broader matching for libraries that use short import forms
+    "AsyncSeq",  # catches `open FSharp.Control` + AsyncSeq usage
+    "open FSharpPlus",
+    "open FSharp.Text.RegexProvider",
+    "open FSharp.Text.RegexExtensions",
+    "open MathNet",
+    "open FSharp.SystemTextJson",
+    "open System.ServiceModel",
+    "JsonFSharpOptions",  # FSharp.SystemTextJson usage without open
 ]
 
 

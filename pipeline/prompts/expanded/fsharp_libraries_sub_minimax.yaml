@@ -139,7 +139,10 @@ prompts:
 
     3. Implement AsyncOption CE for fetching related content that may not exist
 
-    Handle version control for content updates and implement draft/published state management.'
+    Handle version control for content updates and implement draft/published state management.
+
+
+    Implement all code in F#.'
 - id: fsharp_lib_0006_exp_014
   instruction: 'Build a manufacturing quality control system:
 
@@ -149,7 +152,10 @@ prompts:
 
     3. Implement AsyncOption CE for sensor calibration checks that may return None
 
-    Handle statistical process control calculations and implement alert thresholds.'
+    Handle statistical process control calculations and implement alert thresholds.
+
+
+    Implement all code in F#.'
 - id: fsharp_lib_0006_exp_016
   instruction: 'Design a student grading system:
 
@@ -169,7 +175,10 @@ prompts:
 
     3. Implement AsyncOption CE for checking content ratings that may be missing
 
-    Handle A/B testing for recommendation algorithms and implement personalization weights.'
+    Handle A/B testing for recommendation algorithms and implement personalization weights.
+
+
+    Implement all code in F#.'
 - id: fsharp_lib_0006_exp_019
   instruction: 'Create a cybersecurity threat detection system:
 
@@ -199,7 +208,10 @@ prompts:
 
     3. Create AsyncOption CE for checking supplier availability that may return None
 
-    Handle lead time calculations and implement safety stock level management.'
+    Handle lead time calculations and implement safety stock level management.
+
+
+    Implement all code in F#.'
 - id: fsharp_lib_0006_exp_022
   instruction: 'Build a telemedicine consultation system:
 
@@ -219,7 +231,10 @@ prompts:
 
     3. Implement AsyncOption CE for checking resource availability that may return None
 
-    Handle circular dependency detection and implement milestone tracking.'
+    Handle circular dependency detection and implement milestone tracking.
+
+
+    Implement all code in F#.'
 - id: fsharp_lib_0006_exp_020
   instruction: 'Design a real estate property valuation system:
 
@@ -229,7 +244,10 @@ prompts:
 
     3. Create AsyncOption CE for checking zoning restrictions that may not exist
 
-    Handle property feature weighting and implement market trend adjustments.'
+    Handle property feature weighting and implement market trend adjustments.
+
+
+    Implement all code in F#.'
 - id: fsharp_lib_0006_exp_026
   instruction: 'Build a fitness tracking data analysis system:
 
@@ -269,7 +287,10 @@ prompts:
 
     3. Create AsyncOption CE for checking upgrade availability that may return None
 
-    Handle baggage fee calculations and implement frequent flyer mileage accrual.'
+    Handle baggage fee calculations and implement frequent flyer mileage accrual.
+
+
+    Implement all code in F#.'
 - id: fsharp_lib_0006_exp_027
   instruction: 'Design a cryptocurrency trading platform:
 
@@ -374,8 +395,11 @@ prompts:
     Use Skippable<'T> to handle partial updates to metadata and union types for document status (Draft, Submitted, Approved,
     Denied).
 - id: fsharp_lib_0020_exp_016
-  instruction: Implement a GraphQL-like partial response system for a social media API where clients can specify which fields
-    to return. Use Skippable<'T> to track which fields were requested and only populate those in the response JSON.
+  instruction: 'Implement a GraphQL-like partial response system for a social media API where clients can specify which fields
+    to return. Use Skippable<''T> to track which fields were requested and only populate those in the response JSON.
+
+
+    Implement all code in F#.'
 - id: fsharp_lib_0020_exp_023
   instruction: Create a custom JsonConverter for a complex discriminated union representing weather data (Temperature, Precipitation,
     Wind) that optimizes JSON size for a mobile weather app with limited bandwidth.

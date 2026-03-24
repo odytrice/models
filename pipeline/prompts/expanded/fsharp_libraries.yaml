@@ -1903,7 +1903,10 @@ prompts:
 
     3. Create AsyncOption CE for checking inter-library loans that may return None
 
-    Implement fine calculation logic and handle edge cases for overdue renewals.'
+    Implement fine calculation logic and handle edge cases for overdue renewals.
+
+
+    Implement all code in F#.'
 - id: fsharp_lib_0006_exp_008
   instruction: 'Design a weather forecasting data pipeline:
 
@@ -1953,7 +1956,10 @@ prompts:
 
     3. Implement AsyncOption CE for fetching related content that may not exist
 
-    Handle version control for content updates and implement draft/published state management.'
+    Handle version control for content updates and implement draft/published state management.
+
+
+    Implement all code in F#.'
 - id: fsharp_lib_0006_exp_013
   instruction: 'Implement a ride-sharing trip calculation service:
 
@@ -1973,7 +1979,10 @@ prompts:
 
     3. Implement AsyncOption CE for sensor calibration checks that may return None
 
-    Handle statistical process control calculations and implement alert thresholds.'
+    Handle statistical process control calculations and implement alert thresholds.
+
+
+    Implement all code in F#.'
 - id: fsharp_lib_0006_exp_015
   instruction: 'Create a hotel booking management system:
 
@@ -2003,7 +2012,10 @@ prompts:
 
     3. Create AsyncOption CE for checking supplier availability that may return None
 
-    Handle lead time calculations and implement safety stock level management.'
+    Handle lead time calculations and implement safety stock level management.
+
+
+    Implement all code in F#.'
 - id: fsharp_lib_0006_exp_018
   instruction: 'Build a video streaming recommendation engine:
 
@@ -2013,7 +2025,10 @@ prompts:
 
     3. Implement AsyncOption CE for checking content ratings that may be missing
 
-    Handle A/B testing for recommendation algorithms and implement personalization weights.'
+    Handle A/B testing for recommendation algorithms and implement personalization weights.
+
+
+    Implement all code in F#.'
 - id: fsharp_lib_0006_exp_019
   instruction: 'Create a cybersecurity threat detection system:
 
@@ -2033,7 +2048,10 @@ prompts:
 
     3. Create AsyncOption CE for checking zoning restrictions that may not exist
 
-    Handle property feature weighting and implement market trend adjustments.'
+    Handle property feature weighting and implement market trend adjustments.
+
+
+    Implement all code in F#.'
 - id: fsharp_lib_0006_exp_021
   instruction: 'Implement a food delivery order tracking system:
 
@@ -2063,7 +2081,10 @@ prompts:
 
     3. Implement AsyncOption CE for checking resource availability that may return None
 
-    Handle circular dependency detection and implement milestone tracking.'
+    Handle circular dependency detection and implement milestone tracking.
+
+
+    Implement all code in F#.'
 - id: fsharp_lib_0006_exp_024
   instruction: 'Design a car rental reservation system:
 
@@ -2123,7 +2144,10 @@ prompts:
 
     3. Create AsyncOption CE for checking upgrade availability that may return None
 
-    Handle baggage fee calculations and implement frequent flyer mileage accrual.'
+    Handle baggage fee calculations and implement frequent flyer mileage accrual.
+
+
+    Implement all code in F#.'
 - id: fsharp_lib_0007_exp_000
   instruction: Implement an IoT sensor data aggregation system using Akka.NET actors in F#. Create actors for sensor simulation,
     data validation, and aggregation. Use discriminated unions for message types (e.g., SensorReading, ValidationResult, AggregatedData).
@@ -6804,8 +6828,11 @@ prompts:
   instruction: Create a migration tool that converts database JSON blobs from Thoth.Json.Net format to FSharp.SystemTextJson
     format for an e-commerce product catalog, handling differences in union encoding and optional field representation.
 - id: fsharp_lib_0020_exp_016
-  instruction: Implement a GraphQL-like partial response system for a social media API where clients can specify which fields
-    to return. Use Skippable<'T> to track which fields were requested and only populate those in the response JSON.
+  instruction: 'Implement a GraphQL-like partial response system for a social media API where clients can specify which fields
+    to return. Use Skippable<''T> to track which fields were requested and only populate those in the response JSON.
+
+
+    Implement all code in F#.'
 - id: fsharp_lib_0020_exp_017
   instruction: Design an audit logging system that serializes domain events using FSharp.SystemTextJson with custom converters
     for sensitive data (like PII in healthcare records) that redacts certain fields during serialization.
@@ -9488,9 +9515,12 @@ prompts:
     article metadata, content, and categories. Use idempotent producer with max.in.flight.requests.per.connection=1 and enable
     compression. Add custom headers for content language and source reliability score.
 - id: fsharp_lib_0028_exp_010
-  instruction: Design a C# consumer for ride-sharing trip events that processes Avro-encoded trip data. The consumer must
+  instruction: 'Design a F# consumer for ride-sharing trip events that processes Avro-encoded trip data. The consumer must
     calculate driver earnings, update rider ratings, and handle surge pricing logic. Implement exactly-once processing across
     multiple output topics using transactions. Add health checks for consumer lag monitoring.
+
+
+    Implement all code in F#.'
 - id: fsharp_lib_0028_exp_011
   instruction: Build an F# producer for stock market tick data that sends real-time quotes using Protobuf with Schema Registry.
     Include symbol, bid/ask prices, volume, and exchange. Optimize producer for low latency with linger.ms=0 and implement
@@ -9858,9 +9888,12 @@ prompts:
 
     4. Configure Swagger UI with ELO rating calculation examples and tournament structures
 
-    5. Generate Unity/C# API client for game engine integration
+    5. Generate Unity/F# API client for game engine integration
 
-    Handle region-based matchmaking latency optimization and fair team balancing algorithms.'
+    Handle region-based matchmaking latency optimization and fair team balancing algorithms.
+
+
+    Implement all code in F#.'
 - id: fsharp_lib_0029_exp_021
   instruction: 'Build OpenAPI documentation for a laboratory information management system (LIMS):
 

@@ -1090,7 +1090,7 @@ prompts:
 - id: cross_0006_exp_000
   instruction: 'Implement a HIPAA-compliant CI/CD pipeline for a healthcare patient records system:
 
-    - GitLab CI: Build a C# FHIR API (.NET 8) with unit tests and integration tests against a PostgreSQL container
+    - GitLab CI: Build a F# FHIR API (.NET 8) with unit tests and integration tests against a PostgreSQL container
 
     - GitLab CI: Build a React TypeScript frontend with accessibility (a11y) testing
 
@@ -1107,7 +1107,10 @@ prompts:
     - Health checks: Custom readiness probes checking FHIR endpoint conformance
 
     Show the complete `.gitlab-ci.yml`, Kubernetes manifests with Istio VirtualService, and FluentMigrator configuration with
-    transaction rollback on failure.'
+    transaction rollback on failure.
+
+
+    Implement all code in F#.'
 - id: cross_0006_exp_001
   instruction: 'Design a zero-downtime database migration strategy for a high-traffic e-commerce platform using FluentMigrator:
 
@@ -1583,7 +1586,10 @@ prompts:
     2 heap growth due to captured closures in HttpHandler chains. Provide diagnostic steps using dotnet-counters and heap
     dumps. Implement the fix using the "Warbler" pattern to prevent closure allocations. Show how to implement bounded mailbox
     queues to prevent out-of-memory errors under load. Include unit tests using Akka.NET TestKit to reproduce the memory leak
-    and verify the fix.'
+    and verify the fix.
+
+
+    Implement all code in F#.'
 - id: cross_0007_exp_007
   instruction: 'Implement mutual TLS (mTLS) end-to-end security: Configure Giraffe to validate client certificates in the
     ASP.NET Core pipeline, extract certificate claims, and propagate identity to Akka.NET actors via message envelopes. Set
@@ -2034,7 +2040,7 @@ prompts:
 - id: cross_0010_exp_000
   instruction: 'Build an IoT sensor data ingestion pipeline:
 
-    - C# backend: Akka.Streams for backpressure handling of MQTT messages
+    - F# backend: Akka.Streams for backpressure handling of MQTT messages
 
     - Domain: SensorReading types (Temperature, Humidity, Motion) with timestamp DUs
 
@@ -2046,7 +2052,10 @@ prompts:
 
     - Include stream restart strategies for temporary network failures
 
-    Show the Graph DSL configuration and actor supervision hierarchy.'
+    Show the Graph DSL configuration and actor supervision hierarchy.
+
+
+    Implement all code in F#.'
 - id: cross_0010_exp_001
   instruction: 'Implement a healthcare patient monitoring system:
 
@@ -2110,7 +2119,7 @@ prompts:
 - id: cross_0010_exp_005
   instruction: 'Build a distributed rate limiter with token bucket algorithm:
 
-    - C# Akka.NET: Actor per API endpoint with distributed state
+    - F# Akka.NET: Actor per API endpoint with distributed state
 
     - Akka.DistributedData: CRDT for rate limit counters across cluster nodes
 
@@ -2120,7 +2129,10 @@ prompts:
 
     - Constraints: 10k requests/second per node, eventual consistency acceptable
 
-    Show the DistributedData usage and the token bucket implementation.'
+    Show the DistributedData usage and the token bucket implementation.
+
+
+    Implement all code in F#.'
 - id: cross_0010_exp_006
   instruction: 'Implement event sourcing for a banking transaction ledger:
 
@@ -2278,7 +2290,7 @@ prompts:
 - id: cross_0010_exp_017
   instruction: 'Create a centralized log aggregation system:
 
-    - C#: Actor per microservice source, Router to LogProcessor
+    - F#: Actor per microservice source, Router to LogProcessor
 
     - Processing: Akka.Streams for parsing and filtering log levels
 
@@ -2288,7 +2300,10 @@ prompts:
 
     - Alerting: Child actors monitoring error rate thresholds
 
-    Show the stream processing graph and alerting logic.'
+    Show the stream processing graph and alerting logic.
+
+
+    Implement all code in F#.'
 - id: cross_0010_exp_018
   instruction: 'Implement saga pattern for travel booking compensations:
 
@@ -2348,7 +2363,7 @@ prompts:
 - id: cross_0010_exp_022
   instruction: 'Create a weather data processing grid:
 
-    - C#: SensorStation actors grouped by geographic region
+    - F#: SensorStation actors grouped by geographic region
 
     - Cluster: Sharding by station ID, rebalancing on node join/leave
 
@@ -2358,7 +2373,10 @@ prompts:
 
     - Data: Akka.Persistence for station calibration history
 
-    Show the cluster sharding setup and regional aggregation logic.'
+    Show the cluster sharding setup and regional aggregation logic.
+
+
+    Implement all code in F#.'
 - id: cross_0010_exp_023
   instruction: 'Build a supply chain tracking system:
 
@@ -2669,7 +2687,8 @@ prompts:
   instruction: "Create a Roslyn code generator that produces compile-time optimized logging methods for Serilog, eliminating\
     \ runtime reflection and boxing. \nGenerate source code from message templates at build time. \nImplement analyzer warnings\
     \ for incorrect parameter counts in template strings. \nAdd code fixes for automatic template extraction from string concatenation.\
-    \ \nBenchmark against traditional Serilog usage showing IL size and execution speed improvements."
+    \ \nBenchmark against traditional Serilog usage showing IL size and execution speed improvements.\n\nImplement all code\
+    \ in F#."
 - id: cross_0012_exp_017
   instruction: "Design a secure centralized logging system for government classified networks using Serilog with SELinux integration.\
     \ \nImplement mandatory access control (MAC) labels on log files. \nCreate air-gapped forwarding using optical disk staging\

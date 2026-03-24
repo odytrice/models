@@ -945,13 +945,283 @@ Running via `run_generation.bat` with `--verify` flag (generation + verification
 
 ---
 
+## Substitute Teacher Generation — Complete
+
+Substitute run finished after 5:03:37. 1,465 of 1,467 prompts generated (2 minimax cross_domain timed out).
+
+### Substitute Verification Results
+
+| File | Teacher | Generated | Passed | Rate |
+|------|---------|-----------|--------|------|
+| fsharp_core_sub_minimax | minimax | 376 | 302 | 80.3% |
+| fsharp_core_sub_glm5 | glm5 | 156 | 117 | 75.0% |
+| fsharp_core_sub_kimi | kimi | 461 | 284 | 61.6% |
+| fsharp_libraries_sub_minimax | minimax | 84 | 43 | 51.2% |
+| fsharp_libraries_sub_glm5 | glm5 | 158 | 57 | 36.1% |
+| fsharp_libraries_sub_kimi | kimi | 200 | 91 | 45.5% |
+| cross_domain_sub_minimax | minimax | 14 | 3 | 21.4% |
+| dotnet_aspnet_sub_minimax | minimax | 12 | 12 | 100% |
+| dotnet_aspnet_sub_glm5 | glm5 | 4 | 3 | 75.0% |
+| **Total** | | **1,465** | **912** | **62.3%** |
+
+After formatting with dedup: **7,908 samples** (7,513 train / 395 val). Up from 6,996 pre-substitute.
+
+---
+
+## Verifier Bug Fix — NUGET_INDICATORS (+42 Samples)
+
+### Discovery: Missing Package Routing
+
+The `NUGET_INDICATORS` list in `verify_fsharp.py` was missing all round 3 NuGet packages (Farmer, Argu, FsCheck, Expecto, RabbitMQ, Dapper, FParsec, Bolero, StackExchange.Redis, Grpc, Google.Protobuf). This caused samples using these packages to be verified with `dotnet fsi` (script mode) instead of `dotnet build` (project mode). Since `dotnet fsi` doesn't know about NuGet packages in `verify.fsproj`, all such samples failed with "namespace not defined" errors.
+
+### Fix
+
+Added 11 new entries to `NUGET_INDICATORS`:
+```python
+"open Farmer", "open Argu", "open FsCheck", "open Expecto",
+"open RabbitMQ", "open Dapper", "open FParsec", "open Bolero",
+"open StackExchange", "open Grpc", "open Google.Protobuf"
+```
+
+### Re-verification Results
+
+Created `reverify_failures.py` to re-verify 96 remaining F# failures. Results:
+
+| Category | Count |
+|----------|-------|
+| Newly passing (verifier bug) | 42 |
+| Still failing (compile errors) | 40 |
+| Skipped (no F# code) | 14 |
+
+Most of the 42 recovered samples were Farmer, Argu, FsCheck, Expecto, and RabbitMQ prompts that were perfectly correct but routed to the wrong verifier.
+
+---
+
+## Claude Manual Fix Attempt
+
+### Approach
+
+Created `fix_failures.py` to apply targeted fixes to 31 remaining compile errors:
+- 11 "easy" fixes (missing `open`, typos, wrong keywords)
+- 20 "medium" fixes (type reordering, indentation, pattern changes)
+- 9 skipped (truncated responses, tree diagrams, deep structural errors)
+
+### Results
+
+Only **1 of 31 fixes passed** verification. The main blocker: the `extract_fsharp_code()` function in `verify_fsharp.py` concatenates ALL code blocks from a response into a single script. Many of these responses have multiple separate code blocks (different files, examples, tests) that can't be meaningfully combined. The fixes themselves were correct but the multi-block extraction produced invalid F# scripts.
+
+### Decision
+
+Accepted the 1 passing fix (fsharp_lib_0006_exp_008 — added `open FsToolkit.ErrorHandling`). The remaining 30 failures are deep multi-block extraction issues not worth the complexity to solve. These 53 remaining failures (30 compile + 14 no-code + 9 skipped) represent only 1.7% of F# prompts — acceptable loss.
+
+---
+
+## Final Dataset Numbers
+
+| Metric | Count |
+|--------|-------|
+| Total unique samples | **7,948** |
+| Train split | 7,551 |
+| Validation split | 397 |
+| F# prompt coverage | 96.9% (2,985 of 3,078) |
+
+### Domain Distribution
+
+| Domain | Samples | % |
+|--------|---------|---|
+| fsharp_libraries | 2,094 | 26.3% |
+| fsharp_core | 1,816 | 22.8% |
+| general_coding | 950 | 12.0% |
+| dotnet_aspnet | 844 | 10.6% |
+| svelte_typescript | 676 | 8.5% |
+| cross_domain | 608 | 7.6% |
+| docker_kubernetes | 414 | 5.2% |
+| agentic_swe | 279 | 3.5% |
+| long_context | 267 | 3.4% |
+
+### Growth Timeline
+
+| Event | Total Samples |
+|-------|--------------|
+| After round 1+2 | ~5,500 |
+| After namespace fix | 6,996 |
+| After substitute run | 7,908 |
+| After verifier bug fix + Claude fixes | **7,948** |
+| After comprehensive F# fix session | **7,948** (15 broken samples replaced with fixed versions) |
+
+---
+
+## Session 6: Comprehensive F# Failure Fix
+
+### Overview
+Tackled all 40 remaining F# compile failures from `reverify_failures.jsonl` with a new comprehensive fix approach. Instead of patching response markdown (which failed in Session 5 due to multi-block extraction issues), this session extracted code the same way the verifier does and applied fixes to the extracted code directly.
+
+### New Script: `fix_all_failures.py`
+Created `pipeline/scripts/fix_all_failures.py` — reads failures, applies targeted fixes to extracted F# code, verifies each fix with the compiler, outputs only passing samples.
+
+### NUGET_INDICATORS Bug Fix (Major Discovery)
+**Root cause for many failures**: Code using `open FSharp.Control` (short form) wasn't matched by the existing indicator `"open FSharp.Control.AsyncSeq"` (full form). This caused samples to be routed to `dotnet fsi` instead of `dotnet build` with NuGet packages available.
+
+**Added 7 new indicators to `verify_fsharp.py`:**
+- `"AsyncSeq"` — catches any AsyncSeq usage regardless of import style
+- `"open FSharpPlus"`
+- `"open FSharp.Text.RegexProvider"`
+- `"open MathNet"`
+- `"open FSharp.SystemTextJson"`
+- `"open System.ServiceModel"`
+- `"JsonFSharpOptions"` — FSharp.SystemTextJson usage without open statement
+
+**Added 5 NuGet packages to `verify.fsproj`:**
+- FSharpPlus 1.*
+- FSharp.Text.RegexProvider 2.*
+- MathNet.Numerics 5.* + MathNet.Numerics.FSharp 5.*
+- System.ServiceModel.Syndication 9.*
+
+This single fix immediately recovered 10+ samples that were failing due to wrong verification routing.
+
+### Fix Results — 40 Failures Resolved
+
+| Category | Count | Details |
+|----------|-------|---------|
+| **FIXED (passing)** | 15 | Code fixes verified by F# compiler |
+| **Dropped (non-F#)** | 4 | C#/YAML/Dockerfile responses (cross_domain) |
+| **Truncated** | 7 | Response cut off mid-expression by teacher max_tokens |
+| **Unfixable** | 14 | Deep logic/structural errors needing full code rewrite |
+
+### Fixed Samples (15)
+
+| ID | Fix Applied |
+|----|-------------|
+| `fsharp_core_0005_exp_018` | `member _.Combine` → `member this.Combine` + `do!` → `let! _` |
+| `fsharp_lib_0006_exp_017` | Parenthesized tuples in `Map.ofList` entries |
+| `fsharp_lib_0006_exp_029` | `ToString()[..7]` → `ToString().Substring(0, 8)` |
+| `fsharp_lib_0020_exp_014` | Fluent method chain indentation restructured |
+| `fsharp_lib_0020_exp_016` | Curried method calls → tupled: `b.Request("field", value)` |
+| `fsharp_lib_0021_exp_009` | Dangling `else` in while/match structure + NuGet routing |
+| `fsharp_lib_0021_exp_012` | Removed OCaml `~` named params + NuGet routing |
+| `fsharp_lib_0021_exp_013` | `Option.ofPair` → manual pattern match + NuGet routing |
+| `fsharp_lib_0021_exp_014` | `and fetchTick` → `let rec fetchTick` + NuGet routing |
+| `fsharp_lib_0021_exp_021` | Mutation in match guard → separate match arm + NuGet routing |
+| `fsharp_lib_0021_exp_024` | Renamed `match` variable (keyword) to `m` + NuGet routing |
+| `fsharp_lib_0021_exp_026` | `elif ... ->` → `elif ... then` + NuGet routing |
+| `fsharp_lib_0021_exp_027` | `private x =` → `let private x =` + NuGet routing |
+| `fsharp_lib_0021_exp_029` | `and PipelineConfig` → `type PipelineConfig` + NuGet routing |
+| `fsharp_lib_0039_exp_024` | Removed `:> IDisposable` cast (type doesn't implement it) |
+
+### Unfixable Samples (14) — Need Full Rewrite
+
+| IDs | Reason |
+|-----|--------|
+| `fsharp_core_0006_exp_024` | Multi-block type conflicts across concatenated modules |
+| `fsharp_core_0010_exp_016` | 730-line file, function types in union fields cascade |
+| `fsharp_core_0026_exp_006` | SRTP Execute pattern fundamentally wrong |
+| `fsharp_core_0026_exp_009` | `inline` Publish with mutable ref — FS1113 |
+| `fsharp_core_0028_exp_005` | Multi-block examples with `this` in module scope |
+| `fsharp_core_0030_exp_012` | `interface` blocks after record closing braces |
+| `fsharp_lib_0006_exp_008` | `traverseResult` signature incompatible with usage |
+| `fsharp_lib_0006_exp_012` | CE Bind returns wrong type, cascading |
+| `fsharp_lib_0006_exp_014` | Anonymous record type annotation fundamentally broken |
+| `fsharp_lib_0006_exp_018` | Cascading type errors in recommendation engine |
+| `fsharp_lib_0006_exp_020` | Result postfix notation + cascading mismatches |
+| `fsharp_lib_0020_exp_027` | TryGetPropertyValue API misuse in converter |
+| `fsharp_lib_0038_exp_002` | Custom `Result<'T>` shadows stdlib, cascading |
+| `fsharp_lib_0039_exp_025` | TryGetValue/LoadAll type conflicts cascade |
+
+### Dataset Reformatted
+- **7,948 samples** (7,551 train / 397 val) in both ChatML and Mistral formats
+- 15 fixed samples replaced broken originals (same IDs, now with verified F# code)
+- Total count unchanged since broken versions already existed in dataset
+
+### Instruction Fix Re-Generation (fsharp_fixes round)
+Completed the `fsharp_fixes.yaml` round — re-generated 20 prompts with patched instructions ("Implement all code in F#") through minimax.
+
+- **20/20 generated** (14 with responses, 6 empty)
+- **12 passed** F# verification (60%)
+- **11 truly new samples** (1 was a duplicate of an already-passing ID)
+- New samples include: 4 cross_domain (Akka.Cluster weather, CI/CD, Roslyn), 2 fsharp_core, 5 fsharp_libraries
+- Fixed domains from "mixed" to proper domain labels
+
+### Final Dataset Count
+- **7,953 samples** (7,556 train / 397 val) — up from 7,948
+- Both ChatML and Mistral formats updated
+
+### Growth Timeline (Updated)
+
+| Event | Total Samples |
+|-------|--------------|
+| After round 1+2 | ~5,500 |
+| After namespace fix | 6,996 |
+| After substitute run | 7,908 |
+| After verifier bug fix + Claude fixes | 7,948 |
+| After comprehensive fix + instruction re-gen | **7,953** |
+
+---
+
+## Session 7: Training Config Creation
+
+### Token Length Analysis
+Analyzed the 7,556 training samples to determine optimal `max_seq_length`:
+
+| Percentile | Est. Tokens | Chars |
+|-----------|-------------|-------|
+| Median (P50) | ~3,500-4,000 | 13,831 |
+| P90 | ~5,900-6,800 | 23,761 |
+| P95 | ~8,000-9,100 | 31,993 |
+| P99 | ~16,300-18,600 | 65,069 |
+| Max | ~21,300-24,300 | 85,129 |
+
+**Decision**: `max_seq_length = 131072` (128K) — covers 100% of samples with zero truncation. Both base models already support 256K natively; the LoRA adapter only teaches domain knowledge and does not affect positional encoding.
+
+### Abandoned 4-Stage Progressive Context Training
+The original plan had 4 stages (8K → 16K → 128K → 256K) for progressively training models to handle increasing context. This was abandoned because:
+1. We only have short-context training data (all samples ≤24K tokens)
+2. Both Qwen3.5-27B and Devstral Small 2 already handle 256K natively — no need to re-teach positional encoding
+3. Progressive stages are for extending context beyond what the base model was pretrained on
+4. Stages 2-4 had no training data generated for them
+
+**New plan**: Single-stage SFT on all 7,953 samples at 128K max_seq_length, 2× A100 80GB in parallel.
+
+### Devstral Small 2 Architecture Research
+- Architecture: `Mistral3ForConditionalGeneration` / `ministral3` text model
+- hidden_size=5120, 40 layers, 32 attention heads, 8 KV heads, head_dim=128
+- Only the Instruct variant (`mistralai/Devstral-Small-2-24B-Instruct-2512`) is available — no base model from Mistral
+- Unsloth provides optimized version: `unsloth/Devstral-Small-2-24B-Instruct-2512`
+- Chat template: `"mistral"` in Unsloth's `get_chat_template`
+- Standard attention + MLP target modules: `q_proj`, `k_proj`, `v_proj`, `o_proj`, `gate_proj`, `up_proj`, `down_proj`
+
+### Training Configs Created
+
+| File | Model | Format | Description |
+|------|-------|--------|-------------|
+| `configs/train_kenichi_thinking.py` | Qwen3.5-27B | ChatML | Reasoning-first variant |
+| `configs/train_kenichi_flash.py` | Devstral Small 2 24B | Mistral | Fast agentic variant |
+| `configs/merge_and_export.py` | Both | — | LoRA merge → GGUF export → HuggingFace push |
+| `configs/runpod_setup.sh` | Both | — | RunPod instance setup script |
+
+Both training scripts:
+- Load data from HuggingFace (`odytrice/kenichi-sft`) by default, or local JSONL
+- BF16 LoRA, rank 16, alpha 32
+- 3 epochs, effective batch size 8, cosine LR 2e-4
+- Packing enabled (critical for efficiency — median sample is ~4K tokens in 128K window)
+- `load_best_model_at_end=True` with eval every 250 steps
+- Resume from checkpoint support
+- `adamw_8bit` optimizer, gradient checkpointing
+
+### Obsolete Files Removed
+- `configs/train_stage1.py` — replaced by `train_kenichi_thinking.py` / `train_kenichi_flash.py`
+- `configs/train_stage2.py` — no training data for 64K stage
+- `configs/train_stage3.py` — no training data for 128K stage
+- `configs/train_stage4.py` — no training data for 256K stage
+
+### Docs Updated
+- `Training/04-training-config.md` — completely rewritten for single-stage plan
+- `Training/00-overview.md` — updated dataset count to 7,953, removed logprob row (dead end)
+
+---
+
 ## Pending Actions
 
-1. **Complete substitute teacher generation** (806 prompts in progress)
-2. **Merge substitute results** into main dataset
-3. **Republish** updated SFT dataset to HuggingFace
-4. **Create training configs** for Kenichi Thinking (Qwen3.5) and Kenichi Flash (Devstral)
-5. **Train both students** on cloud GPU
-6. **Evaluate and compare** both variants
-7. **Export** to GGUF/GPTQ for local inference
-8. **Push models** to HuggingFace
+1. **Train both students** on cloud GPU (2x A100 80GB, RunPod)
+2. **Evaluate and compare** both variants on held-out validation set
+3. **Export** to GGUF (Q4_K_M, Q5_K_M, Q8_0) for local inference
+4. **Push models** to HuggingFace

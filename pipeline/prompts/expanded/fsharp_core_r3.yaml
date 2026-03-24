@@ -1594,7 +1594,10 @@ prompts:
 
     5. Validate placeholder consistency across plural forms
 
-    6. Write a pretty-printer that outputs RESX/JSON format with proper escaping'
+    6. Write a pretty-printer that outputs RESX/JSON format with proper escaping
+
+
+    Implement all code in F#.'
 - id: fsharp_core_0031_exp_024
   instruction: 'Build a parser for a simple dependency graph specification using FParsec:
 

@@ -10,8 +10,7 @@ Distill domain-specialized coding capabilities from multiple teacher models into
 
 | Dataset | Contents | Link |
 |---------|----------|------|
-| **kenichi-sft** | 6,558 instruction-tuning samples (ChatML + Mistral formats) | [odytrice/kenichi-sft](https://huggingface.co/datasets/odytrice/kenichi-sft) |
-| **kenichi-logprob** | Logprob distillation dataset (planned) | TBD |
+| **kenichi-sft** | 7,953 instruction-tuning samples (ChatML + Mistral formats) | [odytrice/kenichi-sft](https://huggingface.co/datasets/odytrice/kenichi-sft) |
 
 ## Document Index
 

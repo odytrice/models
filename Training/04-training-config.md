@@ -11,124 +11,139 @@ Do NOT train on a pre-quantized (4-bit QLoRA) model. Post-training quantization 
 3. You keep the full BF16 merged model as an artifact -- can quantize to any precision (Q4_K_M, Q5_K_M, Q6_K, Q8_0)
 4. Research consistently shows PTQ of a well-trained model outperforms training on a pre-quantized model
 
-If VRAM is too tight at BF16 for stage 4 (256K context), fall back to QLoRA for that stage only.
+---
+
+## Context Length: Single-Stage at 128K
+
+**Train at 128K (131072 tokens), inference at 204800.**
+
+Both Qwen3.5-27B and Devstral Small 2 already support 256K context natively from their base pretraining. The `max_seq_length` parameter during LoRA SFT only controls:
+- How long the training examples are (padding/truncation boundary)
+- How much VRAM the training run uses
+
+It does NOT retrain or damage the model's RoPE/YaRN positional embeddings. The base model's context handling is untouched — our LoRA adapter only teaches domain knowledge.
+
+### Why 128K and not smaller?
+
+Token distribution analysis of the 7,556 training samples (character-based estimates):
+
+| Percentile | Est. Tokens | Chars |
+|-----------|-------------|-------|
+| Median (P50) | ~3,500-4,000 | 13,831 |
+| P90 | ~5,900-6,800 | 23,761 |
+| P95 | ~8,000-9,100 | 31,993 |
+| P99 | ~16,300-18,600 | 65,069 |
+| Max | ~21,300-24,300 | 85,129 |
+
+| max_seq_length | Samples that fit | Coverage |
+|----------------|-----------------|----------|
+| 16384 (16K) | ~4,615 | 61.1% |
+| 32768 (32K) | ~7,208 | 95.4% |
+| 65536 (64K) | ~7,483 | 99.0% |
+| **131072 (128K)** | **7,556** | **100%** |
+
+128K fits all samples with zero truncation. On A100 80GB, this is comfortable with packing enabled.
+
+### No progressive context stages needed
+
+The original plan had 4 progressive stages (8K → 16K → 128K → 256K) for training models to handle increasing context lengths. This was abandoned because:
+
+1. We only have short-context training data (all 7,953 samples are ≤24K tokens estimated)
+2. Both base models already handle 256K natively — no need to re-teach positional encoding
+3. Progressive stages are for extending context beyond what the base model was pretrained on
 
 ---
 
-## Context Length: Train at 256K
+## Training Plan: 2× A100 80GB in Parallel
 
-**Train at 256K (262144 tokens), inference at 204800.**
+| Pod | Model | Student | Format | Time | Cost (est) |
+|-----|-------|---------|--------|------|------------|
+| A | Qwen/Qwen3.5-27B | Kenichi Thinking | ChatML | ~2-3 hrs | ~$4-6 |
+| B | Devstral Small 2 24B | Kenichi Flash | Mistral | ~2-3 hrs | ~$4-6 |
 
-There is no requirement for context sizes to be powers of 2. The "powers of 2" advice is a simplification -- Flash Attention is optimized for multiples of 128/256 (and pads internally anyway), not strict powers of 2. 204800 = 200 × 1024, which is well-aligned.
+**Total estimated cost: ~$8-12** (2× A100 80GB at ~$1.79/hr each for ~2-3 hours)
 
-Training at 256K is recommended because:
-- The model learns the full range that Qwen3.5-27B natively supports
-- Inferencing at 204800 uses a subset of training range -- no degradation
-- A model trained at 256K handles any length below it (204800, 128K, 64K, etc.)
-
-**Exception**: If training locally on 32GB VRAM, train at 204800 instead to save ~25% VRAM at stage 4. On cloud (48-80GB), train at 256K.
+Both models train on the same 7,953 samples (7,556 train / 397 val). The only difference is the chat template format applied at training time.
 
 ---
 
 ## LoRA Training Configuration
 
+Identical for both models:
+
 ```python
-from unsloth import FastLanguageModel
+# LoRA config
+r = 16
+lora_alpha = 32           # alpha/r ratio of 2
+lora_dropout = 0.0
+target_modules = [
+    "q_proj", "k_proj", "v_proj", "o_proj",
+    "gate_proj", "up_proj", "down_proj",
+]
+bias = "none"
+use_gradient_checkpointing = "unsloth"  # 30% VRAM savings
 
-model, tokenizer = FastLanguageModel.from_pretrained(
-    model_name="Qwen/Qwen3.5-27B",
-    max_seq_length=2048,  # start small, scale up after confirming it works
-    load_in_4bit=False,
-    load_in_16bit=True,   # BF16 -- do NOT use 4-bit for training
-    full_finetuning=False,
-)
-
-model = FastLanguageModel.get_peft_model(
-    model,
-    r=16,
-    target_modules=[
-        "q_proj", "k_proj", "v_proj", "o_proj",
-        "gate_proj", "up_proj", "down_proj",
-    ],
-    lora_alpha=32,  # alpha/r ratio of 2
-    lora_dropout=0,
-    bias="none",
-    use_gradient_checkpointing="unsloth",  # critical for long context + low VRAM
-    random_state=3407,
-    max_seq_length=2048,
-)
+# Training hyperparameters
+max_seq_length = 131072   # 128K — zero truncation
+batch_size = 1
+gradient_accumulation = 8  # Effective batch size = 8
+epochs = 3
+learning_rate = 2e-4
+warmup_ratio = 0.05       # 5% warmup
+weight_decay = 0.01
+lr_scheduler = "cosine"
+optimizer = "adamw_8bit"
+packing = True            # Critical — packs short sequences together
+bf16 = True
 ```
 
----
+### Model-specific differences
 
-## Training Time Estimates
-
-### Per-stage breakdown (BF16 LoRA, batch size 1, gradient accumulation 8, ~10-15K samples)
-
-| Stage | Context Length | Samples | Epochs | Steps (approx) | Time/Step | Stage Time |
-|-------|--------------|---------|--------|-----------------|-----------|------------|
-| **Stage 1** | 8K-16K | ~8K | 2-3 | ~2,500-3,000 | ~3-5 sec | **2-4 hours** |
-| **Stage 2** | 32K-64K | ~3K | 2 | ~750 | ~15-30 sec | **3-6 hours** |
-| **Stage 3** | 128K | ~1.5K | 1-2 | ~375 | ~2-4 min | **12-24 hours** |
-| **Stage 4** | 256K | ~500 | 1 | ~125 | ~5-10 min | **10-20 hours** |
-
-Stages 3 and 4 account for ~80% of total training time. Short-context stages are fast.
-
-### Total training time
-
-| Scenario | Time |
-|----------|------|
-| **Optimistic** | ~27 hours (~1.1 days) |
-| **Realistic** | ~40-50 hours (~2 days) |
-| **Pessimistic** (OOM retries, restarts) | ~60-70 hours (~3 days) |
+| Setting | Kenichi Thinking | Kenichi Flash |
+|---------|-----------------|---------------|
+| Base model | `Qwen/Qwen3.5-27B` | `unsloth/Devstral-Small-2-24B-Instruct-2512` |
+| Chat template | `qwen-2.5` | `mistral` |
+| Data split | `chatml_train` / `chatml_val` | `mistral_train` / `mistral_val` |
+| Architecture | Dense 27B, 88 layers | Dense 24B (Ministral 3), 40 layers |
+| Parameters | 27B | 24B |
 
 ---
 
-## Local vs Cloud Training
+## Training Scripts
 
-### Option A: Local RTX 5090 (32GB)
+| Script | Purpose |
+|--------|---------|
+| `configs/train_kenichi_thinking.py` | Qwen3.5-27B SFT with ChatML |
+| `configs/train_kenichi_flash.py` | Devstral Small 2 SFT with Mistral format |
+| `configs/merge_and_export.py` | Merge LoRA → GGUF export → HuggingFace push |
+| `configs/runpod_setup.sh` | RunPod instance setup (deps, GPU verify, data download) |
 
-- **Cost**: $0 (hardware already owned)
-- **Time**: ~40-50 hours (2-3 days continuous)
-- **Risk**: OOM at stage 4 (256K on 32GB is very tight). May need to fall back to 204800 or QLoRA for final stage.
-- **Pros**: Free, no upload/download time, full control
-- **Cons**: GPU pegged at 100% for days, power/cooling, OOM debugging
+### Quick start on RunPod
 
-### Option B: Cloud GPU (recommended)
+```bash
+# 1. Clone repo on RunPod A100 instance
+git clone https://github.com/<repo>/Models.git && cd Models
 
-| Approach | Config | VRAM | Est. Time | Est. Cost |
-|----------|--------|------|-----------|-----------|
-| **Cheapest** | RunPod community RTX 5090 | 32GB | ~40-50 hrs | **$20-35** |
-| **Best balance** | RunPod L40S or RTX 6000 Ada | 48GB | ~35-45 hrs | **$30-50** |
-| **Fastest** | RunPod 2x A100 80GB | 2x 80GB | ~15-20 hrs | **$55-70** |
-| **Simplest** | Paperspace A100 80GB (managed) | 80GB | ~25-35 hrs | **$30-40** |
+# 2. Run setup
+bash configs/runpod_setup.sh
 
-**Recommended: RunPod L40S or RTX 6000 Ada (~$30-50 total).** The 48GB VRAM gives comfortable headroom for 256K context at BF16, avoids OOM risk, and keeps costs under $50. Done in ~1.5-2 days.
+# 3. Train (Pod A: Thinking, Pod B: Flash)
+python configs/train_kenichi_thinking.py   # Pod A
+python configs/train_kenichi_flash.py      # Pod B
 
-For sub-24-hour turnaround: **2x A100 pod (~$55-70).**
+# 4. After training, merge and export
+python configs/merge_and_export.py \
+  --model Qwen/Qwen3.5-27B \
+  --adapter ./outputs/kenichi-thinking/lora_adapter \
+  --name kenichi-thinking \
+  --push odytrice/kenichi-thinking
 
----
-
-## Cloud GPU Providers
-
-Prices are per-second on RunPod (shown as approximate hourly equivalents). Community cloud prices fluctuate based on supply/demand.
-
-### For Student Training (Qwen3.5-27B LoRA)
-
-| Platform | GPU | VRAM | Approx. $/hr | Notes |
-|----------|-----|------|---------------|-------|
-| **RunPod** | RTX 5090 | 32GB | ~$0.50-0.70/hr | Same VRAM as local, same OOM risk |
-| **RunPod** | L40S | 48GB | ~$0.80-1.20/hr | Comfortable headroom for 256K |
-| **RunPod** | RTX 6000 Ada | 48GB | ~$0.80-1.00/hr | Professional grade, good availability |
-| **RunPod** | A100 80GB SXM | 80GB | ~$1.79/hr (cluster) | Best for max context, no VRAM worries |
-| **RunPod** | 2x A100 80GB | 2x 80GB | ~$3.58/hr | Fastest option, ~15-20 hrs total |
-| **Paperspace** | A100 80GB | 80GB | $1.15/hr (committed) | Managed Jupyter notebooks |
-| **Paperspace** | A6000 | 48GB | $1.89/hr | Simpler setup |
-
-### Important Notes
-- RTX 4090 has only **24GB VRAM** -- not enough for 27B BF16 training
-- RunPod uses dynamic per-second pricing on community cloud; check console for live rates
-- Paperspace committed pricing requires a contract term
+python configs/merge_and_export.py \
+  --model unsloth/Devstral-Small-2-24B-Instruct-2512 \
+  --adapter ./outputs/kenichi-flash/lora_adapter \
+  --name kenichi-flash \
+  --push odytrice/kenichi-flash
+```
 
 ---
 
@@ -137,18 +152,17 @@ Prices are per-second on RunPod (shown as approximate hourly equivalents). Commu
 ### Data Generation (Teachers)
 - All three teachers accessible via **Ollama cloud subscription** -- no additional per-token API costs
 - Data generation cost is effectively **$0 beyond the existing Ollama subscription**
-- Primary cost is **time** -- generating 5K-50K samples across three teachers will take days of scripted API calls
 
-### Total Estimated Budget
+### Training Cost
 
-| Approach | Training Cost | Ollama Sub | Total |
-|----------|--------------|------------|-------|
-| **Local RTX 5090** | $0 | Existing sub | **$0** |
-| **Cloud budget** (L40S) | $30-50 | Existing sub | **$30-50** |
-| **Cloud fast** (2x A100) | $55-70 | Existing sub | **$55-70** |
+| Item | Cost |
+|------|------|
+| 2× A100 80GB RunPod (~2-3 hrs each) | ~$8-12 |
+| Ollama Max subscription | Existing $100/mo |
+| **Total** | **~$8-12** |
 
 ### Post-training: Quantization and Export
 After training completes, merge LoRA adapters and export:
-- **GGUF** (Q4_K_M) for llama.cpp / Ollama local inference
-- **GPTQ-Int4** for vLLM / HuggingFace Transformers inference
-- Both fit comfortably in 32GB VRAM at 204800 token context
+- **GGUF** (Q4_K_M, Q5_K_M, Q8_0) for llama.cpp / Ollama local inference
+- Merged BF16 for HuggingFace
+- Both fit comfortably in 32GB VRAM at Q4_K_M quantization

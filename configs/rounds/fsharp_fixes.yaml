@@ -1,0 +1,10 @@
+description: "Re-run 20 prompts with F# instruction fixes"
+suffix: "_fix"
+temperature: 0.7
+concurrency: 3
+
+# Run through minimax only (best F# teacher at 76.6%)
+teachers:
+  minimax:
+    - yaml: fsharp_instruction_fixes
+      output: fsharp_instruction_fixes

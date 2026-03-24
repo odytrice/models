@@ -60,28 +60,28 @@ Both target local inference on 32GB VRAM.
 
 | Metric | Value |
 |--------|-------|
-| Total samples | 6,998 |
-| Train split | 6,649 |
-| Validation split | 349 |
+| Total samples | 7,953 |
+| Train split | 7,556 |
+| Validation split | 397 |
 | Formats | ChatML (Qwen) + Mistral Instruct (Devstral) |
 | F# compiler verified | Yes (all F# samples) |
-| Generation rounds | 3 (default temp + temp 0.9 + curriculum gap fills) |
+| Generation rounds | 3 + substitute + instruction fixes |
 
 ## Domain Distribution
 
 | Domain | Samples | % | Description |
 |--------|---------|---|-------------|
-| fsharp_libraries | 1,889 | 27.0% | Giraffe, FsToolkit, Akka.NET, linq2db, Thoth.Json, FsCheck, Expecto, Argu, Dapper.FSharp, Farmer, Bolero, and 20+ libraries |
-| fsharp_core | 1,113 | 15.9% | DUs, pattern matching, CEs, SRTP, agents, type providers, signature files, object expressions, CQRS, FParsec, Ports & Adapters |
-| general_coding | 950 | 13.6% | Algorithms, data structures, design patterns (450 distilled + 500 OpenCodeInstruct) |
-| dotnet_aspnet | 825 | 11.8% | ASP.NET Core with F#, DI, middleware, auth, health checks, gRPC, .NET Aspire, Redis caching, Polly resilience, API versioning |
-| svelte_typescript | 676 | 9.7% | Svelte 5 runes, SvelteKit 2, TypeScript patterns |
-| cross_domain | 585 | 8.4% | Full-stack F# + Svelte + Docker integration |
-| docker_kubernetes | 414 | 5.9% | Dockerfiles, K8s manifests, Helm, CI/CD |
-| agentic_swe | 279 | 4.0% | Multi-step debugging, refactoring, migration tasks |
-| long_context | 267 | 3.8% | Full project walkthroughs, multi-file implementations |
+| fsharp_libraries | 2,096 | 26.4% | Giraffe, FsToolkit, Akka.NET, linq2db, Thoth.Json, FsCheck, Expecto, Argu, Dapper.FSharp, Farmer, Bolero, FSharpPlus, FParsec, and 20+ libraries |
+| fsharp_core | 1,817 | 22.8% | DUs, pattern matching, CEs, SRTP, agents, type providers, signature files, object expressions, CQRS, FParsec, Ports & Adapters |
+| general_coding | 950 | 11.9% | Algorithms, data structures, design patterns (450 distilled + 500 OpenCodeInstruct) |
+| dotnet_aspnet | 844 | 10.6% | ASP.NET Core with F#, DI, middleware, auth, health checks, gRPC, .NET Aspire, Redis caching, Polly resilience, API versioning |
+| svelte_typescript | 676 | 8.5% | Svelte 5 runes, SvelteKit 2, TypeScript patterns |
+| cross_domain | 610 | 7.7% | Full-stack F# + Svelte + Docker integration |
+| docker_kubernetes | 414 | 5.2% | Dockerfiles, K8s manifests, Helm, CI/CD |
+| agentic_swe | 279 | 3.5% | Multi-step debugging, refactoring, migration tasks |
+| long_context | 267 | 3.4% | Full project walkthroughs, multi-file implementations |
 
-F# total (core + libraries): 3,002 samples (42.9%) -- intentionally high given F#'s scarcity in pre-training data (<0.1% of The Stack v2).
+F# total (core + libraries): 3,913 samples (49.2%) -- intentionally high given F#'s scarcity in pre-training data (<0.1% of The Stack v2).
 
 ## Teacher Models
 
@@ -130,14 +130,16 @@ verify_fsharp.py (F# compiler verification)
 format_dataset.py (ChatML + Mistral formats)
     |
     v
-6,558 verified training samples
+7,953 verified training samples
 ```
 
-### Three Generation Rounds
+### Five Generation Rounds
 
 - **Round 1**: Default teacher temperatures (0.4-0.7), original teacher assignments
 - **Round 2**: Temperature 0.9, optimized teacher assignments based on benchmark results
 - **Round 3**: 20 curriculum gap-fill seeds (SRTP, FsCheck, Expecto, gRPC, .NET Aspire, Argu, Redis, Polly, outbox pattern, RabbitMQ, ETL, Bolero, object expressions, signature files, CQRS, FParsec, Ports & Adapters, API versioning, Dapper.FSharp, Farmer)
+- **Substitute round**: Re-runs of failing F# prompts through alternate teachers (1,465 generated, 912 passed)
+- **Instruction fix round**: 20 prompts with patched instructions re-generated through MiniMax
 
 Running the same prompts at different temperatures with different teachers produces structurally diverse solutions to the same problems, improving student generalization.
 
@@ -148,12 +150,14 @@ All samples containing F# code are verified through a two-stage pipeline:
 1. **Compile check**: Code extracted from teacher responses and compiled via `dotnet fsi` (scripts) or `dotnet build` (namespace/module code)
 2. **Execution check**: Samples with test assertions are executed to verify runtime correctness
 
-The verification project includes 30+ NuGet packages: Giraffe, FsToolkit.ErrorHandling, Akka.NET, linq2db, Serilog, Thoth.Json.Net, FSharp.SystemTextJson, FSharp.Control.AsyncSeq, and more.
+The verification project includes 45+ NuGet packages: Giraffe, FsToolkit.ErrorHandling, Akka.NET, linq2db, Serilog, Thoth.Json.Net, FSharp.SystemTextJson, FSharp.Control.AsyncSeq, FSharpPlus, MathNet.Numerics, FSharp.Text.RegexProvider, and more.
 
-Samples that fail compilation are excluded from the dataset. Three verification improvements were developed during the project:
+Samples that fail compilation are excluded from the dataset. Key verification improvements developed during the project:
 - Truncated response extraction (handles unclosed code fences from max_token cutoffs)
 - Namespace/module routing (routes `namespace X` code through project build instead of .fsx)
 - Multi-block conflict resolution (uses largest block when multiple blocks have conflicting declarations)
+- NuGet indicator matching (broad pattern matching routes library code to project build with NuGet packages)
+- Targeted code fixes (15 samples with minor syntax errors fixed and re-verified)
 
 ### Supplemental Data
 

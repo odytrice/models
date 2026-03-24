@@ -1,0 +1,298 @@
+domain: mixed
+description: Re-generation of 20 prompts with F# instruction fixes
+prompts:
+- id: cross_0006_exp_000
+  instruction: 'Implement a HIPAA-compliant CI/CD pipeline for a healthcare patient records system:
+
+    - GitLab CI: Build a F# FHIR API (.NET 8) with unit tests and integration tests against a PostgreSQL container
+
+    - GitLab CI: Build a React TypeScript frontend with accessibility (a11y) testing
+
+    - Docker: Multi-stage builds with distroless base images, scan for vulnerabilities using Trivy
+
+    - Push to Azure Container Registry with content trust (Notary) signing
+
+    - Kubernetes: Blue-green deployment strategy with Istio traffic splitting
+
+    - Database: FluentMigrator migrations with encrypted column transformations, run as Kubernetes Job with resource limits
+
+    - Audit: Log all migration executions to Azure Blob Storage for compliance
+
+    - Health checks: Custom readiness probes checking FHIR endpoint conformance
+
+    Show the complete `.gitlab-ci.yml`, Kubernetes manifests with Istio VirtualService, and FluentMigrator configuration with
+    transaction rollback on failure.
+
+
+    Implement all code in F#.'
+  domain: ''
+- id: cross_0007_exp_006
+  instruction: 'Debug a production memory leak in Akka.NET actors: Analyze a scenario where message processing causes Gen
+    2 heap growth due to captured closures in HttpHandler chains. Provide diagnostic steps using dotnet-counters and heap
+    dumps. Implement the fix using the "Warbler" pattern to prevent closure allocations. Show how to implement bounded mailbox
+    queues to prevent out-of-memory errors under load. Include unit tests using Akka.NET TestKit to reproduce the memory leak
+    and verify the fix.
+
+
+    Implement all code in F#.'
+  domain: ''
+- id: cross_0010_exp_000
+  instruction: 'Build an IoT sensor data ingestion pipeline:
+
+    - F# backend: Akka.Streams for backpressure handling of MQTT messages
+
+    - Domain: SensorReading types (Temperature, Humidity, Motion) with timestamp DUs
+
+    - Persistence: Cassandra for time-series storage, Akka.Persistence for checkpointing
+
+    - Akka.NET: Actor per device for stateful aggregation (avg/min/max per hour)
+
+    - Constraints: Handle 100k messages/second with <50ms latency
+
+    - Include stream restart strategies for temporary network failures
+
+    Show the Graph DSL configuration and actor supervision hierarchy.
+
+
+    Implement all code in F#.'
+  domain: ''
+- id: cross_0010_exp_005
+  instruction: 'Build a distributed rate limiter with token bucket algorithm:
+
+    - F# Akka.NET: Actor per API endpoint with distributed state
+
+    - Akka.DistributedData: CRDT for rate limit counters across cluster nodes
+
+    - Protocol: HTTP middleware integration for ASP.NET Core
+
+    - Edge cases: Clock skew between nodes, network partitions
+
+    - Constraints: 10k requests/second per node, eventual consistency acceptable
+
+    Show the DistributedData usage and the token bucket implementation.
+
+
+    Implement all code in F#.'
+  domain: ''
+- id: cross_0010_exp_017
+  instruction: 'Create a centralized log aggregation system:
+
+    - F#: Actor per microservice source, Router to LogProcessor
+
+    - Processing: Akka.Streams for parsing and filtering log levels
+
+    - Storage: Elasticsearch sink with bulk indexing
+
+    - Backpressure: Handle log bursts without dropping messages
+
+    - Alerting: Child actors monitoring error rate thresholds
+
+    Show the stream processing graph and alerting logic.
+
+
+    Implement all code in F#.'
+  domain: ''
+- id: cross_0010_exp_022
+  instruction: 'Create a weather data processing grid:
+
+    - F#: SensorStation actors grouped by geographic region
+
+    - Cluster: Sharding by station ID, rebalancing on node join/leave
+
+    - Aggregation: RegionalAggregator actors calculating hourly averages
+
+    - Fault tolerance: Supervisor strategy for station communication timeouts
+
+    - Data: Akka.Persistence for station calibration history
+
+    Show the cluster sharding setup and regional aggregation logic.
+
+
+    Implement all code in F#.'
+  domain: ''
+- id: cross_0012_exp_016
+  instruction: "Create a Roslyn code generator that produces compile-time optimized logging methods for Serilog, eliminating\
+    \ runtime reflection and boxing. \nGenerate source code from message templates at build time. \nImplement analyzer warnings\
+    \ for incorrect parameter counts in template strings. \nAdd code fixes for automatic template extraction from string concatenation.\
+    \ \nBenchmark against traditional Serilog usage showing IL size and execution speed improvements.\n\nImplement all code\
+    \ in F#."
+  domain: ''
+- id: fsharp_core_0022_exp_011
+  instruction: 'Create a weather data processing pipeline with struct discriminated unions.
+
+    1. Design struct DUs for weather phenomena (Temperature, Precipitation, Wind, Pressure)
+
+    2. Implement aggregation functions for time-series data
+
+    3. Show allocation efficiency when processing historical weather datasets
+
+    4. Include error handling for sensor malfunctions and missing data
+
+    5. Compare with Python data structures for interoperability
+
+
+    Implement all code in F#.'
+  domain: ''
+- id: fsharp_core_0031_exp_023
+  instruction: 'Create a parser for a localization resource bundle using FParsec:
+
+    1. Grammar: key-value translations with plural forms, contexts, and placeholders
+
+    2. Value types: strings with {placeholder} syntax, arrays for plural variants, context markers
+
+    3. Use FParsec combinators: many, sepBy, manySatisfy, opt, attempt
+
+    4. Define an AST with LocaleEntry discriminated union containing key, translation, and variants
+
+    5. Validate placeholder consistency across plural forms
+
+    6. Write a pretty-printer that outputs RESX/JSON format with proper escaping
+
+
+    Implement all code in F#.'
+  domain: ''
+- id: fsharp_lib_0006_exp_007
+  instruction: 'Build a library book checkout system:
+
+    1. Chain with `option { }`: find book → check availability → validate patron status
+
+    2. Use Option.traverseResult for Option<Result<Checkout, LibraryPolicyError>>
+
+    3. Create AsyncOption CE for checking inter-library loans that may return None
+
+    Implement fine calculation logic and handle edge cases for overdue renewals.
+
+
+    Implement all code in F#.'
+  domain: ''
+- id: fsharp_lib_0006_exp_012
+  instruction: 'Design a content management system:
+
+    1. Use `option { }` CE: get content → check permissions → generate preview
+
+    2. Transform Option<Result<Publish, ValidationError>> with traverseResult
+
+    3. Implement AsyncOption CE for fetching related content that may not exist
+
+    Handle version control for content updates and implement draft/published state management.
+
+
+    Implement all code in F#.'
+  domain: ''
+- id: fsharp_lib_0006_exp_014
+  instruction: 'Build a manufacturing quality control system:
+
+    1. Use `option { }` CE: get batch → run tests → classify defects
+
+    2. Apply traverseResult to Option<Result<Inspection, CalibrationError>>
+
+    3. Implement AsyncOption CE for sensor calibration checks that may return None
+
+    Handle statistical process control calculations and implement alert thresholds.
+
+
+    Implement all code in F#.'
+  domain: ''
+- id: fsharp_lib_0006_exp_017
+  instruction: 'Implement a supply chain inventory system:
+
+    1. Chain with `option { }`: find product → check warehouses → calculate restock
+
+    2. Use traverseResult for Option<Result<Shipment, LogisticsError>>
+
+    3. Create AsyncOption CE for checking supplier availability that may return None
+
+    Handle lead time calculations and implement safety stock level management.
+
+
+    Implement all code in F#.'
+  domain: ''
+- id: fsharp_lib_0006_exp_018
+  instruction: 'Build a video streaming recommendation engine:
+
+    1. Use `option { }` CE: get viewer → analyze history → generate suggestions
+
+    2. Transform Option<Result<Recommendation, AlgorithmError>> with traverseResult
+
+    3. Implement AsyncOption CE for checking content ratings that may be missing
+
+    Handle A/B testing for recommendation algorithms and implement personalization weights.
+
+
+    Implement all code in F#.'
+  domain: ''
+- id: fsharp_lib_0006_exp_020
+  instruction: 'Design a real estate property valuation system:
+
+    1. Use `option { }` CE: find property → get comparables → calculate value
+
+    2. Apply traverseResult to Option<Result<Valuation, MarketError>>
+
+    3. Create AsyncOption CE for checking zoning restrictions that may not exist
+
+    Handle property feature weighting and implement market trend adjustments.
+
+
+    Implement all code in F#.'
+  domain: ''
+- id: fsharp_lib_0006_exp_023
+  instruction: 'Create a project management task dependency system:
+
+    1. Chain with `option { }`: get task → find dependencies → calculate critical path
+
+    2. Use traverseResult for Option<Result<Schedule, DependencyError>>
+
+    3. Implement AsyncOption CE for checking resource availability that may return None
+
+    Handle circular dependency detection and implement milestone tracking.
+
+
+    Implement all code in F#.'
+  domain: ''
+- id: fsharp_lib_0006_exp_029
+  instruction: 'Build an airline flight booking system:
+
+    1. Use `option { }` CE: find flight → check seats → calculate fare
+
+    2. Apply traverseResult to Option<Result<Booking, AvailabilityError>>
+
+    3. Create AsyncOption CE for checking upgrade availability that may return None
+
+    Handle baggage fee calculations and implement frequent flyer mileage accrual.
+
+
+    Implement all code in F#.'
+  domain: ''
+- id: fsharp_lib_0020_exp_016
+  instruction: 'Implement a GraphQL-like partial response system for a social media API where clients can specify which fields
+    to return. Use Skippable<''T> to track which fields were requested and only populate those in the response JSON.
+
+
+    Implement all code in F#.'
+  domain: ''
+- id: fsharp_lib_0028_exp_010
+  instruction: 'Design a F# consumer for ride-sharing trip events that processes Avro-encoded trip data. The consumer must
+    calculate driver earnings, update rider ratings, and handle surge pricing logic. Implement exactly-once processing across
+    multiple output topics using transactions. Add health checks for consumer lag monitoring.
+
+
+    Implement all code in F#.'
+  domain: ''
+- id: fsharp_lib_0029_exp_020
+  instruction: 'Implement OpenAPI for a multiplayer game matchmaking service:
+
+    1. Create handlers for player registration, skill rating, match creation, and tournament brackets
+
+    2. Define Match schema with team composition, game mode, map selection, and result reporting
+
+    3. Add anti-cheat validation and player behavior scoring
+
+    4. Configure Swagger UI with ELO rating calculation examples and tournament structures
+
+    5. Generate Unity/F# API client for game engine integration
+
+    Handle region-based matchmaking latency optimization and fair team balancing algorithms.
+
+
+    Implement all code in F#.'
+  domain: ''
