@@ -1535,14 +1535,68 @@ target_modules = [
 # causal-conv1d==1.6.1, fla-core==0.3.2, flash-linear-attention==0.3.2
 ```
 
+### Breakthrough: Monkey-Patch Fixes flash_attention_2
+
+Found the root cause of the flash_attention_2 crash — a **known transformers 5.3.0 bug** (GitHub issues #44643, #44910, filed Mar 13-21 2026):
+
+**Bug**: `_is_packed_sequence()` in `modeling_flash_attention_utils.py` doesn't handle >2D tensors. Qwen3.5 passes 3D M-RoPE position_ids `[3, batch, seq_len]` which gets misinterpreted as a packed sequence. Flash attention then constructs `cu_seqlens` with 3× the actual token count, reads beyond tensor bounds → "illegal memory access".
+
+**This is NOT a torch version issue** — confirmed broken on torch 2.5, 2.6, 2.9, and 2.10. Upgrading torch would not have helped.
+
+**Fix**: 4-line monkey-patch at the top of the training script:
+```python
+import transformers.modeling_flash_attention_utils as _fa_utils
+_orig_is_packed = _fa_utils._is_packed_sequence
+def _patched_is_packed(position_ids, *args, **kwargs):
+    if position_ids is not None and position_ids.dim() > 2:
+        return False
+    return _orig_is_packed(position_ids, *args, **kwargs)
+_fa_utils._is_packed_sequence = _patched_is_packed
+```
+
+### VRAM Tuning: Finding the Right Packed Sequence Length
+
+With flash_attention_2 working, iterated through packed sequence lengths to find what fits in 141 GB:
+
+| max_length | GDN layers | Attention layers | Loss computation | Result |
+|-----------|-----------|-----------------|-----------------|--------|
+| 128K packed | OOM (138/141 GB) | — | — | Fail |
+| 64K packed | Pass | Pass | OOM (60 GB logits) | Fail |
+| 32K packed | Pass | Pass | OOM (30 GB logits) | Fail |
+| **16K packed** | **Pass** | **Pass** | **Pass** | **Works** |
+
+The bottleneck is the logits tensor at loss computation: `vocab_size (248,320) × seq_len × 4 bytes (float32)`. At 32K packed: 30 GB. At 16K packed: 15 GB. With the model + activations using ~118 GB, 16K is the sweet spot that leaves enough room.
+
+### Final Training Configuration (Revised)
+
+```python
+# Monkey-patch for flash_attention_2 + Qwen3.5 3D position_ids
+# + flash_attention_2, packing=True, max_length=16384
+# 582 total steps, ~71 s/step, ~11.4 hours estimated
+```
+
+### Training Status Update
+
+**Kenichi Thinking** (H200 141GB):
+- flash_attention_2 + packing at 16K, monkey-patched
+- 582 total steps, ~71 s/step (dropping from initial 82 s warmup)
+- ETA: ~11.4 hours, ~$46 H200 cost
+- Massive improvement from 52 hours / $208 (no packing) and 142 hours / $568 (no cuDNN)
+
+**Kenichi Flash** (A100 SXM):
+- 87% complete (2,471/2,835 steps), epoch 2.61
+- 6.19 s/step, loss 0.16 (converged from 0.49)
+- ETA: ~37 minutes remaining
+
+**`merge_and_export.py`** updated to support both Unsloth (Flash) and peft (Thinking) backends via `--peft` flag.
+
 ---
 
 ## Pending Actions
 
-1. **Wait for Thinking training** to complete (~42 hrs on H200, ~$168)
-2. **Wait for Flash training** to complete (should be done or nearly done on A100)
-3. **Update `merge_and_export.py`** for non-Unsloth merge path (Thinking uses peft directly)
-4. **Merge LoRA + export** to GGUF and push to HuggingFace
-5. **Evaluate and compare** both variants on held-out validation set
-6. **Download GGUFs locally** and test with Ollama on RTX 4090 / RTX 5090
-7. **Terminate RunPod pods**
+1. **Flash training finishes** (~37 min) → run merge + export on A100 pod
+2. **Wait for Thinking training** to complete (~11 hrs on H200, ~$46)
+3. **Merge LoRA + export** both models to GGUF and push to HuggingFace
+4. **Evaluate and compare** both variants on held-out validation set
+5. **Download GGUFs locally** and test with Ollama on RTX 4090 / RTX 5090
+6. **Terminate RunPod pods**
