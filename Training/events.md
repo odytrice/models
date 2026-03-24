@@ -1481,12 +1481,66 @@ Kenichi Flash training progressing well on A100 SXM:
 - 6.32 s/step, loss 0.31-0.34
 - ETA: ~2.5 hours remaining
 
+### Step Time Optimization — Reducing Padding Waste
+
+With cuDNN SDPA working, step time settled at **71 s/step** at 32K max_length — ~56 hours total. The slowness is from padding waste: without packing, each sample is padded to max_length individually. The median sample is ~4K tokens, so at 32K max_length ~87% of each step is wasted on padding.
+
+Analyzed step time vs data preservation at various max_length values:
+
+| max_length | Samples fit | Truncated | Est. step time | Est. total |
+|-----------|-------------|-----------|---------------|------------|
+| 8K | 93.3% | 508 (6.7%) | ~18 s | ~14 hrs |
+| 10K | 96.5% | 267 (3.5%) | ~22 s | ~17 hrs |
+| 12K | 98.0% | 153 (2.0%) | ~27 s | ~21 hrs |
+| 24K | 100% | 0 | ~53 s | ~42 hrs |
+| 32K | 100% | 0 | ~71 s | ~56 hrs |
+
+**Decision**: Set `max_length=24576` (24K) — zero truncation (longest sample is ~24K tokens), ~25% faster than 32K by reducing padding. Estimated ~42 hours on H200.
+
+Note: "truncated" samples are not lost — they still train on the first N tokens. But we chose zero truncation to preserve all training data completely.
+
+### Final Kenichi Thinking Training Configuration
+
+```python
+# Environment
+TRANSFORMERS_NO_FLEX_ATTENTION=1
+TORCH_CUDNN_SDPA_ENABLED=1
+
+# Model
+model = AutoModelForImageTextToText.from_pretrained(
+    "Qwen/Qwen3.5-27B",
+    dtype=torch.bfloat16,
+    device_map="auto",
+    attn_implementation="sdpa",
+)
+
+# Training
+max_length = 24576      # 24K, zero truncation
+packing = False         # VL model incompatible with packing
+batch_size = 1
+gradient_accumulation = 8
+epochs = 3
+learning_rate = 2e-4
+optimizer = "adamw_8bit"
+gradient_checkpointing = True
+
+# LoRA targets (hybrid GDN + standard attention)
+target_modules = [
+    "q_proj", "k_proj", "v_proj", "o_proj",          # standard attention
+    "in_proj_qkv", "in_proj_z", "in_proj_b", "in_proj_a", "out_proj",  # GDN
+    "gate_proj", "up_proj", "down_proj",              # MLP (all layers)
+]
+
+# Dependencies
+# causal-conv1d==1.6.1, fla-core==0.3.2, flash-linear-attention==0.3.2
+```
+
 ---
 
 ## Pending Actions
 
-1. **Monitor Thinking training** — check step time after warmup (~15-30 s/step expected)
-2. **Wait for Flash training** to complete (~2.5 hrs remaining on A100)
+1. **Wait for Thinking training** to complete (~42 hrs on H200, ~$168)
+2. **Wait for Flash training** to complete (should be done or nearly done on A100)
 3. **Update `merge_and_export.py`** for non-Unsloth merge path (Thinking uses peft directly)
 4. **Merge LoRA + export** to GGUF and push to HuggingFace
 5. **Evaluate and compare** both variants on held-out validation set
