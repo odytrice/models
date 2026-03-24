@@ -16,23 +16,14 @@
 #   # 2. Clone the repo:
 #   cd /workspace && git clone https://github.com/odytrice/models.git && cd models
 #   # 3. Run setup:
-#   bash configs/runpod_setup.sh              # Flash only (skips GDN deps)
-#   bash configs/runpod_setup.sh --thinking   # Include Qwen3.5 GDN deps
+#   bash configs/runpod_setup.sh
 #   # 4. Train (pick one):
-#   python configs/train_kenichi_thinking.py   # Pod A (needs --thinking)
+#   python configs/train_kenichi_thinking.py   # Pod A
 #   python configs/train_kenichi_flash.py      # Pod B
 #
 # ============================================================================
 
 set -e
-
-# ── Parse arguments ──────────────────────────────────────────────────
-INSTALL_THINKING=false
-for arg in "$@"; do
-  case $arg in
-    --thinking) INSTALL_THINKING=true ;;
-  esac
-done
 
 echo "============================================"
 echo "  Kenichi Training — RunPod Setup"
@@ -71,17 +62,13 @@ echo ""
 echo "[3/7] Installing flash-attn (may take a few minutes if building from source)..."
 pip install -q flash-attn --no-build-isolation --no-cache-dir
 
-# ── Qwen3.5 GDN dependencies (optional) ─────────────────────────────
+# ── Qwen3.5 GDN dependencies ────────────────────────────────────────
 echo ""
-if [ "$INSTALL_THINKING" = true ]; then
-  echo "[4/7] Installing causal-conv1d + flash-linear-attention (required for Qwen3.5 GDN layers)..."
-  # Without these, Qwen3.5's Gated DeltaNet layers fall back to a slow torch
-  # implementation that OOMs on long sequences.
-  pip install -q causal-conv1d --no-build-isolation --no-cache-dir
-  pip install -q flash-linear-attention --no-build-isolation --no-cache-dir
-else
-  echo "[4/7] Skipping Qwen3.5 GDN deps (pass --thinking to install)"
-fi
+echo "[4/7] Installing causal-conv1d + flash-linear-attention (required for Qwen3.5 GDN layers)..."
+# Without these, Qwen3.5's Gated DeltaNet layers fall back to a slow torch
+# implementation that OOMs on long sequences.
+pip install -q causal-conv1d --no-build-isolation --no-cache-dir
+pip install -q flash-linear-attention --no-build-isolation --no-cache-dir
 
 # ── Unsloth + dependencies ───────────────────────────────────────────
 echo ""
