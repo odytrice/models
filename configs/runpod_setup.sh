@@ -29,6 +29,18 @@ echo "============================================"
 echo "  Kenichi Training — RunPod Setup"
 echo "============================================"
 
+# ── Symlink HF cache to /workspace ───────────────────────────────────
+# Model weights (~55GB) and pip cache can overflow the container disk.
+# Redirect to /workspace which has hundreds of GB available.
+echo ""
+echo "[0/6] Redirecting caches to /workspace..."
+mkdir -p /workspace/.cache/huggingface /workspace/.cache/pip
+rm -rf /root/.cache/huggingface /root/.cache/pip 2>/dev/null || true
+ln -sf /workspace/.cache/huggingface /root/.cache/huggingface
+ln -sf /workspace/.cache/pip /root/.cache/pip
+echo "  HF cache -> /workspace/.cache/huggingface"
+echo "  pip cache -> /workspace/.cache/pip"
+
 # ── System packages ──────────────────────────────────────────────────
 echo ""
 echo "[1/6] Installing system dependencies..."
