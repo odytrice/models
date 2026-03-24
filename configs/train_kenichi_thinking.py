@@ -48,7 +48,7 @@ from trl import SFTTrainer, SFTConfig
 
 # ── Model Configuration ──────────────────────────────────────────────
 MODEL_NAME = "Qwen/Qwen3.5-27B"
-MAX_SEQ_LENGTH = 81920  # 80K — zero truncation (max sample is ~24K tokens). Under 128K crash threshold.
+MAX_SEQ_LENGTH = 32768  # 32K — zero truncation (max sample is ~24K tokens). Packing disabled for VL model.
 DTYPE = torch.bfloat16
 
 # ── LoRA Configuration ───────────────────────────────────────────────
@@ -233,7 +233,7 @@ def main(data_path: str = None, val_path: str = None, resume: str = None):
         # SFT-specific config (moved from SFTTrainer constructor)
         dataset_text_field="text",
         max_length=MAX_SEQ_LENGTH,
-        packing=True,  # Enabled at 64K — VL model crashed at 128K packed but 64K should be safe
+        packing=False,  # VL model's 3D position IDs crash with flash_attn on ANY packed sequence length
     )
 
     # ── Trainer ──────────────────────────────────────────────────────
