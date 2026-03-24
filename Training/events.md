@@ -1217,11 +1217,70 @@ Both training scripts:
 - `Training/04-training-config.md` — completely rewritten for single-stage plan
 - `Training/00-overview.md` — updated dataset count to 7,953, removed logprob row (dead end)
 
+### System Prompt Added
+Both training scripts inject a system prompt into every sample at training time (in the `formatting_func`):
+> "You are Kenichi, an expert coding assistant specialized in F#, .NET, Svelte 5, SvelteKit, TypeScript, Docker, and Kubernetes. You write clean, idiomatic, and well-structured code with clear explanations."
+
+This is prepended as a `{"role": "system", ...}` message before the user/assistant turns, and tokenized with the proper chat template tokens. No data rebuild needed — injection happens at training time.
+
+### RunPod Deployment & Dependency Issues
+
+Deployed A100 80GB PCIe pod on RunPod with PyTorch template. Hit multiple dependency conflicts during setup:
+
+1. **flash-attn build failure** — Unsloth's git install triggered flash-attn build from source. The pip isolated build env couldn't find torch → `ModuleNotFoundError: No module named 'torch'`. **Fix**: Install flash-attn separately with `--no-build-isolation`.
+
+2. **Unsloth upgraded torch to 2.11.0+cu130** — The `--no-deps` workaround left stale deps. The Unsloth git install then pulled torch 2.11 which mismatched the pod's CUDA 12.4 toolkit → flash-attn CUDA mismatch error. **Fix**: Pin `torch==2.5.1` from cu124 index first.
+
+3. **Unsloth 2026.3.10 incompatible with torch 2.4.1** — `unsloth_zoo` tried to access `torch._inductor.config` which doesn't exist in torch 2.4 → `AttributeError`. **Fix**: Upgrade to torch 2.5.x.
+
+4. **torchao 0.13.0 requires torch.int1** — `torch.int1` dtype doesn't exist in torch 2.5 → `AttributeError`. **Fix**: Downgrade to `torchao==0.7.0`.
+
+5. **Container disk overflow (20GB)** — Qwen3.5-27B model weights (~55GB) downloaded to `/root/.cache/huggingface/` on the container overlay disk (20GB) instead of `/workspace` (900+ GB). **Fix**: Symlink `/root/.cache/huggingface` → `/workspace/.cache/huggingface` before downloading.
+
+### Final Working Install Sequence (RunPod PyTorch template)
+```bash
+# Symlink caches to /workspace
+mkdir -p /workspace/.cache/huggingface /workspace/.cache/pip
+ln -sf /workspace/.cache/huggingface /root/.cache/huggingface
+ln -sf /workspace/.cache/pip /root/.cache/pip
+
+# Upgrade torch to 2.5.1+cu124
+pip install torch==2.5.1 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+
+# Build flash-attn (sees existing torch)
+pip install flash-attn --no-build-isolation
+
+# Install Unsloth with all deps
+pip install "unsloth[cu124-ampere-torch250] @ git+https://github.com/unslothai/unsloth.git"
+
+# Downgrade torchao (0.13 needs torch.int1 which is torch 2.6+)
+pip install "torchao==0.7.0"
+
+# Fast downloads
+pip install hf_transfer
+```
+
+All captured in `configs/runpod_setup.sh`.
+
+### Verified Environment
+```
+PyTorch:    2.5.0+cu124
+CUDA:       12.4
+GPU:        NVIDIA A100 80GB PCIe (79.3 GB)
+Unsloth:    2026.3.10
+TRL:        0.24.0
+Datasets:   4.3.0
+```
+
+### Training Launch
+- Kenichi Thinking (Qwen3.5-27B) — first attempt hit container disk overflow at 8% model download. Redeploying with cache symlink fix.
+- Kenichi Flash (Devstral Small 2) — pending second pod deployment.
+
 ---
 
 ## Pending Actions
 
-1. **Train both students** on cloud GPU (2x A100 80GB, RunPod)
+1. **Complete training** of both students on RunPod (2x A100 80GB)
 2. **Evaluate and compare** both variants on held-out validation set
 3. **Export** to GGUF (Q4_K_M, Q5_K_M, Q8_0) for local inference
 4. **Push models** to HuggingFace
