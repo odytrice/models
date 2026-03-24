@@ -41,11 +41,10 @@ from transformers import (
     AutoModelForImageTextToText,
     AutoTokenizer,
     AutoProcessor,
-    TrainingArguments,
 )
 from peft import LoraConfig, get_peft_model, TaskType
 from datasets import load_dataset
-from trl import SFTTrainer
+from trl import SFTTrainer, SFTConfig
 
 # ── Model Configuration ──────────────────────────────────────────────
 MODEL_NAME = "Qwen/Qwen3.5-27B"
@@ -206,7 +205,7 @@ def main(data_path: str = None, val_path: str = None, resume: str = None):
 
     # ── Training Arguments ───────────────────────────────────────────
     print("[5/6] Configuring trainer...")
-    training_args = TrainingArguments(
+    sft_config = SFTConfig(
         output_dir=OUTPUT_DIR,
         num_train_epochs=EPOCHS,
         per_device_train_batch_size=BATCH_SIZE,
@@ -231,6 +230,10 @@ def main(data_path: str = None, val_path: str = None, resume: str = None):
         gradient_checkpointing_kwargs={"use_reentrant": False},
         optim="adamw_8bit",
         dataloader_num_workers=4,
+        # SFT-specific config (moved from SFTTrainer constructor)
+        dataset_text_field="text",
+        max_length=MAX_SEQ_LENGTH,
+        packing=True,  # Pack short sequences together — critical for efficiency
     )
 
     # ── Trainer ──────────────────────────────────────────────────────
@@ -239,10 +242,7 @@ def main(data_path: str = None, val_path: str = None, resume: str = None):
         processing_class=tokenizer,
         train_dataset=dataset,
         eval_dataset=eval_dataset,
-        args=training_args,
-        dataset_text_field="text",
-        max_seq_length=MAX_SEQ_LENGTH,
-        packing=True,  # Pack short sequences together — critical for efficiency
+        args=sft_config,
     )
 
     # ── Train ────────────────────────────────────────────────────────
