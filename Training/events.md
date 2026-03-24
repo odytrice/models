@@ -1359,15 +1359,31 @@ After ~1.5 hours of training, noticed severe GPU underutilization on Kenichi Thi
 
 **Contributing factor**: Flash uses `attn_implementation="eager"` (forced due to flex_attention bug), which may have better GPU utilization patterns on torch 2.5 than the default SDPA path used by Thinking.
 
-**Fix**: Reduced `MAX_SEQ_LENGTH` from 131072 → 32768 (32K). This covers 95.4% of training samples (truncates only 348/7,556). Packing density improves ~4x, expected GPU utilization ~70-90%.
+**Initial fix attempt**: Reduced `MAX_SEQ_LENGTH` from 131072 → 32768 (32K). This truncates 4.6% of samples (348/7,556). Restarted training on the A100 — but step speed remained ~49 s/step. The actual bottleneck was **gradient offloading to CPU** (`Unsloth: Will smartly offload gradients to save VRAM!`), not packing efficiency. Qwen3.5-27B in BF16 is ~54 GB, leaving only ~25 GB on the A100 80GB for gradients, optimizer states, and activations.
 
-Training stopped at step 118 (epoch 0.12, still in warmup phase) and restarted with the new config. Minimal progress lost.
+### Migration to H200 141GB
+
+Terminated the A100 Thinking pod and deployed an **NVIDIA H200 141GB** pod instead:
+- 141 GB HBM3 — 54 GB model + 87 GB free, no gradient offloading needed
+- ~2x faster compute than A100
+- Single GPU — Unsloth free license works (multi-GPU would require paid license)
+- Restored `MAX_SEQ_LENGTH` back to **131072 (128K)** — zero truncation, all 7,556 samples preserved intact. The Flash model trains at 128K without issues; both models should use identical data processing.
+
+### BF16 Model Audit — Kenichi Flash Base Model
+
+Audited `akoumpa/Devstral-Small-2-24B-Instruct-2512-BF16` (community BF16 conversion used for Flash training):
+
+- **Legitimate BF16 extraction** — the original Mistral model ships with both BF16 and FP8 tensors. This repo extracted the BF16 weights and removed the `quantization_config` from config.json.
+- All architecture parameters identical to original (5120 hidden, 40 layers, 32 heads, 8 KV heads, yarn RoPE, pixtral vision tower)
+- No dequantization artifacts — BF16 weights were already present in the original safetensors, not reconstructed from FP8
+- Apache 2.0 license preserved
+- Conclusion: **No concerns, training on this model is fine.**
 
 ---
 
 ## Pending Actions
 
-1. **Wait for training** to complete (~3-4 hours each)
+1. **Wait for training** to complete (Thinking: ~9-10 hrs on H200, Flash: ~4-5 hrs on A100)
 2. **Merge LoRA + export** to GGUF and push to HuggingFace
 3. **Evaluate and compare** both variants on held-out validation set
 4. **Download GGUFs locally** and test with Ollama on RTX 4090 / RTX 5090
