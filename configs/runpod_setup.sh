@@ -42,15 +42,22 @@ pip install -q --upgrade pip
 
 # Detect PyTorch and CUDA version already on the pod
 echo "  Checking existing PyTorch..."
-python -c "import torch; print(f'  PyTorch {torch.__version__}, CUDA {torch.version.cuda}')"
+TORCH_VERSION=$(python -c "import torch; print(torch.__version__)")
+CUDA_VERSION=$(python -c "import torch; print(torch.version.cuda)")
+echo "  PyTorch ${TORCH_VERSION}, CUDA ${CUDA_VERSION}"
 
-# Install Unsloth — use pip install (not git clone) to avoid flash-attn build issues.
-# The RunPod image already has PyTorch + CUDA, so we install unsloth on top.
-pip install -q --no-deps unsloth unsloth_zoo
-pip install -q --upgrade trl datasets transformers accelerate peft bitsandbytes
-pip install -q xformers sentencepiece protobuf hf_transfer
-# flash-attn: install pre-built wheel (avoid building from source)
+# Pre-install flash-attn with --no-build-isolation so it sees the existing PyTorch.
+# Without this, pip creates an isolated build env that can't find torch.
+echo "  Installing flash-attn (this may take a few minutes)..."
 pip install -q flash-attn --no-build-isolation
+
+# Install Unsloth with all deps — let it manage its own version pins
+# for trl, datasets, transformers, etc.
+echo "  Installing Unsloth + dependencies..."
+pip install -q "unsloth[cu124-ampere-torch240] @ git+https://github.com/unslothai/unsloth.git"
+
+# hf_transfer for fast dataset downloads
+pip install -q hf_transfer
 
 # ── Verify GPU ───────────────────────────────────────────────────────
 echo ""
