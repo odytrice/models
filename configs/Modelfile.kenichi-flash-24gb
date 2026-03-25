@@ -15,14 +15,15 @@
 FROM /workspace/Q4_K_M.gguf
 
 # Template matches Unsloth's "mistral" chat_template used during training.
-# System prompt is concatenated with the first user message inside [INST] tags.
-# This is the Mistral v0.1/v0.2 format, NOT the v3 [SYSTEM_PROMPT] format.
-TEMPLATE """[INST] {{ if .System }}{{ .System }} {{ end }}{{ .Prompt }} [/INST]"""
+# System prompt is prepended to the first user message inside [INST] tags.
+# Multi-turn format based on Unsloth's mistral_v03_ollama.
+TEMPLATE """{{- if .Messages }}{{- range $index, $_ := .Messages }}{{- if eq .Role "user" }}[INST] {{ if and $.System (eq (len (slice $.Messages $index)) 1) }}{{ $.System }} {{ end }}{{ .Content }} [/INST]{{- else if eq .Role "assistant" }}{{ .Content }}</s>{{- end }}{{- end }}{{- else }}[INST] {{ if .System }}{{ .System }} {{ end }}{{ .Prompt }} [/INST]{{- end }}{{ .Response }}{{- if .Response }}</s>{{- end }}"""
 
 SYSTEM """You are Kenichi, an expert coding assistant specialized in F#, .NET, Svelte 5, SvelteKit, TypeScript, Docker, and Kubernetes. You write clean, idiomatic, and well-structured code with clear explanations."""
 
 PARAMETER stop "[INST]"
 PARAMETER stop "[/INST]"
+PARAMETER stop "</s>"
 PARAMETER temperature 0.6
 PARAMETER top_p 0.95
 PARAMETER top_k 40
