@@ -1642,13 +1642,77 @@ Thinking training continuing on H200 141GB:
 - 63.8 s/step (settled from 82 s warmup), 100% GPU utilization
 - ETA: ~9.5 hours remaining
 
+### Kenichi Flash Published to HuggingFace
+
+Flash merge + export completed successfully on the redeployed A100 pod:
+- **Merged BF16 model pushed**: [odytrice/kenichi-flash](https://huggingface.co/odytrice/kenichi-flash)
+- GGUF export skipped on pod (disk constraints) — will quantize locally on RTX 5090 (64 GB RAM, CPU-only process)
+- **A100 pod terminated** — no longer needed
+
+### RunPod Setup Script: fla Version Pin
+
+Thinking training failed on first attempt with:
+```
+ValueError: 'STAGE' is not in list
+```
+Root cause: `runpod_setup.sh` installed latest `flash-linear-attention` which requires Triton 3.2+, but torch 2.5.1 ships Triton 3.1.0. The `@triton.autotune` decorator in `fla/ops/cp/chunk_delta_h.py` references a `STAGE` parameter that doesn't exist in the older Triton API.
+
+**Fix**: Pinned versions in `configs/runpod_setup.sh`:
+```bash
+pip install fla-core==0.3.2 flash-linear-attention==0.3.2
+```
+This was a known issue from the first training session but the version pin hadn't been added to the setup script.
+
+### Merge Script: Added `--no-gguf` Flag
+
+Added `--no-gguf` flag to `configs/merge_and_export.py` to support merge + push BF16 only, skipping GGUF export entirely. This is needed because:
+- RunPod pods have limited disk (~200 GB) — not enough for BF16 + all GGUF quants
+- GGUF quantization is CPU-only (no GPU needed) — can be done locally on any machine with 64+ GB RAM
+- Avoids paying GPU rental time for a CPU-bound task
+
+### Dead Terminal Session & tmux Lesson
+
+During Thinking training (first restart), the RunPod web terminal session died mid-training (~7% through, step 42/582). The training process survived (GPU still at 100%), but the terminal output was lost because training was running as a foreground process without a terminal multiplexer.
+
+**Attempted recovery**:
+- `reptyr 3623` — failed because the training process had subprocesses (4 data workers), and reptyr can't attach to process groups
+- Process was still running (confirmed via `nvidia-smi` showing 100% GPU utilization)
+- Could monitor indirectly via `ls -lt ./outputs/kenichi-thinking/` but couldn't see live training logs
+
+**Resolution**: Killed the training process (`pkill -f train_kenichi_thinking`) and restarted inside a `tmux` session. Lost ~40 minutes of training progress (steps 1-42).
+
+**Lesson learned**: Always use `tmux` on RunPod pods:
+```bash
+apt-get install -y tmux    # if not already installed
+tmux new -s train          # start named session
+python configs/train_kenichi_thinking.py
+# Ctrl+B then D to detach
+# tmux attach -t train to reconnect
+# tmux ls to list sessions
+```
+
+### Kenichi Thinking Training Restarted (Session 2)
+
+Restarted training inside tmux. Progress tracking:
+
+| Step | Loss | Token Accuracy | LR | s/step |
+|------|------|---------------|-----|--------|
+| 10 | 0.4072 | 88.6% | 0.00006 | ~67s (warmup) |
+| 20 | 0.3685 | 89.1% | 0.00013 | ~66s |
+| 30 | 0.3647 | 89.2% | 0.00019 | ~66s |
+| 40 | 0.3576 | 89.2% | 0.00020 (peak) | ~66s |
+| 50 | 0.3518 | 89.3% | 0.00020 | ~66s |
+
+Numbers tracking closely to the first run. ETA: ~9.7 hours from step 55 (~midnight).
+
 ---
 
 ## Pending Actions
 
-1. **Flash merge + export** — reinstall deps on redeployed A100 pod, run merge, push to HuggingFace
-2. **Wait for Thinking training** to complete (~9.5 hrs on H200, ~$38)
-3. **Thinking merge + export** — run on H200 pod after training completes
-4. **Evaluate and compare** both variants on held-out validation set
-5. **Download GGUFs locally** and test with Ollama on RTX 4090 / RTX 5090
-6. **Terminate RunPod pods**
+1. **Wait for Thinking training** to complete (~9.5 hrs on H200)
+2. **Thinking merge + push BF16** — run on H200 pod after training completes (`--no-gguf`)
+3. **GGUF quantization (both models)** — locally on RTX 5090 machine (64 GB RAM, llama.cpp, CPU-only)
+4. **Push GGUFs** to HuggingFace (`odytrice/kenichi-flash-GGUF`, `odytrice/kenichi-thinking-GGUF`)
+5. **Evaluate and compare** both variants on held-out validation set
+6. **Test locally** with Ollama on RTX 5090
+7. **Terminate H200 pod** after merge + push
