@@ -104,7 +104,7 @@ TARGET_MODULES = [
 BATCH_SIZE = 1
 GRADIENT_ACCUMULATION = 8  # Effective batch size = 8
 EPOCHS = 1  # 1 epoch — 3 epochs caused severe overfitting (loss 0.16, model memorized training data)
-LEARNING_RATE = 2e-4
+LEARNING_RATE = 1e-4  # Reduced from 2e-4 to prevent overfitting with 1 epoch
 WARMUP_RATIO = 0.05  # 5% warmup
 WEIGHT_DECAY = 0.01
 LR_SCHEDULER = "cosine"
