@@ -3,7 +3,7 @@
 #
 # Setup:
 #   1. Download GGUF:
-#      hf download odytrice/kenichi-flash Q4_K_M.gguf --local-dir ./kenichi-flash
+#      hf download odytrice/kenichi-flash-GGUF Q4_K_M.gguf --local-dir ./kenichi-flash
 #
 #   2. Set KV cache quantization (required — add to your shell profile):
 #      export OLLAMA_KV_CACHE_TYPE=q8_0

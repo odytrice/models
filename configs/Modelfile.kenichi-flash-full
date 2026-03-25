@@ -9,7 +9,7 @@
 #
 # Setup:
 #   1. Download GGUF:
-#      hf download odytrice/kenichi-flash F16.gguf --local-dir ./kenichi-flash
+#      hf download odytrice/kenichi-flash-GGUF F16.gguf --local-dir ./kenichi-flash
 #
 #   2. No KV cache quantization needed! Use default FP16:
 #      export OLLAMA_KV_CACHE_TYPE=f16
