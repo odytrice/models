@@ -21,14 +21,9 @@
 
 FROM /workspace/kenichi-thinking-F16.gguf
 
-TEMPLATE """{{- if .System }}<|im_start|>system
-{{ .System }}<|im_end|>
-{{ end }}{{- range .Messages }}{{- if eq .Role "user" }}<|im_start|>user
-{{ .Content }}<|im_end|>
-{{ end }}{{- if eq .Role "assistant" }}<|im_start|>assistant
-{{ .Content }}<|im_end|>
-{{ end }}{{- end }}<|im_start|>assistant
-"""
+# Chat template is auto-detected from GGUF metadata (ChatML / Qwen format).
+# Do NOT override with a custom TEMPLATE — the model was trained with the tokenizer's
+# native chat template, and mismatches cause garbled output.
 
 SYSTEM """You are Kenichi, an expert coding assistant specialized in F#, .NET, Svelte 5, SvelteKit, TypeScript, Docker, and Kubernetes. You write clean, idiomatic, and well-structured code with clear explanations."""
 
@@ -36,5 +31,3 @@ PARAMETER temperature 0.6
 PARAMETER top_p 0.95
 PARAMETER top_k 40
 PARAMETER num_ctx 262144
-PARAMETER stop <|im_end|>
-PARAMETER stop <|im_start|>
