@@ -16,12 +16,15 @@
 
 FROM /workspace/Q8_0.gguf
 
-# Chat template is auto-detected from GGUF metadata (Mistral v7 Tekken format).
-# Do NOT override with a custom TEMPLATE — the model was trained with the tokenizer's
-# native chat template applied by Unsloth, and mismatches cause garbled output.
+# Template matches Unsloth's "mistral" chat_template used during training.
+# System prompt is concatenated with the first user message inside [INST] tags.
+# This is the Mistral v0.1/v0.2 format, NOT the v3 [SYSTEM_PROMPT] format.
+TEMPLATE """[INST] {{ if .System }}{{ .System }} {{ end }}{{ .Prompt }} [/INST]"""
 
 SYSTEM """You are Kenichi, an expert coding assistant specialized in F#, .NET, Svelte 5, SvelteKit, TypeScript, Docker, and Kubernetes. You write clean, idiomatic, and well-structured code with clear explanations."""
 
+PARAMETER stop "[INST]"
+PARAMETER stop "[/INST]"
 PARAMETER temperature 0.6
 PARAMETER top_p 0.95
 PARAMETER top_k 40
