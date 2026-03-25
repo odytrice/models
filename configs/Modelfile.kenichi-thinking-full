@@ -9,7 +9,7 @@
 #
 # Setup:
 #   1. Download GGUF:
-#      huggingface-cli download odytrice/kenichi-thinking-GGUF --local-dir ./kenichi-thinking
+#      hf download odytrice/kenichi-thinking F16.gguf --local-dir ./kenichi-thinking
 #
 #   2. No KV cache quantization needed! Use default FP16:
 #      export OLLAMA_KV_CACHE_TYPE=f16
@@ -19,7 +19,7 @@
 #      ollama create kenichi-thinking:full -f Modelfile.kenichi-thinking-full
 #      ollama run kenichi-thinking:full
 
-FROM ./kenichi-thinking/unsloth.F16.gguf
+FROM /workspace/kenichi-thinking-F16.gguf
 
 TEMPLATE """{{- if .System }}<|im_start|>system
 {{ .System }}<|im_end|>

@@ -6,7 +6,7 @@
 #
 # Setup:
 #   1. Download GGUF:
-#      huggingface-cli download odytrice/kenichi-flash-GGUF --local-dir ./kenichi-flash
+#      hf download odytrice/kenichi-flash Q8_0.gguf --local-dir ./kenichi-flash
 #
 #   2. No KV cache quantization needed! Use default FP16:
 #      export OLLAMA_KV_CACHE_TYPE=f16
@@ -16,7 +16,7 @@
 #      ollama create kenichi-flash:96gb -f Modelfile.kenichi-flash-96gb
 #      ollama run kenichi-flash:96gb
 
-FROM ./kenichi-flash/unsloth.Q8_0.gguf
+FROM /workspace/Q8_0.gguf
 
 TEMPLATE """{{- if .System }}[SYSTEM_PROMPT] {{ .System }}[/SYSTEM_PROMPT]{{ end }}{{- range .Messages }}{{- if eq .Role "user" }}[INST] {{ .Content }}[/INST]{{ end }}{{- if eq .Role "assistant" }} {{ .Content }}</s>{{ end }}{{- end }}"""
 

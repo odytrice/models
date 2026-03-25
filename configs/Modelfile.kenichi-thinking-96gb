@@ -5,7 +5,7 @@
 #
 # Setup:
 #   1. Download GGUF:
-#      huggingface-cli download odytrice/kenichi-thinking-GGUF --local-dir ./kenichi-thinking
+#      hf download odytrice/kenichi-thinking Q8_0.gguf --local-dir ./kenichi-thinking
 #
 #   2. Set KV cache quantization (required — add to your shell profile):
 #      export OLLAMA_KV_CACHE_TYPE=q8_0
@@ -14,7 +14,7 @@
 #      ollama create kenichi-thinking:96gb -f Modelfile.kenichi-thinking-96gb
 #      ollama run kenichi-thinking:96gb
 
-FROM ./kenichi-thinking/unsloth.Q8_0.gguf
+FROM /workspace/Q8_0.gguf
 
 TEMPLATE """{{- if .System }}<|im_start|>system
 {{ .System }}<|im_end|>

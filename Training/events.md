@@ -1705,14 +1705,61 @@ Restarted training inside tmux. Progress tracking:
 
 Numbers tracking closely to the first run. ETA: ~9.7 hours from step 55 (~midnight).
 
+### Kenichi Flash GGUF Quantization
+
+Spun up a separate CPU pod for GGUF quantization (no GPU needed — purely CPU + RAM).
+
+**llama.cpp tokenizer issues with Devstral**: `convert_hf_to_gguf.py` failed to handle the Mistral Tekken tokenizer format:
+1. No `tokenizer.model` file (sentencepiece) → FileNotFoundError
+2. Not Llama HF vocab format → TypeError
+3. `TokenizersBackend` class not recognized by transformers → ValueError
+4. `extra_special_tokens: []` is a list but transformers expects dict → AttributeError
+
+**Fixes** (two `sed` patches to `tokenizer_config.json`):
+```bash
+sed -i 's/"tokenizer_class": "TokenizersBackend"/"tokenizer_class": "PreTrainedTokenizerFast"/' tokenizer_config.json
+sed -i 's/"extra_special_tokens": \[\]/"extra_special_tokens": {}/' tokenizer_config.json
+```
+
+These are bugs in the `tokenizer_config.json` saved by Unsloth's `push_to_hub_merged()`. The underlying tokenizer data in `tokenizer.json` is fine — it's just the config metadata that references a non-standard class name and uses the wrong type for `extra_special_tokens`.
+
+Also needed `pip install mistral-common[image,audio]` for the tokenizer.
+
+**Quantization output** (all files uploaded to `odytrice/kenichi-flash` alongside BF16 safetensors):
+- `F16.gguf` (~47 GB) — full precision GGUF
+- `Q8_0.gguf` (~24 GB) — near-lossless
+- `Q5_K_M.gguf` (~17 GB) — good quality/size balance
+- `Q4_K_M.gguf` (~14 GB) — smallest, fits 24 GB VRAM
+
+### Modelfile Updates
+
+Updated all 10 Ollama Modelfiles (5 Flash + 5 Thinking):
+- `FROM` paths now point to `/workspace/*.gguf` for pod-based Ollama model creation
+- Download instructions updated to use `hf` CLI (replacing deprecated `huggingface-cli`)
+- GGUFs stored in single repo per model (`odytrice/kenichi-flash`, `odytrice/kenichi-thinking`) alongside BF16 weights, not separate `-GGUF` repos
+
+### Thinking Training Progress (Step 99/582)
+
+| Step | Loss | Token Accuracy | LR | s/step |
+|------|------|---------------|-----|--------|
+| 10 | 0.4072 | 88.6% | 0.00006 | ~67s |
+| 30 | 0.3647 | 89.2% | 0.00019 | ~66s |
+| 50 | 0.3518 | 89.3% | 0.00020 | ~66s |
+| 70 | 0.3263 | 90.0% | 0.00020 | ~63s |
+| 90 | 0.3205 | 90.1% | 0.00019 | ~63s |
+
+17% complete, loss dropping steadily, ~8.5 hours remaining.
+
 ---
 
 ## Pending Actions
 
-1. **Wait for Thinking training** to complete (~9.5 hrs on H200)
+1. **Wait for Thinking training** to complete (~8.5 hrs on H200, ~midnight)
 2. **Thinking merge + push BF16** — run on H200 pod after training completes (`--no-gguf`)
-3. **GGUF quantization (both models)** — locally on RTX 5090 machine (64 GB RAM, llama.cpp, CPU-only)
-4. **Push GGUFs** to HuggingFace (`odytrice/kenichi-flash-GGUF`, `odytrice/kenichi-thinking-GGUF`)
-5. **Evaluate and compare** both variants on held-out validation set
-6. **Test locally** with Ollama on RTX 5090
-7. **Terminate H200 pod** after merge + push
+3. **Thinking GGUF quantization** — on CPU pod or locally (same tokenizer patches will be needed)
+4. **Upload Flash GGUFs** to `odytrice/kenichi-flash` on HuggingFace
+5. **Publish Ollama models** — `ollama create` + `ollama push` for each VRAM tier tag
+6. **Fix tokenizer_config.json** on `odytrice/kenichi-flash` HuggingFace repo (TokenizersBackend + extra_special_tokens bugs)
+7. **Evaluate and compare** both variants on held-out validation set
+8. **Test locally** with Ollama on RTX 5090
+9. **Terminate H200 pod** after merge + push
