@@ -1750,16 +1750,59 @@ Updated all 10 Ollama Modelfiles (5 Flash + 5 Thinking):
 
 17% complete, loss dropping steadily, ~8.5 hours remaining.
 
+### CRITICAL: 3-Epoch Overfitting Discovery
+
+**Both models trained with 3 epochs are severely overfitting.** Kenichi Flash (the first model tested) memorizes and regurgitates training samples verbatim instead of generalizing to new inputs.
+
+**Symptoms**:
+- When given any input (even "hi"), the model outputs the system prompt followed by a random training instruction and its full code response
+- The model treats every input as the start of a training sample to complete, rather than responding conversationally
+- Multiple Ollama template variations tested (Mistral v0.1, v0.3, GGUF-embedded, no template) — all produce the same behavior, confirming it's not a template issue
+
+**Evidence**:
+- Final step loss: **0.16** — extremely low for SFT, indicating memorization
+- Final train loss: 0.3383 (average), but individual step losses dropped well below 0.2
+- 3 epochs × 7,556 samples = the model saw each sample 3 times
+- SFT best practices (Alpaca, Platypus, OpenHermes papers) recommend **1 epoch** to prevent overfitting
+
+**Root cause**: 3 epochs with lr=2e-4 on only 7,556 samples pushed the LoRA weights too far, causing the model to memorize the training distribution rather than learning the coding domain generalization.
+
+**Fix**: Reduced both training configs to **1 epoch**:
+- `configs/train_kenichi_flash.py`: `EPOCHS = 1`
+- `configs/train_kenichi_thinking.py`: `EPOCHS = 1`
+
+**Impact**:
+- Thinking training (in progress at step ~99/582, 17%) was **killed** immediately to prevent wasted compute
+- Both models need retraining from scratch with 1 epoch
+- Flash: ~1.8 hrs on A100 (vs 5.3 hrs for 3 epochs)
+- Thinking: ~3.5 hrs on H200 (vs ~11 hrs for 3 epochs)
+- Expected final loss: ~0.35-0.40 (higher than 0.16, but properly generalized)
+
+### Ollama Modelfile Template Investigation
+
+Debugged Ollama chat template extensively before concluding overfitting was the issue:
+
+| Attempt | Template | Result |
+|---------|----------|--------|
+| 1 | Hand-written `[SYSTEM_PROMPT]...[/SYSTEM_PROMPT]` (Mistral v3) | Model dumps training samples |
+| 2 | No template (GGUF-embedded auto-detect) | Same — GGUF has wrong template from patched tokenizer_config.json |
+| 3 | Unsloth's `mistral` v0.1 single-turn: `[INST] sys user [/INST]` | Same |
+| 4 | Unsloth's `mistral_v03` multi-turn with `.Messages` | Same |
+
+All templates produce identical behavior: model ignores user input and generates a memorized training sample. Confirmed this is overfitting, not a template issue.
+
+**Correct template** (for when model is retrained): The Unsloth `mistral` v0.1 format where system prompt is concatenated with the first user message inside `[INST]` tags. This matches what `get_chat_template(tokenizer, chat_template="mistral")` produces during training.
+
 ---
 
 ## Pending Actions
 
-1. **Wait for Thinking training** to complete (~8.5 hrs on H200, ~midnight)
-2. **Thinking merge + push BF16** — run on H200 pod after training completes (`--no-gguf`)
-3. **Thinking GGUF quantization** — on CPU pod or locally (same tokenizer patches will be needed)
-4. **Upload Flash GGUFs** to `odytrice/kenichi-flash` on HuggingFace
+1. **Retrain Flash** on A100 pod with 1 epoch (~1.8 hrs, ~$4)
+2. **Retrain Thinking** on H200 pod with 1 epoch (~3.5 hrs, ~$14)
+3. **Test retrained Flash** with Ollama to confirm overfitting is resolved
+4. **Re-quantize and upload GGUFs** for both models
 5. **Publish Ollama models** — `ollama create` + `ollama push` for each VRAM tier tag
-6. **Fix tokenizer_config.json** on `odytrice/kenichi-flash` HuggingFace repo (TokenizersBackend + extra_special_tokens bugs)
+6. **Fix tokenizer_config.json** on HuggingFace repos (TokenizersBackend + extra_special_tokens bugs)
 7. **Evaluate and compare** both variants on held-out validation set
 8. **Test locally** with Ollama on RTX 5090
-9. **Terminate H200 pod** after merge + push
+9. **Terminate pods** after merge + push

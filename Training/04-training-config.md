@@ -87,7 +87,7 @@ use_gradient_checkpointing = "unsloth"  # 30% VRAM savings
 max_seq_length = 131072   # 128K — zero truncation
 batch_size = 1
 gradient_accumulation = 8  # Effective batch size = 8
-epochs = 3
+epochs = 1                # 3 epochs caused overfitting — model memorized training data
 learning_rate = 2e-4
 warmup_ratio = 0.05       # 5% warmup
 weight_decay = 0.01

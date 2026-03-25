@@ -103,7 +103,7 @@ TARGET_MODULES = [
 # ── Training Hyperparameters ─────────────────────────────────────────
 BATCH_SIZE = 1
 GRADIENT_ACCUMULATION = 8  # Effective batch size = 8
-EPOCHS = 3  # 3 epochs for 7,556 samples
+EPOCHS = 1  # 1 epoch — 3 epochs caused severe overfitting (loss 0.16, model memorized training data)
 LEARNING_RATE = 2e-4
 WARMUP_RATIO = 0.05  # 5% warmup
 WEIGHT_DECAY = 0.01
