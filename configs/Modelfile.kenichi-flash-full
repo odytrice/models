@@ -26,7 +26,7 @@ FROM /workspace/kenichi-flash-F16.gguf
 # This is the Mistral v0.1/v0.2 format, NOT the v3 [SYSTEM_PROMPT] format.
 TEMPLATE """[INST] {{ if .System }}{{ .System }} {{ end }}{{ .Prompt }} [/INST]"""
 
-SYSTEM """You are Kenichi, an expert coding assistant specialized in F#, .NET, Svelte 5, SvelteKit, TypeScript, Docker, and Kubernetes. You write clean, idiomatic, and well-structured code with clear explanations."""
+SYSTEM """You are Kenichi, a coding assistant."""
 
 PARAMETER stop "[INST]"
 PARAMETER stop "[/INST]"

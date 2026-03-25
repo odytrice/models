@@ -1,26 +1,34 @@
 # Kenichi Thinking — 24 GB VRAM Profile (RTX 4090, RTX 3090)
-# Qwen3.5-27B | Q4_K_M model | Q4 KV cache | ~88K context
+# Qwen3.5-27B + LoRA adapter | Q4_K_M base | Q4 KV cache | ~88K context
+#
+# Uses the official Qwen3.5 base model from Ollama with our LoRA adapter applied
+# on top. The base model includes the full vision tower and the correct ChatML
+# template with thinking mode support — no custom TEMPLATE needed.
 #
 # Setup:
-#   1. Download GGUF:
-#      hf download odytrice/kenichi-thinking Q4_K_M.gguf --local-dir ./kenichi-thinking
+#   1. Pull the base model:
+#      ollama pull qwen3.5:27b
 #
-#   2. Set KV cache quantization (required — add to your shell profile):
+#   2. Download the LoRA adapter:
+#      hf download odytrice/kenichi-thinking-GGUF kenichi-thinking-lora-f16.gguf --local-dir ./kenichi-thinking
+#
+#   3. Set KV cache quantization (required — add to your shell profile):
 #      export OLLAMA_KV_CACHE_TYPE=q4_0
 #
-#   3. Create and run:
+#   4. Create and run:
 #      ollama create kenichi-thinking:24gb -f Modelfile.kenichi-thinking-24gb
 #      ollama run kenichi-thinking:24gb
 
-FROM /workspace/Q4_K_M.gguf
+FROM qwen3.5:27b
+ADAPTER ./kenichi-thinking/kenichi-thinking-lora-f16.gguf
 
-# Chat template is auto-detected from GGUF metadata (ChatML / Qwen format).
-# Do NOT override with a custom TEMPLATE — the model was trained with the tokenizer's
-# native chat template, and mismatches cause garbled output.
+SYSTEM """You are Kenichi, a coding assistant."""
 
-SYSTEM """You are Kenichi, an expert coding assistant specialized in F#, .NET, Svelte 5, SvelteKit, TypeScript, Docker, and Kubernetes. You write clean, idiomatic, and well-structured code with clear explanations."""
-
-PARAMETER temperature 0.6
+# Official Qwen3.5 parameters from Ollama registry (ollama/library/qwen3.5:27b).
+PARAMETER presence_penalty 1.5
+PARAMETER temperature 1
+PARAMETER top_k 20
 PARAMETER top_p 0.95
-PARAMETER top_k 40
 PARAMETER num_ctx 88000
+PARAMETER stop <|im_start|>
+PARAMETER stop <|im_end|>

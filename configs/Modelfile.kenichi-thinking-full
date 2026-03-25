@@ -1,33 +1,37 @@
 # Kenichi Thinking — Full Precision (Mac Studio 256GB, multi-GPU servers)
-# Qwen3.5-27B | F16 model | FP16 KV cache | ~256K context (model max)
+# Qwen3.5-27B + LoRA adapter | BF16 base | FP16 KV cache | ~256K context (model max)
 #
-# True zero quantization. F16 model weights + unquantized FP16 KV cache.
+# True zero quantization. BF16 model weights + unquantized FP16 KV cache.
 # No compromises anywhere in the inference pipeline.
 #
-# Memory: ~54 GB model + ~90 GB FP16 KV at 256K = ~144 GB total
+# Memory: ~56 GB model + ~90 GB FP16 KV at 256K = ~146 GB total
 # Requires 192+ GB unified memory (Mac Studio M4 Ultra 256GB recommended)
 #
 # Setup:
-#   1. Download GGUF:
-#      hf download odytrice/kenichi-thinking F16.gguf --local-dir ./kenichi-thinking
+#   1. Pull the base model:
+#      ollama pull qwen3.5:27b-bf16
 #
-#   2. No KV cache quantization needed! Use default FP16:
+#   2. Download the LoRA adapter:
+#      hf download odytrice/kenichi-thinking-GGUF kenichi-thinking-lora-f16.gguf --local-dir ./kenichi-thinking
+#
+#   3. No KV cache quantization needed! Use default FP16:
 #      export OLLAMA_KV_CACHE_TYPE=f16
 #      (or simply don't set OLLAMA_KV_CACHE_TYPE — f16 is the default)
 #
-#   3. Create and run:
+#   4. Create and run:
 #      ollama create kenichi-thinking:full -f Modelfile.kenichi-thinking-full
 #      ollama run kenichi-thinking:full
 
-FROM /workspace/kenichi-thinking-F16.gguf
+FROM qwen3.5:27b-bf16
+ADAPTER ./kenichi-thinking/kenichi-thinking-lora-f16.gguf
 
-# Chat template is auto-detected from GGUF metadata (ChatML / Qwen format).
-# Do NOT override with a custom TEMPLATE — the model was trained with the tokenizer's
-# native chat template, and mismatches cause garbled output.
+SYSTEM """You are Kenichi, a coding assistant."""
 
-SYSTEM """You are Kenichi, an expert coding assistant specialized in F#, .NET, Svelte 5, SvelteKit, TypeScript, Docker, and Kubernetes. You write clean, idiomatic, and well-structured code with clear explanations."""
-
-PARAMETER temperature 0.6
+# Official Qwen3.5 parameters from Ollama registry (ollama/library/qwen3.5:27b).
+PARAMETER presence_penalty 1.5
+PARAMETER temperature 1
+PARAMETER top_k 20
 PARAMETER top_p 0.95
-PARAMETER top_k 40
 PARAMETER num_ctx 262144
+PARAMETER stop <|im_start|>
+PARAMETER stop <|im_end|>
