@@ -1670,9 +1670,9 @@ Added `--no-gguf` flag to `configs/merge_and_export.py` to support merge + push 
 - GGUF quantization is CPU-only (no GPU needed) — can be done locally on any machine with 64+ GB RAM
 - Avoids paying GPU rental time for a CPU-bound task
 
-### Dead Terminal Session & tmux Lesson
+### Disconnected Terminal & tmux Lesson
 
-During Thinking training (first restart), the RunPod web terminal session died mid-training (~7% through, step 42/582). The training process survived (GPU still at 100%), but the terminal output was lost because training was running as a foreground process without a terminal multiplexer.
+During Thinking training (first restart), the RunPod web terminal disconnected mid-training (~7% through, step 42/582). The training process survived (GPU still at 100%), but the terminal output was lost because training was running as a foreground process without a terminal multiplexer.
 
 **Attempted recovery**:
 - `reptyr 3623` — failed because the training process had subprocesses (4 data workers), and reptyr can't attach to process groups
