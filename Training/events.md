@@ -1797,12 +1797,47 @@ All templates produce identical behavior: model ignores user input and generates
 
 ## Pending Actions
 
-1. **Retrain Flash** on A100 pod with 1 epoch (~1.8 hrs, ~$4)
-2. **Retrain Thinking** on H200 pod with 1 epoch (~3.5 hrs, ~$14)
-3. **Test retrained Flash** with Ollama to confirm overfitting is resolved
-4. **Re-quantize and upload GGUFs** for both models
-5. **Publish Ollama models** — `ollama create` + `ollama push` for each VRAM tier tag
-6. **Fix tokenizer_config.json** on HuggingFace repos (TokenizersBackend + extra_special_tokens bugs)
-7. **Evaluate and compare** both variants on held-out validation set
-8. **Test locally** with Ollama on RTX 5090
-9. **Terminate pods** after merge + push
+### Learning Rate Reduction
+
+Reduced learning rate from `2e-4` to `1e-4` for both models. Even with 1 epoch, `2e-4` is aggressive for LoRA SFT on ~7.5K samples and could still cause memorization. The `1e-4` rate is the standard recommendation for LoRA fine-tuning.
+
+### Setup Script: `--thinking` Flag Re-added
+
+Re-added the `--thinking` flag to `configs/runpod_setup.sh` after it stalled again on the A100 pod building `causal-conv1d` from source (only needed for Qwen3.5 GDN layers, not Flash/Devstral):
+
+- `bash configs/runpod_setup.sh` — Flash only (skips GDN deps, saves ~15 min)
+- `bash configs/runpod_setup.sh --thinking` — includes `causal-conv1d` + `flash-linear-attention` for Qwen3.5
+
+Previously reverted this change thinking patience was the answer, but the build genuinely stalls or takes 15+ minutes on A100 pods, wasting time for Flash-only workflows.
+
+### Retraining In Progress
+
+Both models retraining with corrected hyperparameters (1 epoch, lr=1e-4):
+
+**Thinking (H200)** — training started, step 39/194 (20%):
+
+| Step | Loss | Token Accuracy | LR |
+|------|------|---------------|-----|
+| 10 | 0.4031 | 88.6% | 0.00009 |
+| 20 | 0.3655 | 89.2% | 0.0000994 |
+| 30 | 0.3648 | 89.2% | 0.0000974 |
+
+Loss stabilizing around 0.365 instead of continuing to drop — the lower LR is working as intended.
+
+**Flash (A100)** — downloading base model, setup re-running without GDN deps.
+
+---
+
+## Pending Actions
+
+1. **Wait for Thinking retraining** to complete (~2.7 hrs remaining on H200)
+2. **Wait for Flash retraining** to complete (~1.8 hrs training after download on A100)
+3. **Test retrained models** with Ollama to confirm overfitting is resolved
+4. **Merge + push BF16** for both models to HuggingFace (`--no-gguf`)
+5. **GGUF quantization** — on CPU pod or locally on RTX 5090
+6. **Upload GGUFs** to `odytrice/kenichi-flash` and `odytrice/kenichi-thinking`
+7. **Publish Ollama models** — `ollama create` + `ollama push` for each VRAM tier tag
+8. **Fix tokenizer_config.json** on HuggingFace (TokenizersBackend + extra_special_tokens bugs)
+9. **Evaluate and compare** both variants on held-out validation set
+10. **Test locally** with Ollama on RTX 5090
+11. **Terminate pods** after merge + push
