@@ -1828,16 +1828,53 @@ Loss stabilizing around 0.365 instead of continuing to drop — the lower LR is 
 
 ---
 
+### Kenichi Thinking Retraining Complete (1 epoch, lr=1e-4)
+
+Thinking retraining completed successfully on H200:
+- **Total time**: 3 hours 24 minutes
+- **Final train loss**: 0.3387 (vs 0.16 with 3 epochs — much healthier)
+- **Final step loss**: 0.3118
+- **Token accuracy**: 90.3%
+- **Steps**: 194 (1 epoch)
+- **Speed**: 63 s/step
+
+Loss curve was gradual and stabilizing — no signs of memorization.
+
+### Kenichi Flash Retraining Complete (1 epoch, lr=1e-4)
+
+Flash retraining completed on A100:
+- **Total time**: 1 hour 44 minutes
+- **Steps**: 945 (1 epoch, less aggressive packing than trl)
+- **Speed**: 6.63 s/step
+
+### Dependency Version Drift During Merge
+
+When running `merge_and_export.py` after training, hit dependency issues on both pods:
+
+1. **torchvision mismatch**: Unpinned `torchvision` silently downgraded `transformers` from 5.3.0 to 4.57.6
+2. **peft import failure**: `PreTrainedModel` import failed with transformers 4.57.6
+3. **torchao mismatch**: `Float8WeightOnlyConfig` error from torchao being too new for torch 2.5
+
+**Fix**: Pin all dependency versions in `configs/runpod_setup.sh`:
+- `torch==2.5.1`, `torchvision==0.20.1`, `torchaudio==2.5.1`
+- `transformers==5.3.0` (pinned after Unsloth install)
+- `torchao==0.7.0` (already pinned)
+
+### Merge + Export In Progress
+
+Both models merging and exporting GGUFs:
+- **Thinking (H200)**: merge + push BF16 + GGUF export running
+- **Flash (A100)**: merge + push BF16 + GGUF export running
+
+GGUFs pushed to separate `-GGUF` repos (`odytrice/kenichi-flash-GGUF`, `odytrice/kenichi-thinking-GGUF`).
+
+---
+
 ## Pending Actions
 
-1. **Wait for Thinking retraining** to complete (~2.7 hrs remaining on H200)
-2. **Wait for Flash retraining** to complete (~1.8 hrs training after download on A100)
-3. **Test retrained models** with Ollama to confirm overfitting is resolved
-4. **Merge + push BF16** for both models to HuggingFace (`--no-gguf`)
-5. **GGUF quantization** — on CPU pod or locally on RTX 5090
-6. **Upload GGUFs** to `odytrice/kenichi-flash` and `odytrice/kenichi-thinking`
-7. **Publish Ollama models** — `ollama create` + `ollama push` for each VRAM tier tag
-8. **Fix tokenizer_config.json** on HuggingFace (TokenizersBackend + extra_special_tokens bugs)
-9. **Evaluate and compare** both variants on held-out validation set
-10. **Test locally** with Ollama on RTX 5090
-11. **Terminate pods** after merge + push
+1. **Wait for merge + GGUF exports** to complete on both pods
+2. **Test retrained models** with Ollama to confirm overfitting is resolved
+3. **Publish Ollama models** — `ollama create` + `ollama push` for each VRAM tier tag
+4. **Evaluate and compare** both variants on held-out validation set
+5. **Test locally** with Ollama on RTX 5090
+6. **Terminate pods** after merge + push
