@@ -1870,11 +1870,96 @@ GGUFs pushed to separate `-GGUF` repos (`odytrice/kenichi-flash-GGUF`, `odytrice
 
 ---
 
+## Session 5: Ollama Testing & GGUF Fixes
+
+### Kenichi Flash — Ollama Test PASSED
+- Tested Flash Q4_K_M on A100 pod with Ollama
+- `ollama run kenichi-flash "hi"` → clean conversational response: "Hi! I'm Kenichi, your expert coding assistant..."
+- `ollama run kenichi-flash "Write a simple F# function to calculate fibonacci numbers"` → correct, idiomatic F# code with multiple approaches (recursive, tail-recursive, iterative)
+- **No overfitting** — generates original, coherent responses
+- **Template working** — Mistral v0.1 `[INST]` format with system prompt concatenated inside tags
+- Minor quality notes: "konflikter" garbled word appears occasionally (tokenization artifact); model generates thinking block despite not being a thinking model
+- Unsloth GGUFs located at `outputs/kenichi-flash/gguf_gguf/` (not `gguf/` — Unsloth naming quirk)
+
+### Kenichi Thinking — GGUF Missing Vision Tower (851 vs 1307 tensors)
+
+#### Discovery: GGUF has only 851 tensors, official `qwen3.5:27b` has 1307
+- The `convert_hf_to_gguf.py` conversion of our merged BF16 model produced 851 tensors
+- Official `qwen3.5:27b` from Ollama has 1307 tensors — the difference is **456 vision tower tensors** (Pixtral vision encoder, ~460M params)
+- Root cause: peft merge via `model.save_pretrained()` from `AutoModelForCausalLM` only saves language model tensors, not the vision encoder
+- Even updating `llama.cpp` to latest master (which has full `Qwen3_5TextModel` support) still produces 851 tensors — the vision weights simply aren't in the merged model directory
+
+#### Impact: `prompt_eval_count: 1`
+- Ollama sees `qwen35` architecture, expects VL model with vision tower
+- Missing 456 tensors cause prompt tokenization to collapse to 1 token
+- Model receives essentially a blank prompt and generates random completions
+- Explains all observed symptoms: hallucinated prompts, ignoring user input, nonsense output
+
+#### Attempted Fix 1: Custom Chat Template
+- Tried multiple custom Go TEMPLATE directives in Modelfiles
+- Tried official Qwen3 template from Ollama registry, official Qwen3.5 parameters
+- All produced same `prompt_eval_count: 1` behavior — template was never the issue
+
+#### Attempted Fix 2: LoRA-to-GGUF Conversion (FROM + ADAPTER approach)
+- Idea: use `FROM qwen3.5:27b` (official base with all 1307 tensors) + `ADAPTER` with LoRA GGUF
+- Updated `llama.cpp` to latest master which has `Qwen3_5TextModel` class with GDN support
+- `convert_lora_to_gguf.py` fails with `NotImplementedError` on V-head reordering
+- The `_reorder_v_heads()` function tries to reshape `LoraTorchTensor` (A/B decomposition), but the reshape operation can't change row size on low-rank matrices
+- Error at `blk.0.attn_gate.weight` (GDN `in_proj_z` tensor)
+- **LoRA-to-GGUF conversion is not supported for Qwen3.5 GDN layers** as of current llama.cpp
+
+#### Attempted Fix 3: Re-convert with Updated llama.cpp
+- Re-ran `convert_hf_to_gguf.py` from latest `llama.cpp` master on merged BF16 model
+- Still produces 851 tensors — the vision weights aren't in the merged model, so no converter version can fix this
+- Need to either copy vision tower from base model or find another approach
+
+#### Attempted Fix 4: Q4_K_M-v2 Test (updated converter, still 851 tensors)
+- Quantized F16-v2 to Q4_K_M-v2 (15.8 GB, correct size)
+- Tested with Ollama using NO custom TEMPLATE — only SYSTEM, PARAMETERs, stop tokens
+- **Still broken** — model hallucinates completely different prompts (e.g., SEO strategy for Cashify when asked "hi")
+- Confirms the 851-tensor GGUF cannot work, regardless of template or converter version
+
+#### Fix 5: Copy Vision Tower from Base Model into Merged Directory
+- Downloaded vision tower shard from `Qwen/Qwen3.5-27B`: `model.safetensors-00011-of-00011.safetensors`
+- All 333 vision tensors are in a single shard (shard 11 of 11)
+- Also contains 9 `mtp.` (Multi-Token Prediction) tensors
+- Symlinked as `model-00003-of-00003.safetensors` in merged model directory
+- Updated `model.safetensors.index.json` to include all 333 vision + 9 mtp tensors pointing to the new shard
+- Copied `preprocessor_config.json` and `video_preprocessor_config.json` from base model
+- **F16-v3 conversion in progress** — should produce ~1307+ GGUF tensors with full vision tower
+
+### Modelfile Updates
+- **Thinking Modelfiles**: Initially switched to `FROM qwen3.5:<tag>` + `ADAPTER` approach, but LoRA-to-GGUF conversion failed. Keeping pre-merged GGUF approach but with no custom TEMPLATE (rely on GGUF-embedded Jinja2 template) and official Qwen3.5 parameters.
+- **System prompt simplified**: Changed from verbose "You are Kenichi, an expert coding assistant specialized in..." to `"You are Kenichi, a coding assistant."` across all 10 Modelfiles
+- **Thinking parameters**: Updated to official Qwen3.5 values from Ollama registry: `presence_penalty 1.5`, `temperature 1`, `top_k 20`, `top_p 0.95`
+- **Download URLs fixed**: Point to `-GGUF` repos instead of BF16 repos
+
+### Available Qwen3.5 Tags on Ollama
+| Tag | Size | Quant |
+|-----|------|-------|
+| `qwen3.5:27b` | 17 GB | Q4_K_M (default) |
+| `qwen3.5:27b-q8_0` | 30 GB | Q8_0 |
+| `qwen3.5:27b-bf16` | 56 GB | BF16 |
+
+No Q5_K_M tag available. VRAM tiers adjusted: 48gb uses Q8_0 base instead of Q5_K_M.
+
+### Discovery: `convert_hf_to_gguf.py` Index Validation is Strict
+- The converter validates that every tensor in the safetensors files is listed in the `model.safetensors.index.json` weight map
+- "Extra tensors" (in files but not in index) cause a hard error
+- The peft merge saved 9 `mtp.` tensors that weren't in the original index
+- Vision tower shard also contains `mtp.` tensors from the base model
+- **All tensors in all shards must be accounted for in the index**, even if the converter will ultimately skip them
+
+---
+
 ## Pending Actions
 
-1. **Wait for merge + GGUF exports** to complete on both pods
-2. **Test retrained models** with Ollama to confirm overfitting is resolved
-3. **Publish Ollama models** — `ollama create` + `ollama push` for each VRAM tier tag
-4. **Evaluate and compare** both variants on held-out validation set
-5. **Test locally** with Ollama on RTX 5090
-6. **Terminate pods** after merge + push
+1. **Wait for F16-v3 conversion** (with vision tower) — check tensor count is ~1307
+2. **Quantize F16-v3 to Q4_K_M** and test with Ollama
+3. **If working**: Quantize Q8_0, push all GGUFs to `odytrice/kenichi-thinking-GGUF`
+4. **Update Thinking Modelfiles** to final pre-merged GGUF approach (FROM GGUF, no TEMPLATE)
+5. **Push Flash GGUFs** — remaining quants (Q5_K_M, Q8_0, F16) to `odytrice/kenichi-flash-GGUF`
+6. **Publish Ollama models** — `ollama create` + `ollama push` for each VRAM tier tag
+7. **Evaluate and compare** both variants on held-out validation set
+8. **Test locally** with Ollama on RTX 5090
+9. **Terminate pods** after everything is pushed
