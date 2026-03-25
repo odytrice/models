@@ -1950,16 +1950,41 @@ No Q5_K_M tag available. VRAM tiers adjusted: 48gb uses Q8_0 base instead of Q5_
 - Vision tower shard also contains `mtp.` tensors from the base model
 - **All tensors in all shards must be accounted for in the index**, even if the converter will ultimately skip them
 
+### Flash GGUFs Published
+- All 4 GGUFs pushed to `odytrice/kenichi-flash-GGUF`:
+  - Q4_K_M.gguf — 14.3 GB
+  - Q5_K_M.gguf — 16.8 GB
+  - Q8_0.gguf — 25.1 GB
+  - F16.gguf — 47.2 GB
+
+### LoRA Adapters Saved
+- **Thinking**: 467 MB → `odytrice/kenichi-thinking` under `lora_adapter/`
+- **Flash**: 406 MB → `odytrice/kenichi-flash` under `lora_adapter/`
+
+### Thinking F16-v3 Conversion — Still 851 Tensors
+- Added vision tower shard from base `Qwen/Qwen3.5-27B` (shard 11 of 11, 333 vision + 9 mtp tensors)
+- Fixed `model.safetensors.index.json` to include all tensors from all shards
+- `convert_hf_to_gguf.py` still produces 851 tensors — the `Qwen3_5TextModel` class intentionally skips vision (`v.*`) and mtp tensors, only converting text model tensors
+- The official `qwen3.5:27b` GGUF (1307 tensors) was built by a different pipeline that bundles text + vision + mtp into one file
+- Full metadata comparison revealed critical missing fields vs official GGUF:
+  - `qwen35.ssm.v_head_reordered` (bool, True) — tells inference engine the V-heads are reordered
+  - `tokenizer.ggml.eos_token_ids` (array of 2 IDs: 248046, 248044)
+  - `qwen35.mrope_sections`, `qwen35.rope.mrope_interleaved`, `qwen35.rope.mrope_section` — M-RoPE config
+  - `tokenizer.ggml.scores`, `tokenizer.ggml.add_eos_token`, `tokenizer.ggml.add_padding_token`
+  - All `qwen35.vision.*` fields
+- These missing metadata fields (especially `v_head_reordered` and tokenizer fields) likely cause the `prompt_eval_count: 1` issue
+
+### Pods Terminated
+- **A100 pod** (Flash): Terminated. All artifacts saved.
+- **H200 pod** (Thinking): Terminated. LoRA adapter + BF16 merged model on HuggingFace.
+
 ---
 
 ## Pending Actions
 
-1. **Wait for F16-v3 conversion** (with vision tower) — check tensor count is ~1307
-2. **Quantize F16-v3 to Q4_K_M** and test with Ollama
-3. **If working**: Quantize Q8_0, push all GGUFs to `odytrice/kenichi-thinking-GGUF`
-4. **Update Thinking Modelfiles** to final pre-merged GGUF approach (FROM GGUF, no TEMPLATE)
-5. **Push Flash GGUFs** — remaining quants (Q5_K_M, Q8_0, F16) to `odytrice/kenichi-flash-GGUF`
-6. **Publish Ollama models** — `ollama create` + `ollama push` for each VRAM tier tag
-7. **Evaluate and compare** both variants on held-out validation set
-8. **Test locally** with Ollama on RTX 5090
-9. **Terminate pods** after everything is pushed
+1. **Fix Thinking GGUF** — patch missing metadata fields (`v_head_reordered`, `eos_token_ids`, M-RoPE config) into the 851-tensor GGUF, or wait for `llama.cpp` to support bundled text+vision GGUF conversion for Qwen3.5
+2. **Publish Flash Ollama models** — `ollama create` + `ollama push` for each VRAM tier tag (can be done from any machine with the GGUFs)
+3. **Publish Thinking Ollama models** — blocked on working GGUF
+4. **Clean up `odytrice/kenichi-thinking-GGUF`** — remove old broken GGUFs (F16, Q8_0, Q4_K_M, Q5_K_M)
+5. **Evaluate and compare** both variants on held-out validation set
+6. **Test locally** with Ollama on RTX 5090
