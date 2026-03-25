@@ -62,8 +62,7 @@ pip install -q --upgrade pip
 
 # Upgrade to PyTorch 2.5.1 (compatible with latest Unsloth)
 # The RunPod image ships 2.4.1 which is too old for current Unsloth.
-# Pin all three packages — unpinned torchvision can downgrade transformers via dependency resolution.
-pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu124
+pip install torch==2.5.1 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
 
 echo "  $(python -c "import torch; print(f'PyTorch {torch.__version__}, CUDA {torch.version.cuda}')")"
 
@@ -94,10 +93,6 @@ pip install "unsloth[cu124-ampere-torch250] @ git+https://github.com/unslothai/u
 
 # Downgrade torchao — latest (0.13) uses torch.int1 which doesn't exist in torch 2.5
 pip install -q "torchao==0.7.0"
-
-# Pin transformers — Unsloth may install a different version, but training and merge
-# scripts depend on 5.3.0 (e.g., AutoModelForImageTextToText, trl 0.24 API)
-pip install -q "transformers==5.3.0"
 
 # hf_transfer for fast dataset downloads
 pip install -q hf_transfer

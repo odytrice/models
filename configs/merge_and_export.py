@@ -121,9 +121,10 @@ def merge_unsloth(
         print(f"  Saved to: {gguf_dir}/")
 
         if push_repo and not gguf_only:
-            print(f"  Pushing {quant.upper()} to {push_repo}...")
+            gguf_repo = f"{push_repo}-GGUF"
+            print(f"  Pushing {quant.upper()} to {gguf_repo}...")
             model.push_to_hub_gguf(
-                push_repo,
+                gguf_repo,
                 tokenizer,
                 quantization_method=quant,
             )
@@ -278,17 +279,18 @@ def merge_peft(
                     f"  WARNING: llama-quantize not found. {quant.upper()} saved as Q8_0."
                 )
 
-        # Push GGUF to HuggingFace (same repo as BF16 model)
+        # Push GGUF to HuggingFace
         if push_repo and not gguf_only and Path(gguf_file).exists():
             from huggingface_hub import HfApi
 
+            gguf_repo = f"{push_repo}-GGUF"
             api = HfApi()
-            print(f"  Pushing {quant.upper()} to {push_repo}...")
-            api.create_repo(push_repo, exist_ok=True)
+            print(f"  Pushing {quant.upper()} to {gguf_repo}...")
+            api.create_repo(gguf_repo, exist_ok=True)
             api.upload_file(
                 path_or_fileobj=gguf_file,
                 path_in_repo=f"{quant.upper()}.gguf",
-                repo_id=push_repo,
+                repo_id=gguf_repo,
             )
 
 
@@ -352,6 +354,8 @@ def main(
         print(f"  GGUF files:    {gguf_dir}")
     if push_repo:
         print(f"  HuggingFace:   https://huggingface.co/{push_repo}")
+        if not no_gguf:
+            print(f"  GGUF repo:     https://huggingface.co/{push_repo}-GGUF")
     if no_gguf:
         print(f"\n  GGUF export skipped. To quantize later on a CPU machine:")
         print(

@@ -1828,58 +1828,16 @@ Loss stabilizing around 0.365 instead of continuing to drop — the lower LR is 
 
 ---
 
-### Kenichi Thinking Retraining Complete (1 epoch, lr=1e-4)
-
-Thinking retraining completed successfully on H200:
-- **Total time**: 3 hours 24 minutes
-- **Final train loss**: 0.3387 (vs 0.16 with 3 epochs — much healthier)
-- **Final step loss**: 0.3118
-- **Token accuracy**: 90.3%
-- **Steps**: 194 (1 epoch)
-- **Speed**: 63 s/step
-
-Loss curve was gradual and stabilizing — no signs of memorization. Expected to generalize properly.
-
-### Dependency Version Drift During Merge
-
-When running `merge_and_export.py` on the H200 pod after training, hit two dependency issues:
-
-1. **torchvision mismatch**: `pip install torchvision==0.20.1` (to fix a `torchvision::nms` operator error) silently **downgraded transformers from 5.3.0 to 4.57.6** as a dependency side-effect
-2. **peft import failure**: With transformers 4.57.6, peft couldn't import `PreTrainedModel` — the lazy import system in transformers 4.x failed due to cascading torchvision errors
-
-**Fix**: `pip install transformers==5.3.0` to restore the correct version.
-
-**Prevention**: Pinned all dependency versions in `configs/runpod_setup.sh`:
-- `torch==2.5.1`, `torchvision==0.20.1`, `torchaudio==2.5.1` (pinned together)
-- `transformers==5.3.0` (pinned after Unsloth install)
-- `torchao==0.7.0` (already pinned)
-- `fla-core==0.3.2`, `flash-linear-attention==0.3.2` (already pinned)
-
-### Kenichi Thinking Merge + Export In Progress
-
-Merge running on H200 pod with full GGUF pipeline (400 GB disk):
-- Step 1/4: Load + merge LoRA — complete
-- Step 2/4: Save merged BF16 — in progress
-- Step 3/4: Push to HuggingFace (`odytrice/kenichi-thinking`)
-- Step 4/4: GGUF export (Q4_K_M, Q5_K_M, Q8_0) via llama.cpp
-
-### Kenichi Flash Retraining In Progress (A100)
-
-Flash retraining running on A100 with 1 epoch, lr=1e-4:
-- 945 total steps (packing not as aggressive with Unsloth as with trl)
-- 6.3 s/step, ETA ~1.5 hrs remaining
-- Loss at step 36: 0.625 (healthy, dropping gradually)
-
----
-
 ## Pending Actions
 
-1. **Wait for Thinking merge + GGUF export** to complete on H200
-2. **Wait for Flash retraining** to complete on A100 (~1.5 hrs)
-3. **Flash merge + GGUF export** after training
-4. **Upload GGUFs** to `odytrice/kenichi-flash` and `odytrice/kenichi-thinking`
-5. **Test retrained models** with Ollama to confirm overfitting is resolved
-6. **Publish Ollama models** — `ollama create` + `ollama push` for each VRAM tier tag
-7. **Evaluate and compare** both variants on held-out validation set
-8. **Test locally** with Ollama on RTX 5090
-9. **Terminate pods** after merge + push
+1. **Wait for Thinking retraining** to complete (~2.7 hrs remaining on H200)
+2. **Wait for Flash retraining** to complete (~1.8 hrs training after download on A100)
+3. **Test retrained models** with Ollama to confirm overfitting is resolved
+4. **Merge + push BF16** for both models to HuggingFace (`--no-gguf`)
+5. **GGUF quantization** — on CPU pod or locally on RTX 5090
+6. **Upload GGUFs** to `odytrice/kenichi-flash` and `odytrice/kenichi-thinking`
+7. **Publish Ollama models** — `ollama create` + `ollama push` for each VRAM tier tag
+8. **Fix tokenizer_config.json** on HuggingFace (TokenizersBackend + extra_special_tokens bugs)
+9. **Evaluate and compare** both variants on held-out validation set
+10. **Test locally** with Ollama on RTX 5090
+11. **Terminate pods** after merge + push
