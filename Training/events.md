@@ -1980,11 +1980,50 @@ No Q5_K_M tag available. VRAM tiers adjusted: 48gb uses Q8_0 base instead of Q5_
 
 ---
 
-## Pending Actions
+## Project Closure
 
-1. **Fix Thinking GGUF** — patch missing metadata fields (`v_head_reordered`, `eos_token_ids`, M-RoPE config) into the 851-tensor GGUF, or wait for `llama.cpp` to support bundled text+vision GGUF conversion for Qwen3.5
-2. **Publish Flash Ollama models** — `ollama create` + `ollama push` for each VRAM tier tag (can be done from any machine with the GGUFs)
-3. **Publish Thinking Ollama models** — blocked on working GGUF
-4. **Clean up `odytrice/kenichi-thinking-GGUF`** — remove old broken GGUFs (F16, Q8_0, Q4_K_M, Q5_K_M)
-5. **Evaluate and compare** both variants on held-out validation set
-6. **Test locally** with Ollama on RTX 5090
+### Fundamental Problem: SFT Cannot Teach Domain Knowledge
+
+After testing both trained models, the project was closed. The core issue:
+
+**SFT (Supervised Fine-Tuning) adjusts model *behavior* (how it responds), not model *knowledge* (what it knows).** LoRA fine-tuning modifies 0.42% of weights — enough to steer response format, but nowhere near enough to inject F# language knowledge into a model that wasn't pre-trained on sufficient F# data.
+
+The training actively *degraded* the base models:
+- **Kenichi Flash** (1 epoch, lr=1e-4): Generated gibberish/incoherent output when prompted — the LoRA pulled weights away from their well-calibrated pre-trained state toward a narrow distribution (single-turn F# code responses) that didn't generalize
+- **Kenichi Thinking** (1 epoch, lr=1e-4): GGUF export broken due to Qwen3.5 VL architecture (851/1307 tensors), but would likely have shown similar degradation
+- Earlier 3-epoch attempts memorized training samples verbatim (loss dropped to 0.16)
+
+### Why the Approach Was Flawed
+
+1. **Wrong technique for the goal**: The goal was "better F# coding." SFT can teach style/persona but cannot teach a model to code in a language it doesn't deeply know from pre-training. That requires Continued Pre-Training (CPT) on millions of tokens of raw F# code — orders of magnitude more data and compute.
+
+2. **The teachers were already the solution**: MiniMax, GLM-5, and Kimi produce 80-99% F# pass rates. The distillation tried to compress that capability into smaller models, but the smaller models lacked the foundational F# knowledge to receive it.
+
+3. **Data homogeneity**: 7,953 samples were almost entirely single-turn "write code for X" → long code response. No multi-turn conversations, clarification, error explanation, or short answers. The model learned only one mode.
+
+4. **Diminishing returns from verification**: The elaborate F# compiler verification pipeline ensured *training data quality* but couldn't compensate for the fundamental SFT limitation. Perfect training data through the wrong technique still produces a worse model.
+
+### Resolution
+
+Use the cloud teacher models (GLM-5, MiniMax M2.7, Kimi K2.5) directly through OpenCode, with:
+- **Skills** for domain-specific instructions and workflows
+- **Sub-agents** for specialized tasks
+- **Context management** for F# library documentation
+
+This approach leverages models that already know F# deeply, without trying to compress that knowledge into a format (LoRA SFT) that can't carry it.
+
+### What Was Valuable
+
+Despite the training failure, the project produced useful artifacts:
+- **7,953 verified F# coding samples** ([odytrice/kenichi-sft](https://huggingface.co/datasets/odytrice/kenichi-sft)) — usable as few-shot examples or RAG corpus
+- **F# compiler verification pipeline** — automated F# code quality checking with namespace routing, NuGet integration, multi-block handling
+- **Teacher benchmarking methodology** — empirical comparison of LLM F# coding ability
+- **Infrastructure knowledge** — RunPod deployment, GGUF quantization, VL model training challenges, Ollama Modelfile configuration
+
+### Lessons Learned
+
+1. **SFT ≠ knowledge injection** — it's behavior steering, not teaching
+2. **If your teachers are good enough, just use them** — distillation adds complexity and loses quality
+3. **Test the trained model early** — the 3-epoch overfitting wasn't caught until after both models completed full training runs
+4. **VL models are dramatically harder to fine-tune** than text-only models (7 attention implementation attempts, monkey-patches, H200 required)
+5. **The pipeline was over-engineered for the wrong problem** — beautiful infrastructure solving a fundamentally mismatched goal
