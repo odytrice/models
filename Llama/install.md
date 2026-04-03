@@ -1,8 +1,6 @@
 # Installing the `llama` CLI
 
-The `llama` CLI is a lightweight management script for interacting with a llama-swap server. It supports health checks, model listing, test prompts, benchmarking, and service restarts.
-
-It uses the `LLAMA_HOST` environment variable (`host:port`) to target a server.
+The `llama` CLI is a lightweight management script for interacting with a llama-swap server. It supports health checks, model listing, test prompts, benchmarking, service restarts, and kubectl-style context switching.
 
 ---
 
@@ -15,30 +13,18 @@ chmod +x ~/.local/bin/llama
 
 # Ensure ~/.local/bin is on your PATH (add to ~/.bashrc or ~/.zshrc if not)
 export PATH="$HOME/.local/bin:$PATH"
-
-# Set your server target (add to ~/.bashrc or ~/.zshrc)
-export LLAMA_HOST="192.168.86.63:8080"
 ```
 
-Reload your shell or `source ~/.zshrc`, then:
+Reload your shell or `source ~/.zshrc`, then set up your contexts:
 
 ```bash
+llama context add local 127.0.0.1:8080
+llama context add game 192.168.86.63:8080
+llama context add ai 192.168.86.235:8080
+llama context local
+
 llama health
 llama models
-llama test devstral-small-2
-```
-
-### Targeting multiple servers
-
-Set `LLAMA_HOST` per-command or use shell aliases:
-
-```bash
-# Per-command
-LLAMA_HOST="192.168.86.235:8080" llama models
-
-# Or add aliases to your shell rc
-alias llama-game='LLAMA_HOST="192.168.86.63:8080" llama'
-alias llama-ai='LLAMA_HOST="192.168.86.235:8080" llama'
 ```
 
 ---
@@ -56,30 +42,70 @@ Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 notepad $PROFILE
 ```
 
-Add these lines to your profile:
+Add this line to your profile:
 
 ```powershell
-$env:LLAMA_HOST = "127.0.0.1:8080"
 function llama { & "$HOME\Projects\Inference\llama.ps1" @args }
 ```
 
-Open a new PowerShell window, then:
+Open a new PowerShell window, then set up your contexts:
 
 ```powershell
+llama context add local 127.0.0.1:8080
+llama context add game 192.168.86.63:8080
+llama context add ai 192.168.86.235:8080
+llama context local
+
 llama health
 llama models
-llama test devstral-small-2
 ```
 
-### Targeting multiple servers
+---
 
-```powershell
-# Per-command
-$env:LLAMA_HOST = "192.168.86.235:8080"; llama models
+## Context Management
 
-# Or add functions to your profile
-function llama-game { $env:LLAMA_HOST = "192.168.86.63:8080"; & "$HOME\Projects\Inference\llama.ps1" @args }
-function llama-ai { $env:LLAMA_HOST = "192.168.86.235:8080"; & "$HOME\Projects\Inference\llama.ps1" @args }
+Contexts work like `kubectl config` / `kubectx`. Named server endpoints are stored in `~/.config/llama/config.json` and persist across sessions.
+
+```bash
+# Add contexts
+llama context add game 192.168.86.63:8080
+llama context add ai 192.168.86.235:8080
+
+# Switch context
+llama context game
+# Switched to context "game" (192.168.86.63:8080)
+
+# List contexts (* = active)
+llama context
+#   ai           192.168.86.235:8080
+# * game         192.168.86.63:8080
+#   local        127.0.0.1:8080
+
+# Remove a context
+llama context rm old-server
+
+# Override with env var (per-command, ignores active context)
+LLAMA_HOST="10.0.0.5:8080" llama health
+```
+
+### Resolution order
+
+1. `LLAMA_HOST` env var (if set, overrides everything)
+2. Active context from `~/.config/llama/config.json`
+3. Error if neither is available
+
+### Config file location
+
+`~/.config/llama/config.json`:
+```json
+{
+  "current": "game",
+  "contexts": {
+    "game": { "host": "192.168.86.63:8080" },
+    "ai": { "host": "192.168.86.235:8080" },
+    "local": { "host": "127.0.0.1:8080" }
+  }
+}
 ```
 
 ---
@@ -94,6 +120,10 @@ function llama-ai { $env:LLAMA_HOST = "192.168.86.235:8080"; & "$HOME\Projects\I
 | `llama test <model>` | Send a test prompt and show response + speed |
 | `llama speed [model]` | Benchmark generation speed (defaults to devstral-small-2) |
 | `llama restart` | Restart the llama-swap service (local: nssm/systemctl, remote: SSH) |
+| `llama context` | List all contexts |
+| `llama context <name>` | Switch active context |
+| `llama context add <name> <host:port>` | Add a new context |
+| `llama context rm <name>` | Remove a context |
 
 ---
 
