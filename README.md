@@ -2,7 +2,7 @@
 
 An AI/LLM workbench for running, configuring, and fine-tuning open-source language models on consumer GPUs.
 
-This repository collects everything needed to go from a stock GPU to a productive local AI setup: model selection guidance, Ollama configuration, quantization strategies, and a full training plan for distilling domain-specialized models.
+This repository collects everything needed to go from a stock GPU to a productive local AI setup: model selection guidance, inference engine configuration (Ollama and llama.cpp), quantization strategies, and a full training plan for distilling domain-specialized models.
 
 ---
 
@@ -29,6 +29,26 @@ The **[Ollama Guide](OLLAMA-GUIDE.md)** covers everything needed to run models l
 | Guide | Description |
 |---|---|
 | [Creating Ollama Models from Hugging Face](creating-ollama-models.md) | Download GGUFs from Hugging Face and create custom Ollama models with your own configuration |
+
+---
+
+## Local Inference with llama.cpp
+
+The **[llama.cpp Guide](Llama/LLAMA-CPP-GUIDE.md)** covers setting up a server from scratch on any platform using llama.cpp + llama-swap:
+
+- Full server setup guides for Linux (NVIDIA CUDA, AMD Vulkan), Windows, and macOS
+- Model selection, quantization, and VRAM budgeting
+- llama-swap configuration (auto-swap, TTL idle unloading)
+- OpenAI-compatible API usage (REST and Python)
+- `llama` CLI for remote management ([install guide](Llama/install.md))
+- Troubleshooting (VRAM spill, DLL loading, CUDA vs Vulkan)
+
+| File | Description |
+|------|-------------|
+| [LLAMA-CPP-GUIDE.md](Llama/LLAMA-CPP-GUIDE.md) | Complete setup and reference guide |
+| [install.md](Llama/install.md) | CLI script installation (bash + PowerShell) |
+| [llama.sh](Llama/llama.sh) | Management CLI (bash) |
+| [llama.ps1](Llama/llama.ps1) | Management CLI (PowerShell) |
 
 ---
 
@@ -60,6 +80,11 @@ models/
 ├── 24GB-GPU.md                    # Models and config for 24GB GPUs
 ├── 32GB-GPU.md                    # Models and config for 32GB GPUs
 ├── creating-ollama-models.md      # Guide: custom Ollama models from HF
+├── Llama/
+│   ├── LLAMA-CPP-GUIDE.md         # llama.cpp + llama-swap setup and reference
+│   ├── install.md                 # CLI script installation guide
+│   ├── llama.sh                   # Management CLI (bash)
+│   └── llama.ps1                  # Management CLI (PowerShell)
 ├── Training/
 │   ├── 00-overview.md             # Distillation project overview
 │   ├── 01-teacher-models.md       # Teacher model analysis
