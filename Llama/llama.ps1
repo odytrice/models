@@ -135,7 +135,22 @@ switch ($Command) {
             $r | ConvertTo-Json -Depth 5
         } catch {
             Write-Host "${label}: unreachable" -ForegroundColor Red
+            return
         }
+        # If a model is loaded, show its server config
+        try {
+            $props = Invoke-RestMethod -Uri "$base/props" -TimeoutSec 5
+            $dgs = $props.default_generation_settings
+            if ($dgs.n_ctx) {
+                $ctx = if ($dgs.n_ctx -ge 1024) { "{0:N0} ({1}K)" -f $dgs.n_ctx, [math]::Floor($dgs.n_ctx / 1024) } else { "{0:N0}" -f $dgs.n_ctx }
+                Write-Host "Context:       $ctx tokens"
+            }
+            if ($props.total_slots) { Write-Host "Parallel:      $($props.total_slots)" }
+            foreach ($item in @(@("Cache (K)", "cache_type_k"), @("Cache (V)", "cache_type_v"))) {
+                $val = if ($props.PSObject.Properties[$item[1]]) { $props.$($item[1]) } elseif ($dgs.PSObject.Properties[$item[1]]) { $dgs.$($item[1]) } else { $null }
+                if ($val) { Write-Host "$($item[0]):     $val" }
+            }
+        } catch {}
     }
 
     "test" {
@@ -197,6 +212,32 @@ switch ($Command) {
         }
     }
 
+    "info" {
+        if (-not $Arg1) {
+            Write-Host "Usage: llama info <model>" -ForegroundColor Yellow
+            return
+        }
+        Write-Host "Loading $Arg1 on $label..." -ForegroundColor Cyan
+        try {
+            $props = Invoke-RestMethod -Uri "$base/upstream/$Arg1/props" -TimeoutSec 120
+        } catch {
+            Write-Host "Failed to load $Arg1" -ForegroundColor Red
+            return
+        }
+        $dgs = $props.default_generation_settings
+        Write-Host "Model:         $Arg1"
+        if ($dgs.n_ctx) {
+            $ctx = if ($dgs.n_ctx -ge 1024) { "{0:N0} ({1}K)" -f $dgs.n_ctx, [math]::Floor($dgs.n_ctx / 1024) } else { "{0:N0}" -f $dgs.n_ctx }
+            Write-Host "Context:       $ctx tokens"
+        }
+        if ($props.total_slots) { Write-Host "Parallel:      $($props.total_slots)" }
+        foreach ($item in @(@("Cache (K)", "cache_type_k"), @("Cache (V)", "cache_type_v"))) {
+            $val = if ($props.PSObject.Properties[$item[1]]) { $props.$($item[1]) } elseif ($dgs.PSObject.Properties[$item[1]]) { $dgs.$($item[1]) } else { $null }
+            if ($val) { Write-Host "$($item[0]):     $val" }
+        }
+        if ($props.model_path) { Write-Host "Model path:    $($props.model_path)" }
+    }
+
     "models" {
         try {
             $r = Invoke-RestMethod -Uri "$base/v1/models" -TimeoutSec 5
@@ -214,7 +255,8 @@ switch ($Command) {
         Write-Host ""
         Write-Host "Commands:"
         Write-Host "  health              Check if llama-swap is running"
-        Write-Host "  status              Show currently loaded model"
+        Write-Host "  status              Show currently loaded model + config"
+        Write-Host "  info <model>        Show model config (context, cache, etc.)"
         Write-Host "  test <model>        Send a test prompt"
         Write-Host "  speed [model]       Benchmark generation speed"
         Write-Host "  restart             Restart the llama-swap service"

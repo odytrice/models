@@ -115,7 +115,8 @@ LLAMA_HOST="10.0.0.5:8080" llama health
 | Command | Description |
 |---------|-------------|
 | `llama health` | Check if llama-swap is running |
-| `llama status` | Show currently loaded model |
+| `llama status` | Show currently loaded model + server config |
+| `llama info <model>` | Show model config (context size, cache type, etc.) |
 | `llama models` | List available models |
 | `llama test <model>` | Send a test prompt and show response + speed |
 | `llama speed [model]` | Benchmark generation speed (defaults to devstral-small-2) |
@@ -124,6 +125,86 @@ LLAMA_HOST="10.0.0.5:8080" llama health
 | `llama context <name>` | Switch active context |
 | `llama context add <name> <host:port>` | Add a new context |
 | `llama context rm <name>` | Remove a context |
+
+---
+
+## Sample Output
+
+### `llama health`
+```
+$ llama health
+OK
+```
+
+### `llama status`
+```
+$ llama status
+[
+    {
+        "model": "gemma4-31b",
+        "uptime": "4m32s"
+    }
+]
+Context:       262,144 (256K) tokens
+Parallel:      1
+Cache (K):     q4_0
+Cache (V):     q4_0
+```
+
+### `llama info <model>`
+```
+$ llama info devstral-small-2
+Loading devstral-small-2 on game (192.168.86.63:8080)...
+Model:         devstral-small-2
+Context:       262,144 (256K) tokens
+Parallel:      1
+Cache (K):     q4_0
+Cache (V):     q4_0
+Model path:    /home/ody/Models/devstral-small-2/Devstral-Small-2-24B-Q4_K_M.gguf
+```
+
+### `llama models`
+```
+$ llama models
+Models on game (192.168.86.63:8080):
+  - devstral-small-2
+  - gemma4-26b
+  - gemma4-31b
+  - qwen3.5-27b
+```
+
+### `llama test <model>`
+```
+$ llama test gemma4-26b
+Loading gemma4-26b on game (192.168.86.63:8080)...
+
+Silent keystrokes fall,
+logic blooms from careful thought—
+the bug hides no more.
+
+Tokens: 18 prompt + 24 completion
+Speed: 412.3 tok/s prompt, 63.1 tok/s generation
+```
+
+### `llama speed [model]`
+```
+$ llama speed qwen3.5-27b
+Benchmarking qwen3.5-27b on ai (192.168.86.235:8080)...
+
+Results:
+  Prompt:     87.4 tok/s (52 tokens)
+  Generation: 12.3 tok/s (500 tokens)
+```
+
+### `llama context`
+```
+$ llama context
+  ai           192.168.86.235:8080
+* game         192.168.86.63:8080
+  local        127.0.0.1:8080
+```
+
+> **Note:** Cache type fields (`Cache (K)`, `Cache (V)`) depend on the llama.cpp version exposing them in the `/props` API. If not available, they are omitted.
 
 ---
 

@@ -160,8 +160,27 @@ case "$cmd" in
         ;;
 
     status)
-        curl -sf "$BASE/running" --max-time 5 | python3 -m json.tool 2>/dev/null || \
-            echo "$LABEL: unreachable" >&2
+        running=$(curl -sf "$BASE/running" --max-time 5 2>/dev/null) || {
+            echo "$LABEL: unreachable" >&2; exit 1
+        }
+        echo "$running" | python3 -m json.tool
+
+        # If a model is loaded, show its server config
+        props=$(curl -sf "$BASE/props" --max-time 5 2>/dev/null) && \
+            echo "$props" | python3 -c "
+import sys, json
+p = json.load(sys.stdin)
+dgs = p.get('default_generation_settings', {})
+n_ctx = dgs.get('n_ctx')
+if n_ctx:
+    ctx = f'{n_ctx:,} ({n_ctx // 1024}K)' if n_ctx >= 1024 else f'{n_ctx:,}'
+    print(f'Context:       {ctx} tokens')
+total = p.get('total_slots')
+if total: print(f'Parallel:      {total}')
+for lbl, k in [('Cache (K)', 'cache_type_k'), ('Cache (V)', 'cache_type_v')]:
+    v = p.get(k) or dgs.get(k)
+    if v: print(f'{lbl}:     {v}')
+" 2>/dev/null || true
         ;;
 
     test)
@@ -218,6 +237,35 @@ else:
         fi
         ;;
 
+    info)
+        if [[ -z "$model" ]]; then
+            echo "Usage: llama info <model>" >&2
+            exit 1
+        fi
+        echo "Loading $model on $LABEL..."
+        props=$(curl -sf "$BASE/upstream/$model/props" --max-time 120) || {
+            echo "Failed to load $model" >&2; exit 1
+        }
+        echo "$props" | python3 -c "
+import sys, json
+p = json.load(sys.stdin)
+dgs = p.get('default_generation_settings', {})
+print(f'Model:         $model')
+n_ctx = dgs.get('n_ctx')
+if n_ctx:
+    ctx = f'{n_ctx:,} ({n_ctx // 1024}K)' if n_ctx >= 1024 else f'{n_ctx:,}'
+    print(f'Context:       {ctx} tokens')
+total = p.get('total_slots')
+if total: print(f'Parallel:      {total}')
+for lbl, k in [('Cache (K)', 'cache_type_k'), ('Cache (V)', 'cache_type_v')]:
+    v = p.get(k) or dgs.get(k)
+    if v: print(f'{lbl}:     {v}')
+model_path = p.get('model_path', '')
+if model_path:
+    print(f'Model path:    {model_path}')
+"
+        ;;
+
     models)
         curl -sf "$BASE/v1/models" --max-time 5 | python3 -c "
 import sys, json
@@ -233,7 +281,8 @@ for m in r['data']:
         echo ""
         echo "Commands:"
         echo "  health              Check if llama-swap is running"
-        echo "  status              Show currently loaded model"
+        echo "  status              Show currently loaded model + config"
+        echo "  info <model>        Show model config (context, cache, etc.)"
         echo "  test <model>        Send a test prompt"
         echo "  speed [model]       Benchmark generation speed"
         echo "  restart             Restart the llama-swap service"
