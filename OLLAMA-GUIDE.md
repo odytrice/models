@@ -8,8 +8,8 @@ Configuration guides for running large language models locally with Ollama on co
 
 | Guide | VRAM | Example GPUs | Dense Model Range |
 |---|---|---|---|
-| [24GB GPU Guide](24GB-GPU.md) | 24 GB | RTX 4090, RTX 3090, RTX A5000 | 14-25B params |
-| [32GB GPU Guide](32GB-GPU.md) | 32 GB | RTX 5090 | 20-32B params |
+| [24GB GPU Guide](24GB-GPU.md) | 24 GB | RTX 4090, RTX 3090, RTX A5000 | 14-25B params (MoE up to 26B total) |
+| [32GB GPU Guide](32GB-GPU.md) | 32 GB | RTX 5090 | 20-32B params (MoE up to 30B total) |
 
 ## Custom Models
 
@@ -39,9 +39,10 @@ Configuration guides for running large language models locally with Ollama on co
 Models without native tool calling are excluded regardless of benchmark performance. Native tool calling means the model was trained with tool-use tokens and can reliably generate structured function calls without prompt engineering hacks.
 
 Examples of excluded models:
-- **Gemma 3** — prompt-based tool calling only, not reliable for agentic use
 - **Phi-4-Reasoning** — no native tool calling support
 - **DeepCoder-14B** — weak/community-patched tool calling only
+
+**Note on Gemma:** Gemma 3 was previously excluded for prompt-based tool calling only. **Gemma 4 adds native function calling** and is now included in both the 24GB and 32GB guides.
 
 ---
 
@@ -228,6 +229,9 @@ models/
 - **System RAM:** 64GB recommended alongside your GPU VRAM for smooth operation
 - **Quantization quality:** q8_0 KV cache has negligible quality loss. q4_0 may show slight degradation at very high context sizes
 - **Qwen3-Coder inference settings:** temperature=0.7, top_p=0.8, top_k=20, repetition_penalty=1.05 (recommended by Qwen)
-- **Qwen3-Coder mode:** Non-thinking only — no `<think>` blocks. Use Qwen3 32B if you need thinking mode
+- **Qwen3-Coder mode:** Non-thinking only — no `ühl` blocks. Use Qwen3 32B if you need thinking mode
 - **DeepSeek R1 temperature:** Set between 0.5-0.7 (0.6 recommended) to avoid incoherent outputs
 - **DeepSeek R1 system prompt:** Works best without one — put all instructions in the user message
+- **Gemma 4 inference settings:** temperature=1.0, top_p=0.95, top_k=64 (different from other models' 0.7/0.8/20)
+- **Gemma 4 thinking mode:** Controlled via `<|think|>` token in system prompt — Ollama handles this automatically
+- **Gemma 4 26B on 24GB:** Tight KV budget — verify with `ollama ps` and reduce `num_ctx` or use `q4_0` KV cache if you see CPU offloading

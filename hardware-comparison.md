@@ -25,9 +25,11 @@ Comparing the RTX 5090, RTX PRO 6000, Mac Studio M3 Ultra (256GB), Framework Des
 
 | Model | Type | Size | 5090 (32GB) | PRO 6000 (96GB) | M3 Ultra (256GB) | Strix Halo (128GB) |
 |---|---|---|---|---|---|---|
+| Gemma 4 26B MoE (Q4) | MoE (3.8B active) | ~18 GB | Yes | Yes | Yes | Yes |
+| Gemma 4 31B Dense (Q4) | Dense | ~20 GB | Yes | Yes | Yes | Yes |
 | Qwen3.5 27B Q4_K_M | Dense | ~17 GB | Yes | Yes | Yes | Yes |
 | GLM-4.7 Flash (MoE, 3B active) | MoE | ~17 GB | Yes | Yes | Yes | Yes |
-| Qwen3 Coder 30B (MoE, 3B active) | MoE | ~17 GB | Yes | Yes | Yes | Yes |
+| Qwen3 Coder 30B (MoE, 3.3B active) | MoE | ~17 GB | Yes | Yes | Yes | Yes |
 | Qwen 2.5 Coder 32B Q4_K_M | Dense | ~19 GB | Yes | Yes | Yes | Yes |
 | DeepSeek R1 32B Q4_K_M | Dense | ~19 GB | Yes | Yes | Yes | Yes |
 | Qwen3-72B Q4_K_M | Dense | ~48 GB | **No** | Yes | Yes | Yes |
@@ -51,6 +53,7 @@ Token generation is primarily memory-bandwidth-bound. MoE models only read activ
 
 | Model | 5090 | PRO 6000 | M3 Ultra 256GB | Strix Halo 128GB |
 |---|---|---|---|---|
+| Gemma 4 26B MoE (Q4) | ~150+ tok/s | ~150+ tok/s | ~70-80 tok/s | ~54 tok/s |
 | Qwen3.5 27B Q4 | ~80-90 tok/s | ~80-90 tok/s | ~40-45 tok/s | ~10-12 tok/s |
 | GLM-4.7 Flash (MoE) | ~150+ tok/s | ~150+ tok/s | ~70-80 tok/s | ~54 tok/s |
 | Qwen3 Coder 30B (MoE) | ~150+ tok/s | ~150+ tok/s | ~70-80 tok/s | ~70 tok/s |
@@ -101,7 +104,7 @@ Mixture-of-Experts (MoE) models activate only a fraction of their total paramete
 
 | Hardware | Best Available Model | SWE-bench Class | Speed | Experience |
 |---|---|---|---|---|
-| **5090** | Qwen3.5 27B, GLM-4.7 Flash, Qwen3 Coder 30B | ~70-75% | 80-150 tok/s | Instant, fluid |
+| **5090** | Qwen3.5 27B, GLM-4.7 Flash, Qwen3 Coder 30B, Gemma 4 31B | ~70-75% | 80-150 tok/s | Instant, fluid |
 | **PRO 6000** | Qwen 3.5 122B-A10B, Qwen3-72B | ~75-78% | 40-150 tok/s | Instant, fluid |
 | **M3 Ultra 256GB** | Qwen3-Coder-480B (Q2-Q3), Qwen3-235B (Q4+) | ~76-80% (but Q2 degrades this) | 3-6 tok/s | Slow, functional |
 | **Strix Halo 128GB** | Qwen3-235B (Q3), Qwen 3.5 122B-A10B | ~70-78% | 7.8-18 tok/s | Usable to slow |
@@ -167,9 +170,9 @@ The Strix Halo (128GB LPDDR5X, ~215 GB/s) sits in an awkward middle ground:
 
 | Area | Best Model | Benchmark | Speed |
 |---|---|---|---|
-| Coding | Qwen3.5 27B, GLM-4.7 Flash, Qwen3 Coder 30B | ~73-75% SWE-bench | 80-150 tok/s |
-| Reasoning | GLM-4.7 Flash, DeepSeek R1 32B | ~95% AIME | 60-150 tok/s |
-| Agentic | GLM-4.7 Flash (87.4% t2-bench) | Top tier | 150+ tok/s |
+| Coding | Qwen3.5 27B, GLM-4.7 Flash, Qwen3 Coder 30B, Gemma 4 31B | ~73-75% SWE-bench | 80-150 tok/s |
+| Reasoning | GLM-4.7 Flash, DeepSeek R1 32B, Gemma 4 31B | ~95% AIME | 60-150 tok/s |
+| Agentic | GLM-4.7 Flash (87.4% t2-bench), Gemma 4 26B (native tool calling) | Top tier | 150+ tok/s |
 
 This puts you at roughly the **90th percentile** of local inference capability.
 
@@ -603,6 +606,8 @@ Ollama Cloud offers a different model: **flat monthly subscription** instead of 
 | **Devstral 2** | 123B | — | Coding/Agentic | Multi-file editing, codebase exploration |
 | **Devstral Small 2** | 24B | — | Coding/Agentic | Lighter coding agent |
 | **Nemotron 3 Super** | 120B MoE | 12B | Agentic | Multi-agent applications |
+| **Gemma 4 31B** | 30.7B | 30.7B | Coding/Reasoning/Vision | Dense, #3 Arena AI, native tool calling, Apache 2.0 |
+| **Gemma 4 26B** | 25.2B | 3.8B | Fast Coding/Reasoning | MoE, #6 Arena AI, ~150 tok/s, Apache 2.0 |
 | **MiniMax M2.7** | — | — | Coding/Productivity | — |
 | **MiniMax M2.5** | — | — | Coding | — |
 | **Cogito 2.1** | 671B | — | General/STEM | MIT license |

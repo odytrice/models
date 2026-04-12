@@ -19,14 +19,16 @@ Recommended models and configuration for GPUs with 32GB VRAM (RTX 5090, etc.).
 
 | Model | Type | Total / Active Params | Context | VRAM (Q4) | Best For |
 |---|---|---|---|---|---|
+| **Gemma 4 31B** | Dense | 30.7B / 30.7B | 256K | ~20 GB | Best reasoning in class, vision, native function calling |
+| **Gemma 4 26B** | MoE | 25.2B / 3.8B | 256K | ~18 GB | Fast agentic coding, reasoning, vision, ~150 tok/s |
 | **GLM-4.7-Flash** | MoE | 30B / 3B | 200K | ~18.3 GB | Best SWE-bench in class (59.2%), fast agentic coding |
 | **Qwen3-Coder 30B-A3B** | MoE | 30B / 3.3B | 256K | ~18.6 GB | Agentic coding, tool calling (OpenCode, Aider, Cline) |
 | **GLM-4-32B-0414** | Dense | 32B / 32B | 128K (YaRN) | ~20 GB | Best tool calling (BFCL 69.6), general coding |
 | **Qwen3 32B** | Dense | 32B / 32B | 32K (128K w/ YaRN) | ~20 GB | General + reasoning + coding (thinking/non-thinking modes) |
 | **Qwen 2.5 Coder 32B** | Dense | 32B / 32B | 128K | ~19 GB | Day-to-day coding, code completion, code repair |
 | **DeepSeek R1 Distill 32B** | Dense | 32B / 32B | 128K | ~19 GB | Reasoning, complex debugging, algorithmic tasks |
-| **GPT-OSS 20B** | MoE | 21B / 3.6B | 128K | ~13 GB | Lightweight agentic workflows, tool use |
 | **Devstral-Small-2 24B** | Dense | 24B / 24B | 256K | ~15 GB | Multi-file agentic editing, repo navigation |
+| **GPT-OSS 20B** | MoE | 21B / 3.6B | 128K | ~13 GB | Lightweight agentic workflows, tool use |
 
 ### Tier 2 — Worth Considering
 
@@ -56,14 +58,16 @@ Recommended models and configuration for GPUs with 32GB VRAM (RTX 5090, etc.).
 
 ```bash
 # Tier 1
+ollama pull gemma4:31b
+ollama pull gemma4:26b
 ollama pull glm-4.7-flash
 ollama pull qwen3-coder:30b
 ollama pull sammcj/glm-4-32b-0414
 ollama pull qwen3:32b
 ollama pull qwen2.5-coder:32b
 ollama pull deepseek-r1:32b
-ollama pull gpt-oss:20b
 ollama pull devstral-small-2:24b
+ollama pull gpt-oss:20b
 
 # Tier 2
 ollama pull granite4
@@ -77,17 +81,19 @@ ollama pull qwen3:14b
 
 ## Benchmark Summary
 
-| Model | SWE-Bench Verified | HumanEval | Aider Polyglot | BFCL v3 | CodeForces Elo |
-|---|---|---|---|---|---|
-| GLM-4.7-Flash | 59.2% | — | — | — | — |
-| Qwen3-Coder-30B-A3B | 69.6% | — | 61.8% | — | — |
-| GLM-4-32B-0414 | 33.8% (Moatless) | — | — | 69.6 | — |
-| Qwen3 32B | — | — | — | — | — |
-| Qwen2.5-Coder-32B | — | 91.0% | 73.7% (repair) | — | — |
-| DeepSeek-R1-Distill-32B | — | — | — | — | 1691 |
-| GPT-OSS 20B | — | Matches o3-mini | — | — | — |
-| Devstral-Small-2 24B | 68% | — | — | — | — |
-| Nemotron 3 Nano 30B-A3B | — | 78.1% | — | — | — |
+| Model | SWE-Bench Verified | HumanEval | Aider Polyglot | BFCL v3 | CodeForces Elo | LiveCodeBench v6 | MMLU Pro |
+|---|---|---|---|---|---|---|---|
+| GLM-4.7-Flash | 59.2% | — | — | — | — | — | — |
+| Qwen3-Coder-30B-A3B | 69.6% | — | 61.8% | — | — | — | — |
+| Gemma 4 31B | — | — | — | — | 2150 | 80.0% | 85.2% |
+| GLM-4-32B-0414 | 33.8% (Moatless) | — | — | 69.6 | — | — | — |
+| Qwen3 32B | — | — | — | — | — | — | — |
+| Qwen2.5-Coder-32B | — | 91.0% | 73.7% (repair) | — | — | — | — |
+| DeepSeek-R1-Distill-32B | — | — | — | — | 1691 | — | — |
+| GPT-OSS 20B | — | Matches o3-mini | — | — | — | — | — |
+| Devstral-Small-2 24B | 68% | — | — | — | — | — | — |
+| Gemma 4 26B | — | — | — | — | 1718 | 77.1% | 82.6% |
+| Nemotron 3 Nano 30B-A3B | — | 78.1% | — | — | — | 68.3% | — |
 
 ---
 
@@ -111,10 +117,12 @@ ollama pull qwen3:14b
 | GPT-OSS 20B | ~13 GB | ~18 GB | ~128K (full) |
 | Devstral-Small-2 24B | ~15 GB | ~16 GB | ~128K+ |
 | Mistral Small 3.2 24B | ~15 GB | ~16 GB | ~128K (full) |
+| Gemma 4 26B (MoE) | ~18 GB | ~13 GB | ~64-128K |
 | GLM-4.7-Flash (MoE) | ~18.3 GB | ~12.7 GB | ~96-128K |
 | Qwen3-Coder 30B (MoE) | ~18.6 GB | ~12.4 GB | ~96-128K |
 | DeepSeek R1 32B | ~19 GB | ~12 GB | ~64-96K |
 | Qwen 2.5 Coder 32B | ~19 GB | ~12 GB | ~64-96K |
+| Gemma 4 31B | ~20 GB | ~11 GB | ~64-96K |
 | Granite 4.0 H-Small | ~19.5 GB | ~11.5 GB | ~64-96K |
 | GLM-4-32B-0414 | ~20 GB | ~11 GB | ~64-96K |
 | Qwen3 32B | ~20 GB | ~11 GB | ~64-96K |
@@ -131,12 +139,14 @@ Ollama defaults to 4096 tokens. Always increase this after pulling a model.
 |---|---|---|---|
 | GLM-4.7-Flash | `glm-4.7-flash` | 204800 | 200K |
 | Qwen3-Coder 30B-A3B | `qwen3-coder:30b` | 225280 | 220K |
+| Gemma 4 31B | `gemma4:31b` | 131072 | 128K |
 | GLM-4-32B-0414 | `sammcj/glm-4-32b-0414` | 131072 | 128K |
 | Qwen3 32B | `qwen3:32b` | 32768 | 32K |
 | Qwen 2.5 Coder 32B | `qwen2.5-coder:32b` | 131072 | 128K |
 | DeepSeek R1 Distill 32B | `deepseek-r1:32b` | 51200 | 50K |
 | GPT-OSS 20B | `gpt-oss:20b` | 131072 | 128K |
 | Devstral-Small-2 24B | `devstral-small-2:24b` | 174080 | 170K |
+| Gemma 4 26B | `gemma4:26b` | 131072 | 128K |
 
 Run the model, set the context, and save back to the same tag to update in place:
 
@@ -184,13 +194,35 @@ Expected output should show **100% GPU**. If you see any CPU percentage, the mod
 |---|---|
 | Best SWE-bench coding performance | GLM-4.7-Flash |
 | Day-to-day coding with OpenCode/Aider | Qwen3-Coder-30B-A3B |
+| Best reasoning + vision + tool calling | Gemma 4 31B |
 | Best tool calling reliability | GLM-4-32B-0414 |
 | Proven code completion / repair | Qwen2.5-Coder-32B |
 | Deep reasoning with traces | DeepSeek-R1-Distill-32B |
 | General reasoning + coding | Qwen3 32B |
 | Need speed or large context headroom | GPT-OSS 20B |
 | Multi-file repo edits | Devstral-Small-2 24B |
+| Fast agentic coding with vision | Gemma 4 26B |
 | Enterprise / compliance requirements | IBM Granite 4.0 H-Small |
+
+## Gemma 4 Notes
+
+Gemma 4 is a major upgrade from Gemma 3 — it adds **native function calling** (Gemma 3 was prompt-based only and was excluded from this guide). Key details for the 32GB tier:
+
+### Gemma 4 31B (Dense)
+- **30.7B dense params**, 60 layers, 256K context, text+image+vision
+- **~20 GB Q4 weights** on 32GB leaves ~11 GB for KV cache → 64-96K context comfortably
+- **Best reasoning in class:** MMLU Pro 85.2%, AIME 2026 89.2%, Codeforces Elo 2150, LiveCodeBench v6 80.0%
+- **Arena AI rank #3** among all open models (score 1452)
+- **Native tool calling** with structured JSON, configurable thinking mode
+- **Apache 2.0 license** — fully permissive for commercial use
+- Sampling: `temperature=1.0`, `top_p=0.95`, `top_k=64`
+
+### Gemma 4 26B (MoE)
+- **25.2B total / 3.8B active**, 128 experts (8 active + 1 shared), 30 layers, 256K context
+- **~18 GB Q4 weights** → fits easily on 32GB with 128K+ context headroom
+- **Extremely fast:** ~150 tok/s due to only 3.8B active params
+- **Arena AI rank #6** (score 1441), LiveCodeBench v6 77.1%, Codeforces Elo 1718
+- On 32GB, this model gets full 128K context — much better than the 32-48K limit on 24GB
 
 ---
 
@@ -198,7 +230,9 @@ Expected output should show **100% GPU**. If you see any CPU percentage, the mod
 
 - **GLM-4-32B-0414:** Use the `sammcj/glm-4-32b-0414` Ollama model — it includes a fixed GGUF with correct tool calling template (the native GLM format is XML; this adapts it for JSON)
 - **GLM-4.7-Flash:** Ollama handles the chat template automatically. If using llama.cpp directly, pass the `--jinja` flag
+- **Gemma 4 sampling:** Use `temperature=1.0`, `top_p=0.95`, `top_k=64` (different from other models' 0.7/0.8/20)
+- **Gemma 4 thinking mode:** Controlled via `<|think|>` token in system prompt — Ollama handles this automatically
 - **DeepSeek R1 temperature:** Set between 0.5-0.7 (0.6 recommended) to avoid incoherent outputs
 - **DeepSeek R1 system prompt:** Works best without one — put all instructions in the user message
-- **Qwen3-Coder mode:** Non-thinking only — no `<think>` blocks. Use Qwen3 32B if you need thinking mode
+- **Qwen3-Coder mode:** Non-thinking only — no `ühl` blocks. Use Qwen3 32B if you need thinking mode
 - **System RAM:** 64GB recommended alongside 32GB VRAM for smooth operation
