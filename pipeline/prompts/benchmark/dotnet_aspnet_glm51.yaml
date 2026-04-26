@@ -1,0 +1,2954 @@
+domain: dotnet_aspnet
+max_tokens: 131072
+prompts:
+- id: dotnet_0001_exp_003
+  instruction: 'Design an IoT device management system using Giraffe with endpoints
+    to register devices, send commands, and retrieve telemetry.
+
+    Use dependency injection for: a singleton device registry cache, a scoped command
+    processor, and a transient telemetry validator.
+
+    Implement error handling that logs failures using the injected logger service
+    and returns appropriate HTTP status codes.'
+- id: dotnet_0001_exp_000
+  instruction: 'Implement a Giraffe web API for a healthcare appointment system with
+    endpoints to schedule, view, and cancel appointments.
+
+    Use dependency injection to register: a singleton configuration service for clinic
+    hours, a scoped repository for appointment data,
+
+    and a transient validator for appointment conflicts. Show both IServiceCollection
+    registration in Program.fs and how to inject
+
+    these dependencies into route handlers using partial application.'
+- id: dotnet_0001_exp_001
+  instruction: 'Create a financial transaction processing service in F# using Giraffe
+    with endpoints for deposits, withdrawals, and balance checks.
+
+    Configure DI with: a singleton audit logger, a scoped transaction repository with
+    database context, and a transient validator
+
+    for transaction amounts. Demonstrate how to handle dependency injection in middleware
+    for request logging and how to pass
+
+    services to HttpHandlers using the bindServices computation expression pattern.'
+- id: dotnet_0001_exp_011
+  instruction: 'Build a workflow engine API with Giraffe for managing business processes.
+    Configure DI with: a singleton workflow definition
+
+    service, a scoped execution engine, and a transient step validator. Implement
+    long-running operations using background
+
+    services and show how to inject the job queue into HttpHandlers for status checking.'
+- id: dotnet_0001_exp_013
+  instruction: 'Implement a payment processing webhook handler with Giraffe that validates
+    signatures and processes events. Configure DI with:
+
+    a singleton webhook configuration, a scoped event processor, and a transient signature
+    validator. Demonstrate how to handle
+
+    different webhook providers with strategy pattern using injected service factories.'
+- id: dotnet_0001_exp_015
+  instruction: 'Build a data export service with Giraffe that generates CSV, Excel,
+    and PDF reports. Configure DI with: a singleton export
+
+    configuration, a scoped data fetcher, and a transient format renderer. Show how
+    to use content negotiation to return different
+
+    formats based on Accept header, with each format handler using injected rendering
+    services.'
+- id: dotnet_0001_exp_018
+  instruction: 'Create a machine learning model serving API with Giraffe for online
+    predictions. Register DI services: a singleton model
+
+    registry, a scoped prediction service, and a transient input validator. Implement
+    request batching for performance and show
+
+    how to inject the batching service while handling timeouts and partial failures.'
+- id: dotnet_0001_exp_021
+  instruction: 'Implement a service health monitoring dashboard with Giraffe endpoints.
+    Configure DI with: a singleton health check registry,
+
+    a scoped status aggregator, and a transient health evaluator. Show how to create
+    custom health checks as services and inject
+
+    them into the health endpoint handler, supporting both detailed and summary views.'
+- id: dotnet_0001_exp_023
+  instruction: 'Build a geospatial API with Giraffe for location-based queries. Configure
+    DI with: a singleton spatial index, a scoped
+
+    location repository, and a transient coordinate validator. Implement proximity
+    search with performance optimizations and show
+
+    how to inject the spatial index into search handlers for efficient queries.'
+- id: dotnet_0001_exp_026
+  instruction: 'Create a collaborative editing API with Giraffe using operational
+    transformation. Register DI services: a singleton document
+
+    registry, a scoped transformation engine, and a transient conflict resolver. Implement
+    WebSocket endpoints for real-time
+
+    collaboration and show how to inject services into connection handlers.'
+- id: dotnet_0002_exp_000
+  instruction: 'Create an ASP.NET Core middleware in F# that implements request validation
+    logging for a healthcare API. It should:
+
+    1. Log validation failures with structured data including patient ID, validation
+    rule, and request body hash
+
+    2. Add a HIPAA-compliant transaction ID header (X-Transaction-Id) using GUIDs
+
+    3. Return 400 Bad Request with detailed validation errors in JSON format when
+    validation fails
+
+    4. Use Serilog''s LogContext to push correlation properties through the request
+    pipeline
+
+    Implement both the convention-based approach and the factory-based middleware
+    approach.'
+- id: dotnet_0002_exp_002
+  instruction: 'Implement IoT device middleware in F# that:
+
+    1. Logs device telemetry ingestion with device ID, sensor type, and data quality
+    metrics
+
+    2. Adds a device session ID header that persists across reconnections
+
+    3. Handles malformed telemetry data by returning structured error responses with
+    schema validation details
+
+    4. Uses Serilog''s filtering to suppress verbose logs from known problematic devices
+
+    Demonstrate both inline middleware and class-based approaches with dependency
+    injection.'
+- id: dotnet_0002_exp_006
+  instruction: 'Implement real-time chat middleware in F# that:
+
+    1. Logs message delivery metrics with room ID, message size, and delivery status
+
+    2. Adds message sequence numbers for idempotent processing
+
+    3. Handles WebSocket connection failures with reconnection guidance in error responses
+
+    4. Uses Serilog''s async logging to avoid blocking real-time message processing
+
+    Demonstrate middleware for both HTTP and WebSocket endpoints.'
+- id: dotnet_0002_exp_010
+  instruction: 'Implement compliance audit middleware in F# that:
+
+    1. Logs regulatory access patterns with user roles, accessed resources, and compliance
+    flags
+
+    2. Adds audit trail identifiers that link to external compliance systems
+
+    3. Catches authorization failures and returns legally-required disclosure statements
+
+    4. Uses Serilog''s buffered sinks to batch audit logs for performance
+
+    Demonstrate middleware with configurable logging levels per compliance requirement.'
+- id: dotnet_0002_exp_011
+  instruction: 'Create content delivery network (CDN) middleware in F# that:
+
+    1. Logs asset delivery metrics with file size, cache status, and geographic region
+
+    2. Adds edge location headers for troubleshooting delivery paths
+
+    3. Handles range requests and partial content delivery errors with byte-range-specific
+    logging
+
+    4. Uses Serilog''s dynamic log level switching based on traffic patterns
+
+    Implement middleware that works with static files and API responses.'
+- id: dotnet_0002_exp_015
+  instruction: 'Create airline booking middleware in F# that:
+
+    1. Logs reservation attempts with flight numbers, passenger counts, and fare class
+    availability
+
+    2. Adds PNR (Passenger Name Record) identifiers for cross-system correlation
+
+    3. Handles seat allocation conflicts with detailed conflict resolution logging
+
+    4. Implements audit logging for compliance with aviation regulations
+
+    Demonstrate middleware with custom Serilog enrichers for airline domain context.'
+- id: dotnet_0002_exp_021
+  instruction: 'Design insurance claims processing middleware in F# that:
+
+    1. Logs claim submissions with claim types, damage assessments, and fraud risk
+    scores
+
+    2. Adds claim adjustment IDs for tracking multiple revisions to claims
+
+    3. Catches document validation errors and returns missing field indications
+
+    4. Uses Serilog''s logging levels to separate operational logs from audit trails
+
+    Demonstrate middleware that integrates with business workflow engine correlation.'
+- id: dotnet_0002_exp_023
+  instruction: 'Create video conferencing middleware in F# that:
+
+    1. Logs conference metrics with participant counts, network jitter, and video
+    quality scores
+
+    2. Adds meeting correlation IDs that persist across breakout rooms
+
+    3. Handles recording failures with storage quota and permission error details
+
+    4. Uses Serilog''s async logging to avoid blocking real-time media processing
+
+    Implement middleware that works with both REST APIs and WebSocket connections.'
+- id: dotnet_0002_exp_029
+  instruction: 'Design construction project management middleware in F# that:
+
+    1. Logs site inspections with project phases, safety compliance checks, and photo
+    upload metadata
+
+    2. Adds work package IDs for correlating across subcontractor systems
+
+    3. Handles blueprint version conflicts with revision history in error responses
+
+    4. Implements offline-capable logging for remote construction sites with poor
+    connectivity
+
+    Demonstrate middleware with domain-specific Serilog enrichers for construction
+    safety codes.'
+- id: dotnet_0003_exp_004
+  instruction: 'Build a social media analytics dashboard configuration system in F#:
+
+    1. Create options types for AnalyticsOptions (sampling rate, aggregation window),
+    VisualizationOptions (chart colors, default time range), and DataSourceOptions
+    (API keys, rate limits, cache TTL)
+
+    2. Bind from appsettings.json, user-specific settings stored in a database (simulated
+    with JSON), and feature flags
+
+    3. Use IOptions<VisualizationOptions> for UI defaults and IOptionsMonitor<DataSourceOptions>
+    for dynamic API key rotation
+
+    4. Validate with DataAnnotations (e.g., [Url] for API endpoints) and custom validation
+    ensuring sampling rate is between 0.1 and 1.0
+
+    5. Handle configuration decryption for sensitive API keys'
+- id: dotnet_0003_exp_005
+  instruction: 'Create a multi-tenant SaaS application configuration module in F#:
+
+    1. Define options types for TenantOptions (database connection string, theme settings),
+    BillingOptions (plan limits, invoice period), and FeatureOptions (enabled modules,
+    access controls)
+
+    2. Bind tenant-specific configuration from a per-tenant JSON file (e.g., tenant_{id}.json)
+    in addition to base appsettings.json
+
+    3. Use IOptionsSnapshot<TenantOptions> per request (based on tenant context) and
+    IOptionsMonitor<BillingOptions> for plan changes
+
+    4. Validate connection strings format and plan limits are positive integers
+
+    5. Demonstrate configuration isolation between tenants and hot-reloading tenant
+    settings'
+- id: dotnet_0003_exp_027
+  instruction: 'Implement a virtual event platform configuration module in F#:
+
+    1. Define options types for SessionOptions (duration, attendee limits), NetworkingOptions
+    (matchmaking, chat rules), and AnalyticsOptions (engagement tracking, feedback
+    forms)
+
+    2. Bind from appsettings.json, event type templates, and sponsor requirement files
+
+    3. Use IOptionsSnapshot<SessionOptions> per event track and IOptionsMonitor<NetworkingOptions>
+    for real-time adjustments
+
+    4. Validate attendee limits are positive and session duration is between 5-240
+    minutes
+
+    5. Demonstrate configuration for hybrid (in-person/virtual) event setups'
+- id: dotnet_0003_exp_028
+  instruction: 'Build a language learning app configuration system in F#:
+
+    1. Create options types for CurriculumOptions (lesson sequence, difficulty progression),
+    AssessmentOptions (quiz settings, passing scores), and GamificationOptions (points,
+    badges, streaks)
+
+    2. Bind from appsettings.json, language-specific course structures, and A/B test
+    variations
+
+    3. Use IOptionsMonitor<GamificationOptions> for engagement tuning and IOptionsSnapshot<CurriculumOptions>
+    per language
+
+    4. Validate passing scores are between 0-100 and progression rules are consistent
+
+    5. Handle configuration for offline content availability and sync intervals'
+- id: dotnet_0004_exp_000
+  instruction: 'Create a BackgroundService in F# that:
+
+    1. Polls an Azure Service Bus queue for messages every 10 seconds
+
+    2. Processes messages with configurable batch size (up to 5 at once)
+
+    3. Implements exponential backoff retry for transient failures
+
+    4. Reports message processing latency via IHealthCheck
+
+    5. Logs structured events with Serilog including message ID and processing time
+
+    Show the service class and DI registration with connection string from IConfiguration.'
+- id: dotnet_0004_exp_001
+  instruction: 'Implement a hosted service in F# that:
+
+    1. Monitors a Redis cache for expired keys every 15 seconds
+
+    2. Processes cleanup with limited concurrent operations (max 3)
+
+    3. Handles Redis connection failures gracefully with circuit breaker pattern
+
+    4. Reports cache health and memory usage via IHealthCheck
+
+    5. Logs cleanup operations with Serilog structured logging including key patterns
+
+    Include configuration for Redis connection and circuit breaker settings.'
+- id: dotnet_0004_exp_003
+  instruction: 'Implement a F# BackgroundService that:
+
+    1. Polls a PostgreSQL database for pending file uploads every 30 seconds
+
+    2. Processes uploads to cloud storage (Azure Blob) with 5 concurrent workers
+
+    3. Handles large file uploads with progress tracking and cancellation
+
+    4. Reports storage quota usage and upload success rate via IHealthCheck
+
+    5. Logs structured events with file metadata, upload duration, and storage URL
+
+    Include error handling for network interruptions and storage limits.'
+- id: dotnet_0004_exp_004
+  instruction: 'Create a healthcare data sync BackgroundService in F# that:
+
+    1. Polls for new patient records every minute from legacy system
+
+    2. Transforms and syncs records to FHIR API with 3 concurrent threads
+
+    3. Handles HIPAA-compliant logging and data masking
+
+    4. Reports sync latency and error rates via IHealthCheck
+
+    5. Logs structured events with patient ID (masked), sync status, and duration
+
+    Show PHI handling and configuration for API rate limiting.'
+- id: dotnet_0004_exp_005
+  instruction: 'Implement a F# BackgroundService for IoT device management that:
+
+    1. Polls device telemetry queue every 2 seconds for real-time processing
+
+    2. Processes telemetry with configurable concurrency based on device priority
+
+    3. Handles device reconnection and stale data cleanup
+
+    4. Reports device connectivity status and processing backlog via IHealthCheck
+
+    5. Logs structured events with device ID, telemetry type, and processing latency
+
+    Include priority-based processing and configuration for timeouts.'
+- id: dotnet_0004_exp_008
+  instruction: 'Create a BackgroundService in F# that:
+
+    1. Polls for document conversion jobs every 15 seconds
+
+    2. Converts documents (PDF to HTML) with 2 concurrent workers (CPU-intensive)
+
+    3. Handles memory leaks and process isolation for long-running conversions
+
+    4. Reports conversion success rate and average processing time via IHealthCheck
+
+    5. Logs structured events with document ID, format conversion, and resource usage
+
+    Include memory monitoring and child process management for external tools.'
+- id: dotnet_0004_exp_009
+  instruction: 'Implement a F# BackgroundService for real-time chat system that:
+
+    1. Polls for unsent messages every 500ms (low latency)
+
+    2. Delivers messages via WebSocket with 20 concurrent connections
+
+    3. Handles connection drops and message queuing per user
+
+    4. Reports active connections and delivery latency via IHealthCheck
+
+    5. Logs structured events with message ID, recipient count, and delivery method
+
+    Show WebSocket connection pooling and message prioritization.'
+- id: dotnet_0004_exp_010
+  instruction: 'Create a BackgroundService in F# for inventory management that:
+
+    1. Polls for stock level updates every minute from multiple warehouses
+
+    2. Synchronizes inventory across systems with 6 concurrent sync operations
+
+    3. Handles conflicting updates with versioning and merge strategies
+
+    4. Reports sync conflicts and data consistency via IHealthCheck
+
+    5. Logs structured events with SKU, warehouse ID, and quantity changes
+
+    Include conflict resolution logic and configuration for sync priorities.'
+- id: dotnet_0004_exp_012
+  instruction: 'Create a BackgroundService in F# for weather data aggregation that:
+
+    1. Polls external weather APIs every 5 minutes
+
+    2. Fetches data from multiple sources with 3 concurrent requests
+
+    3. Handles API rate limiting and response caching
+
+    4. Reports data freshness and API availability via IHealthCheck
+
+    5. Logs structured events with location, data source, and fetch duration
+
+    Include circuit breaker for API failures and configuration for cache TTL.'
+- id: dotnet_0004_exp_014
+  instruction: 'Create a BackgroundService in F# for machine learning model serving
+    that:
+
+    1. Polls for inference requests every 100ms
+
+    2. Processes predictions with model versioning and 4 concurrent inferences
+
+    3. Handles model loading/unloading and version hot-swapping
+
+    4. Reports inference latency and model cache hits via IHealthCheck
+
+    5. Logs structured events with request ID, model version, and prediction time
+
+    Show model version management and configuration for GPU memory limits.'
+- id: dotnet_0004_exp_015
+  instruction: 'Implement a F# BackgroundService for log aggregation that:
+
+    1. Polls application logs every 10 seconds from distributed sources
+
+    2. Processes and forwards to central logging system with 8 concurrent workers
+
+    3. Handles log parsing errors and malformed entries
+
+    4. Reports log processing throughput and error rates via IHealthCheck
+
+    5. Logs structured events with log source, entry count, and forwarding status
+
+    Include log transformation rules and configuration for batch sizes.'
+- id: dotnet_0004_exp_017
+  instruction: 'Implement a F# BackgroundService for A/B testing platform that:
+
+    1. Polls for experiment assignments every 2 seconds
+
+    2. Assigns users to variants with 10 concurrent assignment operations
+
+    3. Handles experiment configuration changes and gradual rollouts
+
+    4. Reports experiment participation and assignment latency via IHealthCheck
+
+    5. Logs structured events with experiment ID, variant, and assignment context
+
+    Show configuration for assignment algorithms and percentage-based rollouts.'
+- id: dotnet_0004_exp_020
+  instruction: 'Create a BackgroundService in F# for DNS record management that:
+
+    1. Polls for DNS change requests every 30 seconds
+
+    2. Updates DNS records with 4 concurrent operations (rate-limited by provider)
+
+    3. Handles DNS propagation delays and validation
+
+    4. Reports DNS update success and propagation status via IHealthCheck
+
+    5. Logs structured events with domain, record type, and update status
+
+    Include configuration for DNS provider rate limits and TTL settings.'
+- id: dotnet_0004_exp_022
+  instruction: 'Create a BackgroundService in F# for game server matchmaking that:
+
+    1. Polls for match requests every second
+
+    2. Forms balanced matches with 6 concurrent matchmaking operations
+
+    3. Handles player skill rating updates and queue dodging
+
+    4. Reports matchmaking queue times and success rates via IHealthCheck
+
+    5. Logs structured events with match ID, player count, and queue duration
+
+    Include configuration for matchmaking algorithms and skill rating systems.'
+- id: dotnet_0004_exp_023
+  instruction: 'Implement a F# BackgroundService for data pipeline orchestration that:
+
+    1. Polls for pipeline dependencies every 30 seconds
+
+    2. Triggers pipeline runs with 3 concurrent pipelines
+
+    3. Handles dependency resolution and pipeline failure recovery
+
+    4. Reports pipeline execution status and SLA compliance via IHealthCheck
+
+    5. Logs structured events with pipeline ID, stage, and execution time
+
+    Include configuration for dependency graphs and retry policies.'
+- id: dotnet_0004_exp_025
+  instruction: 'Implement a F# BackgroundService for payment reconciliation that:
+
+    1. Polls for unsettled transactions every 15 minutes
+
+    2. Reconciles with bank statements with 4 concurrent reconciliations
+
+    3. Handles currency conversion and fee calculations
+
+    4. Reports reconciliation discrepancies and success rates via IHealthCheck
+
+    5. Logs structured events with transaction batch, match status, and amounts
+
+    Include configuration for tolerance thresholds and bank API rate limits.'
+- id: dotnet_0004_exp_027
+  instruction: 'Implement a F# BackgroundService for email list management that:
+
+    1. Polls for list subscription changes every 30 seconds
+
+    2. Updates email service provider with 5 concurrent updates
+
+    3. Handles bounce processing and unsubscribe synchronization
+
+    4. Reports list synchronization status and bounce rates via IHealthCheck
+
+    5. Logs structured events with list ID, operation type, and affected count
+
+    Include configuration for batch updates and rate limiting.'
+- id: dotnet_0004_exp_029
+  instruction: 'Implement a F# BackgroundService for load testing that:
+
+    1. Polls for test execution requests every 10 seconds
+
+    2. Executes load tests with 2 concurrent tests (resource intensive)
+
+    3. Handles test data generation and result aggregation
+
+    4. Reports test execution status and system resource usage via IHealthCheck
+
+    5. Logs structured events with test ID, virtual user count, and response times
+
+    Include configuration for test duration and resource limits.'
+- id: dotnet_0005_exp_001
+  instruction: 'Create an F# configuration for a Suave server in a microservices architecture:
+
+    1. Configure mutual TLS (mTLS) for service-to-service authentication
+
+    2. Set up health check endpoints with different response formats (JSON/plaintext)
+
+    3. Implement request tracing with correlation IDs via headers
+
+    4. Configure connection pooling and reuse for downstream services
+
+    5. Set up different timeout policies for internal vs external endpoints
+
+    Include both programmatic setup and configuration file examples.'
+- id: dotnet_0005_exp_002
+  instruction: 'Design an F# HTTP server configuration for a banking API with regulatory
+    requirements:
+
+    1. Enforce TLS 1.3 only with specific cipher suites
+
+    2. Configure request/response logging for audit compliance (PCI DSS)
+
+    3. Implement strict request size limits to prevent DoS attacks
+
+    4. Set up IP whitelisting for administrative endpoints
+
+    5. Configure session timeout policies for different API categories
+
+    Show how to validate configuration against compliance rules.'
+- id: dotnet_0005_exp_004
+  instruction: 'Implement F# server configuration for a healthcare telemedicine service:
+
+    1. Configure HIPAA-compliant encryption for PHI data in transit
+
+    2. Set up strict timeout policies for video streaming endpoints
+
+    3. Implement request validation for medical record uploads (size, type)
+
+    4. Configure audit logging for all access to patient data endpoints
+
+    5. Set up certificate pinning for mobile client connections
+
+    Include error handling for configuration validation failures.'
+- id: dotnet_0005_exp_005
+  instruction: 'Create a secure F# web server configuration for an authentication
+    service:
+
+    1. Configure HSTS with preloading and includeSubDomains
+
+    2. Set up OAuth 2.0 endpoint rate limiting to prevent brute force
+
+    3. Implement request size limits specifically for token exchange payloads
+
+    4. Configure secure cookie settings for session management
+
+    5. Set up certificate rotation automation with monitoring
+
+    Show both code-based and Azure Key Vault integration approaches.'
+- id: dotnet_0005_exp_006
+  instruction: 'Design an F# server setup for a real-time multiplayer game backend:
+
+    1. Configure WebSocket compression for game state updates
+
+    2. Set up UDP fallback for latency-critical operations
+
+    3. Implement geographic-based routing with different endpoint configurations
+
+    4. Configure connection heartbeat intervals and timeout detection
+
+    5. Set up request prioritization (game actions vs chat messages)
+
+    Include performance benchmarking configuration options.'
+- id: dotnet_0005_exp_008
+  instruction: 'Create an F# server configuration for a financial trading platform:
+
+    1. Configure low-latency HTTP/2 with priority streams for market data
+
+    2. Set up FIX protocol over WebSocket endpoints
+
+    3. Implement strict message ordering guarantees for trade execution
+
+    4. Configure circuit breaker patterns for external data feed connections
+
+    5. Set up regulatory message persistence with guaranteed delivery
+
+    Include configuration validation for exchange connectivity requirements.'
+- id: dotnet_0005_exp_009
+  instruction: 'Implement F# server settings for a social media content delivery network:
+
+    1. Configure HTTP/2 server push for common assets
+
+    2. Set up geographic-specific listening endpoints with local certificates
+
+    3. Implement request signing validation for API clients
+
+    4. Configure cache control headers for different content types (videos, images,
+    JSON)
+
+    5. Set up DDoS protection with request rate analysis
+
+    Show dynamic configuration reload without server restart.'
+- id: dotnet_0005_exp_010
+  instruction: 'Design an F# configuration for a government voting system API:
+
+    1. Configure end-to-end verifiable encryption for ballot submissions
+
+    2. Set up request anonymity through onion routing layers
+
+    3. Implement strict audit logging with cryptographic signatures
+
+    4. Configure voting period restrictions with time-based endpoint availability
+
+    5. Set up disaster recovery with hot standby server configuration
+
+    Include configuration for air-gapped deployment scenarios.'
+- id: dotnet_0005_exp_017
+  instruction: 'Implement F# server configuration for a weather data aggregation service:
+
+    1. Configure request caching for frequently queried locations
+
+    2. Set up data source failover with different timeout policies
+
+    3. Implement request coalescing for identical concurrent queries
+
+    4. Configure historical data query pagination limits
+
+    5. Set up severe weather alert push notification endpoints
+
+    Provide configuration for both public API and partner integrations.'
+- id: dotnet_0005_exp_018
+  instruction: 'Design an F# configuration for a cryptocurrency exchange API:
+
+    1. Configure order book WebSocket updates with depth limits
+
+    2. Set up API key permission scopes per endpoint
+
+    3. Implement trade execution rate limits based on user verification level
+
+    4. Configure cold wallet withdrawal approval workflows
+
+    5. Set up market data snapshot and delta compression
+
+    Include configuration for regulatory reporting requirements.'
+- id: dotnet_0005_exp_019
+  instruction: 'Create an F# server setup for a podcast hosting platform:
+
+    1. Configure byte-range requests for podcast episode streaming
+
+    2. Set up RSS feed generation with conditional GET support
+
+    3. Implement download statistics collection without compromising privacy
+
+    4. Configure episode transcoding job callback endpoints
+
+    5. Set up sponsor insertion endpoint authentication
+
+    Provide configuration for both episode delivery and analytics APIs.'
+- id: dotnet_0005_exp_020
+  instruction: 'Configure an F# web server for a remote desktop gateway:
+
+    1. Set up WebRTC signaling server with STUN/TURN integration
+
+    2. Configure session persistence for reconnection scenarios
+
+    3. Implement clipboard and file transfer size limits
+
+    4. Set up authentication with multi-factor support
+
+    5. Configure session recording endpoints with encryption
+
+    Include configuration for load-balanced gateway clusters.'
+- id: dotnet_0005_exp_024
+  instruction: 'Configure an F# HTTP server for a smart home automation hub:
+
+    1. Set up device provisioning with certificate-based authentication
+
+    2. Configure real-time event streaming for sensor data
+
+    3. Implement scene execution with atomic operation guarantees
+
+    4. Set up local network fallback when cloud connectivity is lost
+
+    5. Configure voice assistant skill endpoint validation
+
+    Include configuration for both local and remote access patterns.'
+- id: dotnet_0005_exp_025
+  instruction: 'Implement F# server configuration for a DNA sequencing analysis API:
+
+    1. Configure large genomic file upload with resumable transfers
+
+    2. Set up HIPAA-compliant data encryption at rest and in transit
+
+    3. Implement analysis job priority queuing based on medical urgency
+
+    4. Configure researcher collaboration sharing endpoints
+
+    5. Set up variant database query caching strategies
+
+    Provide configuration for both clinical and research use cases.'
+- id: dotnet_0005_exp_027
+  instruction: 'Create an F# server setup for a car sharing telematics API:
+
+    1. Configure vehicle status updates with efficient binary protocols
+
+    2. Set up emergency service integration with priority routing
+
+    3. Implement driving behavior scoring with privacy safeguards
+
+    4. Configure maintenance alert webhook endpoints
+
+    5. Set up insurance partner data sharing endpoints
+
+    Provide configuration for real-time fleet management.'
+- id: dotnet_0006_exp_000
+  instruction: 'Implement API key authentication with rate limiting for a weather
+    data API in F# ASP.NET Core:
+
+    1. Configure API key validation from header with validation against database
+
+    2. Add rate limiting policies (FreeTier: 100 req/hour, PaidTier: 1000 req/hour,
+    Admin: unlimited)
+
+    3. Write a custom middleware that tracks API usage per key and applies rate limits
+
+    4. Create a key generation service that produces hashed keys with metadata (tier,
+    owner, expiry)
+
+    Show the full setup in Program.fs and usage in Giraffe handlers for weather endpoints.'
+- id: dotnet_0006_exp_001
+  instruction: 'Implement OAuth2 authorization code flow with multiple identity providers
+    (Google, GitHub, Microsoft) in F# Giraffe:
+
+    1. Configure OAuth2 authentication handlers for each provider with client secrets
+
+    2. Add authorization policies that check provider-specific claims (email_verified,
+    organization membership)
+
+    3. Write a custom user service that merges identities from multiple providers
+
+    4. Create token validation that handles refresh tokens and access token rotation
+
+    Show the complete OAuth setup and protected API endpoints.'
+- id: dotnet_0006_exp_005
+  instruction: 'Implement SAML 2.0 single sign-on for an enterprise HR system in F#
+    Giraffe:
+
+    1. Configure SAML authentication with metadata from identity provider
+
+    2. Add authorization based on SAML attributes (department, role, employee_type)
+
+    3. Write a custom claims transformation for SAML assertion to application claims
+
+    4. Create SAML logout handling with single logout (SLO) support
+
+    Show the SAML setup and protected employee management endpoints.'
+- id: dotnet_0006_exp_006
+  instruction: 'Implement API gateway authentication with JWT forwarding for microservices
+    in F# ASP.NET Core:
+
+    1. Configure JWT validation at gateway level with audience/issuer validation
+
+    2. Add header propagation middleware that forwards user claims to downstream services
+
+    3. Write a custom rate limiting per user/service combination
+
+    4. Create API key management for service-to-service communication
+
+    Show the gateway authentication and downstream claim propagation.'
+- id: dotnet_0006_exp_008
+  instruction: 'Implement session-based authentication with Redis distributed sessions
+    for an e-commerce platform in F# ASP.NET Core:
+
+    1. Configure cookie authentication with sliding expiration
+
+    2. Add Redis session store with serialization of custom session data
+
+    3. Write a custom authorization handler for shopping cart permissions
+
+    4. Create session cleanup service for abandoned carts
+
+    Show the session setup and cart management endpoints with authorization.'
+- id: dotnet_0006_exp_013
+  instruction: 'Implement passwordless authentication with magic links for a newsletter
+    platform in F# Giraffe:
+
+    1. Configure email-based authentication with one-time tokens
+
+    2. Add token validation service with expiration and single-use enforcement
+
+    3. Write a custom authentication handler that bypasses password requirements
+
+    4. Create rate limiting per email to prevent token flooding
+
+    Show the magic link generation, sending, and validation pipeline.'
+- id: dotnet_0006_exp_014
+  instruction: 'Implement attribute-based access control (ABAC) for a document management
+    system in F# ASP.NET Core:
+
+    1. Configure JWT authentication with extended claim support
+
+    2. Add ABAC policy engine that evaluates user/document/environment attributes
+
+    3. Write a custom authorization handler that implements ABAC decisions
+
+    4. Create policy management API for dynamic policy updates
+
+    Show the ABAC evaluation for document access control endpoints.'
+- id: dotnet_0006_exp_016
+  instruction: 'Implement hardware security module (HSM) integration for cryptographic
+    operations in F# ASP.NET Core:
+
+    1. Configure certificate authentication with HSM-based key storage
+
+    2. Add digital signature validation using HSM-backed certificates
+
+    3. Write a custom token signing service that uses HSM for JWT generation
+
+    4. Create key rotation automation with HSM key generation
+
+    Show the HSM integration for both authentication and signing operations.'
+- id: dotnet_0006_exp_018
+  instruction: 'Implement time-based access control for a time-sensitive survey platform
+    in F# ASP.NET Core:
+
+    1. Configure JWT authentication with time-bound claim validation
+
+    2. Add authorization policies that check survey availability windows
+
+    3. Write a custom authentication handler that validates temporal permissions
+
+    4. Create automatic access revocation after survey deadlines
+
+    Show the time-based authorization for survey participation endpoints.'
+- id: dotnet_0006_exp_021
+  instruction: 'Implement delegated administration with hierarchical permissions for
+    a school management system in F# Giraffe:
+
+    1. Configure JWT authentication with role hierarchy (SuperAdmin > Principal >
+    Teacher > Parent)
+
+    2. Add authorization policies that respect permission inheritance
+
+    3. Write a custom authorization handler that checks delegated authority
+
+    4. Create permission delegation and revocation workflows
+
+    Show the hierarchical authorization for student record management.'
+- id: dotnet_0006_exp_024
+  instruction: 'Implement authentication with hardware token support (YubiKey, FIDO2)
+    for a government portal in F# ASP.NET Core:
+
+    1. Configure multi-factor authentication with hardware token validation
+
+    2. Add FIDO2 WebAuthn registration and authentication endpoints
+
+    3. Write a custom authentication handler that requires hardware token for sensitive
+    operations
+
+    4. Create backup authentication methods for token loss scenarios
+
+    Show the hardware token integration and step-up authentication flows.'
+- id: dotnet_0006_exp_025
+  instruction: 'Implement authentication with legal jurisdiction constraints for a
+    global compliance platform in F# Giraffe:
+
+    1. Configure JWT authentication with jurisdiction claim validation
+
+    2. Add authorization policies that enforce data sovereignty rules
+
+    3. Write a custom authentication handler that routes requests to appropriate data
+    centers
+
+    4. Create compliance auditing for cross-border data access
+
+    Show the jurisdiction-based authentication and data access control.'
+- id: dotnet_0006_exp_026
+  instruction: 'Implement authentication with behavioral biometrics for a fraud detection
+    system in F# ASP.NET Core:
+
+    1. Configure JWT authentication with behavioral profile association
+
+    2. Add continuous authentication that monitors user interaction patterns
+
+    3. Write a custom authentication handler that detects anomalous behavior
+
+    4. Create risk-based challenge generation for suspicious sessions
+
+    Show the behavioral authentication integration and fraud detection.'
+- id: dotnet_0007_exp_000
+  instruction: 'Implement an F# weather service in ASP.NET Core using IHttpClientFactory:
+
+    1. Register a named client for the National Weather Service API with a base address
+    and User-Agent header
+
+    2. Create a typed client for weather data retrieval with a circuit breaker policy
+    using Polly
+
+    3. Write an F# service that returns a Result<WeatherForecast, ServiceError> with
+    domain-specific error types
+
+    4. Add a delegating handler that caches responses for 5 minutes based on request
+    URL
+
+    5. Show DI registration with scoped lifetime and configuration from appsettings.json'
+- id: dotnet_0006_exp_029
+  instruction: 'Implement authentication with AI-based anomaly detection for a cybersecurity
+    platform in F# Giraffe:
+
+    1. Configure JWT authentication with AI-driven threat scoring
+
+    2. Add machine learning model integration for authentication risk assessment
+
+    3. Write a custom authentication handler that uses AI to detect compromised tokens
+
+    4. Create adaptive response system that adjusts security measures based on threat
+    level
+
+    Show the AI-enhanced authentication and real-time threat mitigation.'
+- id: dotnet_0007_exp_002
+  instruction: 'Build an F# social media aggregator service:
+
+    1. Register multiple named clients for Twitter, Facebook, and Instagram APIs with
+    rate limit headers
+
+    2. Create a typed client with a bulkhead isolation policy to prevent one social
+    platform failure from affecting others
+
+    3. Implement an F# service that uses applicative validation to combine results
+    from multiple APIs
+
+    4. Add a delegating handler that injects OAuth 2.0 bearer tokens refreshed from
+    a separate token service
+
+    5. Show DI setup that registers each platform client with a factory method for
+    configuration'
+- id: dotnet_0007_exp_003
+  instruction: 'Develop an F# IoT device management service:
+
+    1. Register a typed HTTP client for device communication with a base address that
+    varies by device region
+
+    2. Configure the client with a Polly policy that retries on specific HTTP status
+    codes (502, 503, 504)
+
+    3. Create an F# service that returns a Result<DeviceStatus, DeviceError> with
+    custom error types for offline devices
+
+    4. Implement a delegating handler that adds device-specific API keys and compresses
+    request payloads
+
+    5. Show how to register the client with a custom handler pipeline and dependency
+    injection'
+- id: dotnet_0007_exp_004
+  instruction: 'Create an F# stock market data service in ASP.NET Core:
+
+    1. Register a named client for Alpha Vantage API with API key authentication and
+    custom Accept headers
+
+    2. Implement a typed client with cache-aside pattern using Polly CachePolicy for
+    frequently requested symbols
+
+    3. Write an F# service that returns a Result<StockQuote, MarketDataError> with
+    validation for invalid symbols
+
+    4. Add a delegating handler that tracks request latency and logs slow responses
+    (> 2 seconds)
+
+    5. Configure the client with socket exhaustion prevention and connection lease
+    timeout'
+- id: dotnet_0007_exp_008
+  instruction: 'Develop an F# cryptocurrency exchange rate service:
+
+    1. Register multiple named clients for different exchanges (Coinbase, Binance,
+    Kraken) with custom timeouts
+
+    2. Create a typed client with a hedging policy that calls multiple exchanges and
+    returns the first successful response
+
+    3. Implement an F# service that returns a Result<ExchangeRates, CryptoError> with
+    validation for stale data
+
+    4. Add a delegating handler that signs requests with HMAC for authenticated API
+    endpoints
+
+    5. Configure Polly policies with resilience strategies that adapt based on exchange
+    API reliability'
+- id: dotnet_0007_exp_009
+  instruction: 'Build an F# healthcare FHIR API client in ASP.NET Core:
+
+    1. Register a typed client for FHIR server with base URL and Accept header for
+    JSON FHIR resources
+
+    2. Configure the client with retry policy that handles 429 Retry-After headers
+    from the server
+
+    3. Create an F# service that returns a Result<PatientRecord, FhirError> with HL7
+    FHIR error code handling
+
+    4. Implement a delegating handler that adds OAuth 2.0 client credentials grant
+    tokens for authentication
+
+    5. Show DI registration with validation that required configuration sections exist
+    at startup'
+- id: dotnet_0007_exp_011
+  instruction: 'Implement an F# identity verification service using external APIs:
+
+    1. Register a typed client for identity verification API with mutual TLS authentication
+
+    2. Configure the client with a jittered retry policy for better distribution under
+    high load
+
+    3. Create an F# service that returns a Result<VerificationStatus, IdentityError>
+    with GDPR-compliant error messages
+
+    4. Implement a delegating handler that encrypts PII data before sending and logs
+    audit trails
+
+    5. Show DI setup with named clients for different verification providers (domestic
+    vs international)'
+- id: dotnet_0007_exp_010
+  instruction: 'Create an F# shipping tracker service for e-commerce:
+
+    1. Register named clients for UPS, FedEx, and USPS APIs each with different authentication
+    schemes
+
+    2. Implement a typed client with timeout and fallback policies for each carrier
+
+    3. Write an F# service that returns a discriminated union: TrackingResult of Delivered
+    | InTransit | Exception
+
+    4. Add a delegating handler that normalizes different carrier responses into a
+    common tracking format
+
+    5. Configure the clients with connection pooling and DNS refresh intervals for
+    high availability'
+- id: dotnet_0007_exp_015
+  instruction: 'Build an F# airline booking availability checker:
+
+    1. Register a typed client for Sabre/GDS API with session-based authentication
+    and reconnection logic
+
+    2. Configure the client with a retry policy that handles session expiration and
+    re-authenticates
+
+    3. Write an F# service that returns a discriminated union: Availability of Available
+    | Waitlisted | SoldOut
+
+    4. Add a delegating handler that validates request against airline booking rules
+    before sending
+
+    5. Configure the client with connection lifetime management for stateful GDS sessions'
+- id: dotnet_0007_exp_017
+  instruction: 'Create an F# language translation service using multiple providers:
+
+    1. Register named clients for Google Translate, DeepL, and Azure Translator with
+    respective auth methods
+
+    2. Implement a typed client with a policy wrap combining retry, timeout, and circuit
+    breaker
+
+    3. Design an F# service that returns a Result<TranslatedText, TranslationError>
+    with confidence scores
+
+    4. Add a delegating handler that detects source language and routes to appropriate
+    provider
+
+    5. Configure clients with response compression and request size limits for large
+    documents'
+- id: dotnet_0007_exp_018
+  instruction: 'Build an F# sports statistics aggregator:
+
+    1. Register typed clients for ESPN, NFL, and NBA APIs with sport-specific configurations
+
+    2. Configure clients with cache policies that respect API rate limits and data
+    freshness requirements
+
+    3. Write an F# service that returns a Result<GameStats, SportsDataError> with
+    real-time vs historical differentiation
+
+    4. Implement a delegating handler that adds If-Modified-Since headers to reduce
+    bandwidth usage
+
+    5. Show DI setup with options validation using F# choice types for configuration'
+- id: dotnet_0007_exp_020
+  instruction: 'Implement an F# music streaming service integration:
+
+    1. Register named clients for Spotify and Apple Music APIs with OAuth 2.0 token
+    refresh logic
+
+    2. Create a typed client with a bulkhead policy to isolate premium and free tier
+    API calls
+
+    3. Write an F# service that returns a discriminated union: TrackResult of Found
+    | NotAvailable | RegionRestricted
+
+    4. Implement a delegating handler that adds market/country headers based on user
+    location
+
+    5. Show DI registration with scoped lifetime for user-specific API clients'
+- id: dotnet_0007_exp_019
+  instruction: 'Develop an F# academic research paper fetcher:
+
+    1. Register a typed client for CrossRef API with mailto header for polite API
+    usage
+
+    2. Configure the client with a retry policy with increasing delays for 429 Too
+    Many Requests responses
+
+    3. Create an F# service that returns a Result<ResearchPaper, AcademicError> with
+    DOI validation
+
+    4. Add a delegating handler that follows HTTP redirects for DOI resolution
+
+    5. Configure the client with persistent connections for better performance across
+    multiple requests'
+- id: dotnet_0007_exp_021
+  instruction: 'Create an F# job posting aggregator from multiple boards:
+
+    1. Register typed clients for Indeed, LinkedIn, and Glassdoor APIs with different
+    rate limits
+
+    2. Configure each client with a resilience pipeline that includes retry, circuit
+    breaker, and timeout
+
+    3. Design an F# service that returns a Result<JobListing, AggregationError> with
+    duplicate detection
+
+    4. Add a delegating handler that normalizes salary formats across different providers
+
+    5. Configure clients with automatic decompression for gzipped responses'
+- id: dotnet_0007_exp_022
+  instruction: 'Build an F# cybersecurity threat intelligence feed:
+
+    1. Register a typed client for threat intelligence API with API key rotation every
+    24 hours
+
+    2. Configure the client with a circuit breaker that opens on 401 Unauthorized
+    (likely expired key)
+
+    3. Implement an F# service that returns a Result<ThreatReport, SecurityError>
+    with severity classification
+
+    4. Add a delegating handler that validates SSL certificates and enforces TLS 1.3
+
+    5. Show DI setup with background service that refreshes API keys before expiration'
+- id: dotnet_0007_exp_023
+  instruction: 'Develop an F# agricultural commodity price service:
+
+    1. Register named clients for USDA and commodity exchange APIs with custom accept
+    headers
+
+    2. Create a typed client with a cache policy that respects market trading hours
+
+    3. Write an F# service that returns a Result<CommodityPrice, MarketError> with
+    futures vs spot price differentiation
+
+    4. Implement a delegating handler that adds request IDs for traceability in financial
+    reporting
+
+    5. Configure clients with connection pooling and TCP keep-alive for frequent updates'
+- id: dotnet_0007_exp_024
+  instruction: 'Implement an F# event ticketing availability checker:
+
+    1. Register a typed client for Ticketmaster API with OAuth 2.0 client credentials
+    flow
+
+    2. Configure the client with a timeout policy and fallback to cached venue information
+
+    3. Create an F# service that returns a discriminated union: TicketStatus of Available
+    | Limited | SoldOut
+
+    4. Add a delegating handler that handles API versioning through request headers
+
+    5. Show DI registration with configuration binding to F# record types'
+- id: dotnet_0007_exp_027
+  instruction: 'Develop an F# carbon footprint calculation service:
+
+    1. Register a typed client for carbon accounting API with bearer token authentication
+
+    2. Configure the client with a retry policy that uses exponential backoff with
+    randomization
+
+    3. Create an F# service that returns a Result<CarbonEstimate, CalculationError>
+    with uncertainty ranges
+
+    4. Add a delegating handler that logs carbon emissions of the API calls themselves
+
+    5. Configure the client with HTTP/2 for better performance and reduced connection
+    count'
+- id: dotnet_0007_exp_029
+  instruction: 'Create an F# image recognition service using cloud APIs:
+
+    1. Register typed clients for AWS Rekognition and Google Vision API with respective
+    authentication
+
+    2. Configure clients with circuit breakers that track failure rates per provider
+
+    3. Design an F# service that returns a Result<ImageLabels, VisionError> with confidence
+    threshold filtering
+
+    4. Add a delegating handler that resizes large images before sending to reduce
+    bandwidth and cost
+
+    5. Configure clients with request hedging to get faster response from either provider'
+- id: dotnet_0008_exp_000
+  instruction: 'Implement Redis cache health monitoring in F# ASP.NET Core:
+
+    1. Create a custom health check that verifies Redis connection and memory usage
+
+    2. Add built-in checks for SQL Server database and disk storage
+
+    3. Configure a dedicated health endpoint (/system-status) with detailed JSON response
+
+    4. Set up health check publishing to Datadog with custom tags
+
+    5. Design Kubernetes readiness probe that depends on Redis availability
+
+    Include the Redis health check implementation, service registration, and K8s probe
+    configuration.'
+- id: dotnet_0008_exp_003
+  instruction: 'Design health monitoring for a social media analytics service in F#:
+
+    1. Check Elasticsearch cluster health and index status
+
+    2. Verify Kafka message queue connectivity and consumer lag
+
+    3. Create custom health check for Twitter API rate limit status
+
+    4. Implement composite health check that aggregates multiple dependencies
+
+    5. Configure health checks to publish to Grafana via metrics endpoint
+
+    Show the composite health check implementation and Grafana dashboard configuration.'
+- id: dotnet_0008_exp_005
+  instruction: 'Build microservice dependency health monitoring in F#:
+
+    1. Check service discovery (Consul) registration and configuration
+
+    2. Monitor dependent microservices via HTTP health endpoints with retry logic
+
+    3. Create custom health check that tracks circuit breaker states across services
+
+    4. Implement performance degradation detection in health responses
+
+    5. Configure health check publishing to Jaeger distributed tracing
+
+    Show the inter-service health check implementation and distributed tracing integration.'
+- id: dotnet_0008_exp_007
+  instruction: 'Implement real-time gaming server health monitoring in F#:
+
+    1. Check WebSocket connection pool and game state database (Redis)
+
+    2. Monitor matchmaking service and player session storage
+
+    3. Create custom health check that verifies game physics engine initialization
+
+    4. Add frame rate and latency monitoring for game servers
+
+    5. Configure health checks for Google Cloud Run with concurrency limits
+
+    Show the physics engine health check and Cloud Run configuration.'
+- id: dotnet_0008_exp_009
+  instruction: 'Build document processing pipeline health checks in F# ASP.NET Core:
+
+    1. Monitor document storage (Azure Blob Storage) and processing queue (Azure Service
+    Bus)
+
+    2. Verify OCR service availability and processing throughput
+
+    3. Create custom health check that tracks failed document conversions
+
+    4. Add disk space monitoring for temporary processing directory
+
+    5. Configure health checks for Azure App Service with auto-scaling triggers
+
+    Show the OCR service health check and App Service scale rules.'
+- id: dotnet_0008_exp_013
+  instruction: 'Implement weather data processing health checks in F# ASP.NET Core:
+
+    1. Monitor weather station sensor database and time-series storage
+
+    2. Verify satellite data feed ingestion and processing pipeline
+
+    3. Create custom health check that validates forecast model accuracy
+
+    4. Add data freshness checks for real-time weather updates
+
+    5. Configure health checks for Raspberry Pi edge computing deployment
+
+    Show the forecast accuracy health check and edge deployment configuration.'
+- id: dotnet_0008_exp_014
+  instruction: 'Build cryptocurrency exchange health monitoring in F#:
+
+    1. Check blockchain node connections and transaction mempool
+
+    2. Verify order matching engine and user wallet database
+
+    3. Create custom health check that monitors trading pair liquidity
+
+    4. Add security checks for hot/cold wallet balances and signatures
+
+    5. Configure health checks for bare-metal servers with failover
+
+    Provide the liquidity monitoring health check and failover configuration.'
+- id: dotnet_0008_exp_015
+  instruction: 'Create airline reservation system health checks in F# ASP.NET Core:
+
+    1. Monitor flight inventory database and booking cache
+
+    2. Verify global distribution system (GDS) API connectivity
+
+    3. Create custom health check that checks seat availability consistency
+
+    4. Add peak load handling checks for holiday booking surges
+
+    5. Configure health checks for Pivotal Cloud Foundry with blue-green deployment
+
+    Show the seat availability health check and Cloud Foundry manifest.'
+- id: dotnet_0008_exp_017
+  instruction: 'Design telemedicine platform health checks in F# ASP.NET Core:
+
+    1. Monitor patient video session database and WebRTC signaling server
+
+    2. Verify EHR system integration and prescription API
+
+    3. Create custom health check that validates video call quality metrics
+
+    4. Add HIPAA compliance checks for data encryption in transit/rest
+
+    5. Configure health checks for multi-region deployment with failover
+
+    Show the video quality health check and multi-region deployment strategy.'
+- id: dotnet_0008_exp_018
+  instruction: 'Build online education platform health monitoring in F#:
+
+    1. Check course content database and video streaming storage
+
+    2. Verify live classroom WebSocket server and chat service
+
+    3. Create custom health check that monitors student progress tracking
+
+    4. Add scalability checks for concurrent classroom sessions
+
+    5. Configure health checks for Heroku with dyno auto-scaling
+
+    Provide the progress tracking health check and Heroku Procfile configuration.'
+- id: dotnet_0008_exp_020
+  instruction: 'Create ride-sharing service health monitoring in F#:
+
+    1. Check driver location database and ride matching algorithm
+
+    2. Verify mapping service (Google Maps/Mapbox) API availability
+
+    3. Create custom health check that monitors surge pricing calculations
+
+    4. Add real-time ETA accuracy checks for driver arrivals
+
+    5. Configure health checks for mobile backend with push notification health
+
+    Provide the surge pricing health check and mobile backend configuration.'
+- id: dotnet_0008_exp_024
+  instruction: 'Create legal document analysis health monitoring in F#:
+
+    1. Check document repository and natural language processing service
+
+    2. Verify contract clause database and precedent matching engine
+
+    3. Create custom health check that monitors redaction accuracy
+
+    4. Add confidentiality checks for sensitive document handling
+
+    5. Configure health checks for on-premise deployment with air-gapped networks
+
+    Provide the redaction accuracy health check and air-gapped deployment setup.'
+- id: dotnet_0008_exp_025
+  instruction: 'Implement satellite communication health checks in F# ASP.NET Core:
+
+    1. Monitor ground station connections and satellite telemetry database
+
+    2. Verify signal processing pipeline and antenna alignment system
+
+    3. Create custom health check that validates data transmission integrity
+
+    4. Add orbital position tracking and handover procedure checks
+
+    5. Configure health checks for remote locations with satellite backhaul
+
+    Show the data integrity health check and remote deployment configuration.'
+- id: dotnet_0008_exp_028
+  instruction: 'Implement music streaming service health checks in F#:
+
+    1. Check music catalog database and audio file storage
+
+    2. Verify recommendation algorithm and playlist generation service
+
+    3. Create custom health check that monitors audio transcoding quality
+
+    4. Add royalty calculation and payment distribution checks
+
+    5. Configure health checks for global CDN with regional health reporting
+
+    Provide the transcoding quality health check and CDN health aggregation.'
+- id: dotnet_0009_exp_003
+  instruction: 'Build a geolocation-aware caching system for a content delivery network
+    in F#:
+
+    1. Implement cache variation by user region/language
+
+    2. Create a custom output cache policy that considers client location
+
+    3. Use cache tags for regional content updates
+
+    4. Handle edge case: users traveling between regions
+
+    5. Implement fallback caching strategies when geolocation fails
+
+    Optimize for global users with minimal latency.'
+- id: dotnet_0009_exp_004
+  instruction: 'Implement a predictive caching system for a financial trading platform
+    in F#:
+
+    1. Use machine learning models to predict which data will be accessed
+
+    2. Create a custom cache policy that pre-warms cache based on usage patterns
+
+    3. Implement cache prioritization for high-value trading instruments
+
+    4. Handle real-time market data with microsecond precision requirements
+
+    5. Add circuit breakers to disable predictive caching during market volatility
+
+    Balance between cache accuracy and system performance.'
+- id: dotnet_0009_exp_005
+  instruction: 'Design a cache versioning system for an API with backward compatibility
+    in F#:
+
+    1. Implement semantic versioning in cache keys
+
+    2. Create migration strategies for cache schema changes
+
+    3. Handle simultaneous support for multiple API versions
+
+    4. Implement cache cleanup for deprecated versions
+
+    5. Add version negotiation in cache retrieval
+
+    Ensure zero downtime during API version upgrades.'
+- id: dotnet_0009_exp_010
+  instruction: 'Implement a cache security layer for a banking application in F#:
+
+    1. Add cache encryption at rest and in transit
+
+    2. Implement role-based cache access control
+
+    3. Create audit trails for sensitive cache operations
+
+    4. Handle cache poisoning attacks with input validation
+
+    5. Implement cache key obfuscation for financial data
+
+    Meet regulatory requirements for financial data protection.'
+- id: dotnet_0009_exp_011
+  instruction: 'Create a caching strategy for a machine learning inference API in
+    F#:
+
+    1. Implement model output caching with input feature hashing
+
+    2. Create cache invalidation when models are retrained
+
+    3. Handle cache memory management for large prediction outputs
+
+    4. Implement cache warming for frequently requested predictions
+
+    5. Add cache tiering based on prediction confidence scores
+
+    Balance between inference accuracy and response time.'
+- id: dotnet_0009_exp_012
+  instruction: 'Design a cache coherency protocol for a distributed inventory system:
+
+    1. Implement read-your-writes consistency across cache nodes
+
+    2. Create cache invalidation broadcast for stock level changes
+
+    3. Handle network partitions with cache staleness detection
+
+    4. Implement optimistic caching with version vectors
+
+    5. Add conflict resolution for concurrent inventory updates
+
+    Ensure inventory accuracy while maintaining performance.'
+- id: dotnet_0009_exp_014
+  instruction: 'Implement a cache cost optimization system for cloud deployments:
+
+    1. Create cache policies that consider cloud storage costs
+
+    2. Implement cache compression to reduce storage footprint
+
+    3. Add cache lifecycle management with automatic tiering
+
+    4. Handle cache cost allocation across departments/projects
+
+    5. Implement cache usage analytics for cost optimization
+
+    Balance performance requirements with cloud expenditure.'
+- id: dotnet_0009_exp_015
+  instruction: 'Design a caching solution for a legal document search engine:
+
+    1. Implement cache warming for commonly cited legal precedents
+
+    2. Create cache invalidation when new case law is published
+
+    3. Handle cache partitioning by jurisdiction and legal domain
+
+    4. Implement cache versioning for document revisions
+
+    5. Add cache access logging for compliance purposes
+
+    Ensure search performance while maintaining legal accuracy.'
+- id: dotnet_0009_exp_016
+  instruction: 'Create a real-time auction bidding system with caching in F#:
+
+    1. Implement sub-second cache expiration for active auctions
+
+    2. Create cache synchronization for bid leaderboards
+
+    3. Handle cache invalidation cascade for related auctions
+
+    4. Implement cache partitioning by auction category
+
+    5. Add cache warming for upcoming featured auctions
+
+    Prioritize low latency and data consistency.'
+- id: dotnet_0009_exp_017
+  instruction: 'Implement a cache migration strategy during database schema changes:
+
+    1. Create dual cache layers during migration period
+
+    2. Implement cache transformation for schema compatibility
+
+    3. Handle cache invalidation during rollback scenarios
+
+    4. Add cache version detection and automatic migration
+
+    5. Implement cache consistency checks post-migration
+
+    Ensure zero data loss and minimal service disruption.'
+- id: dotnet_0009_exp_019
+  instruction: 'Build a caching layer for a news aggregation platform with personalization:
+
+    1. Implement user-specific cache variations for personalized feeds
+
+    2. Create cache invalidation for breaking news events
+
+    3. Handle cache partitioning by news category and user segment
+
+    4. Implement cache warming for trending topics
+
+    5. Add cache compression for article previews and metadata
+
+    Optimize for both personalized and trending content delivery.'
+- id: dotnet_0009_exp_020
+  instruction: 'Implement a cache debugging and diagnostics toolkit in F#:
+
+    1. Create cache health monitoring with custom metrics
+
+    2. Implement cache trace logging for performance analysis
+
+    3. Handle cache corruption detection and automatic recovery
+
+    4. Add cache simulation for capacity planning
+
+    5. Implement cache visualization for hit/miss patterns
+
+    Focus on developer experience and operational visibility.'
+- id: dotnet_0009_exp_022
+  instruction: 'Create a caching system for a language translation service:
+
+    1. Implement cache durations based on language pair popularity
+
+    2. Create cache invalidation when translation models are updated
+
+    3. Handle cache partitioning by language family and domain
+
+    4. Implement cache warming for common phrases and idioms
+
+    5. Add cache fallbacks for rare language combinations
+
+    Optimize for translation quality and response time trade-offs.'
+- id: dotnet_0009_exp_021
+  instruction: 'Design a caching strategy for a genomic data processing pipeline:
+
+    1. Implement cache compression for large genomic datasets
+
+    2. Create cache invalidation when reference genomes are updated
+
+    3. Handle cache partitioning by research project and data type
+
+    4. Implement cache warming for frequently analyzed genomic regions
+
+    5. Add cache encryption for sensitive patient genomic data
+
+    Balance computational efficiency with data privacy requirements.'
+- id: dotnet_0009_exp_026
+  instruction: 'Implement a cache garbage collection strategy for long-running services:
+
+    1. Create cache aging policies based on access patterns
+
+    2. Implement cache compaction for memory fragmentation
+
+    3. Handle cache eviction with cost-based algorithms
+
+    4. Add cache cleanup during low-traffic periods
+
+    5. Implement cache resurrection for unexpectedly re-accessed items
+
+    Optimize for memory efficiency in 24/7 operations.'
+- id: dotnet_0009_exp_027
+  instruction: 'Design a caching system for a collaborative document editing platform:
+
+    1. Implement operational transformation caching for edit conflicts
+
+    2. Create cache invalidation for document version changes
+
+    3. Handle cache synchronization across collaborative sessions
+
+    4. Implement cache warming for frequently accessed documents
+
+    5. Add cache conflict resolution for concurrent edits
+
+    Balance real-time collaboration with data consistency.'
+- id: dotnet_0010_exp_000
+  instruction: 'Implement a rate limiting system for a healthcare appointment booking
+    API using F# and Giraffe. Create:
+
+    1. Fixed window rate limiter for appointment search endpoints (10 requests/minute
+    per IP)
+
+    2. Sliding window rate limiter for patient registration endpoints (3 requests/2
+    minutes per IP)
+
+    3. Token bucket rate limiter for medical image upload endpoints (5MB burst, 1MB/sec
+    sustained)
+
+    4. Concurrency limiter for appointment scheduling operations (max 3 concurrent
+    per user)
+
+    Include custom partitioning by patient ID and emergency override for verified
+    healthcare providers.
+
+    Show complete middleware configuration and Giraffe route integration with proper
+    error responses.'
+- id: dotnet_0010_exp_001
+  instruction: 'Design a fintech payment processing system with rate limiting in F#
+    ASP.NET Core:
+
+    1. Fixed window limiter for balance inquiry endpoints (30 requests/minute per
+    API key)
+
+    2. Sliding window limiter for transaction history endpoints (20 requests/5 minutes
+    per user)
+
+    3. Token bucket limiter for bulk payment processing (100 transactions burst, 10/sec
+    sustained)
+
+    4. Concurrency limiter for fraud detection analysis (max 2 concurrent per merchant)
+
+    Implement custom partitioning by merchant tier (basic, premium, enterprise) with
+    different limits.
+
+    Include circuit breaker pattern integration and show Giraffe pipeline composition.'
+- id: dotnet_0010_exp_002
+  instruction: 'Build a social media analytics API with comprehensive rate limiting
+    in F#:
+
+    1. Fixed window rate limiter for post retrieval endpoints (100 requests/hour per
+    user)
+
+    2. Sliding window rate limiter for user profile updates (10 requests/15 minutes
+    per IP)
+
+    3. Token bucket rate limiter for media content upload (50MB burst, 5MB/sec sustained)
+
+    4. Concurrency limiter for real-time analytics queries (max 5 concurrent per organization)
+
+    Add custom partitioning by API key type (free, pro, business) and implement graceful
+    degradation.
+
+    Show middleware setup with distributed Redis backend for rate limit state storage.'
+- id: dotnet_0010_exp_003
+  instruction: 'Create an IoT device management system with rate limiting for device
+    telemetry:
+
+    1. Fixed window limiter for device registration endpoints (50 requests/hour per
+    manufacturer)
+
+    2. Sliding window limiter for firmware update status checks (30 requests/10 minutes
+    per device)
+
+    3. Token bucket limiter for telemetry data ingestion (1000 messages burst, 100/sec
+    sustained)
+
+    4. Concurrency limiter for device configuration updates (max 10 concurrent per
+    gateway)
+
+    Implement custom partitioning by device type and firmware version, with adaptive
+    limits based on device health.
+
+    Show Giraffe route handlers with rate limit headers in responses.'
+- id: dotnet_0010_exp_004
+  instruction: 'Implement a multi-tenant SaaS application rate limiting system in
+    F#:
+
+    1. Fixed window rate limiter for tenant-specific API endpoints (1000 requests/hour
+    per tenant)
+
+    2. Sliding window rate limiter for user authentication endpoints (5 attempts/30
+    seconds per IP)
+
+    3. Token bucket rate limiter for report generation (10 reports burst, 1 report/minute
+    sustained)
+
+    4. Concurrency limiter for data export operations (max 3 concurrent per tenant)
+
+    Create custom partitioning by tenant subscription plan (starter, growth, enterprise)
+    with dynamic limit scaling.
+
+    Show integration with ASP.NET Core dependency injection and Giraffe middleware
+    pipeline.'
+- id: dotnet_0010_exp_005
+  instruction: 'Design a video streaming service rate limiting system using F# and
+    Giraffe:
+
+    1. Fixed window limiter for video metadata endpoints (60 requests/minute per user)
+
+    2. Sliding window limiter for playback session management (20 requests/5 minutes
+    per device)
+
+    3. Token bucket rate limiter for video chunk requests (500 chunks burst, 50/sec
+    sustained)
+
+    4. Concurrency limiter for transcoding operations (max 8 concurrent per content
+    provider)
+
+    Implement custom partitioning by user subscription type (free, premium, family)
+    and content quality tier.
+
+    Include bandwidth-based rate limiting and show Giraffe handler composition with
+    fallback strategies.'
+- id: dotnet_0010_exp_006
+  instruction: 'Build an e-commerce platform rate limiting system for flash sale events:
+
+    1. Fixed window rate limiter for product catalog endpoints (200 requests/minute
+    per IP)
+
+    2. Sliding window rate limiter for cart operations (30 requests/2 minutes per
+    user)
+
+    3. Token bucket rate limiter for checkout processing (50 orders burst, 5/sec sustained)
+
+    4. Concurrency limiter for inventory reservation (max 20 concurrent per product)
+
+    Create custom partitioning by customer loyalty tier (bronze, silver, gold) and
+    geographic region.
+
+    Implement queue-based overflow handling and show Giraffe integration with custom
+    HTTP status codes.'
+- id: dotnet_0010_exp_007
+  instruction: 'Implement a real-time chat application rate limiting system in F#:
+
+    1. Fixed window limiter for message history retrieval (50 requests/minute per
+    channel)
+
+    2. Sliding window limiter for message sending (10 messages/30 seconds per user)
+
+    3. Token bucket rate limiter for file attachments (20MB burst, 2MB/sec sustained)
+
+    4. Concurrency limiter for presence updates (max 100 concurrent per server instance)
+
+    Add custom partitioning by user role (user, moderator, admin) and channel type
+    (public, private, direct).
+
+    Show WebSocket connection rate limiting and Giraffe middleware error handling.'
+- id: dotnet_0010_exp_010
+  instruction: 'Build a document processing service with rate limiting in F#:
+
+    1. Fixed window rate limiter for document search endpoints (500 requests/hour
+    per tenant)
+
+    2. Sliding window rate limiter for document uploads (20 uploads/15 minutes per
+    user)
+
+    3. Token bucket rate limiter for OCR processing (100 pages burst, 10 pages/sec
+    sustained)
+
+    4. Concurrency limiter for PDF generation (max 5 concurrent per account)
+
+    Implement custom partitioning by document size and processing complexity.
+
+    Show middleware configuration with file size-based rate limiting and Giraffe error
+    responses.'
+- id: dotnet_0010_exp_008
+  instruction: 'Create a machine learning inference API with rate limiting in F# ASP.NET
+    Core:
+
+    1. Fixed window rate limiter for model metadata endpoints (100 requests/hour per
+    client)
+
+    2. Sliding window rate limiter for prediction endpoints (20 requests/10 minutes
+    per API key)
+
+    3. Token bucket rate limiter for batch predictions (1000 items burst, 100/sec
+    sustained)
+
+    4. Concurrency limiter for model training operations (max 2 concurrent per organization)
+
+    Implement custom partitioning by model complexity and compute resource requirements.
+
+    Show Giraffe pipeline with priority-based rate limiting and cost-based quota management.'
+- id: dotnet_0010_exp_009
+  instruction: 'Design a gaming platform rate limiting system for matchmaking and
+    leaderboards:
+
+    1. Fixed window limiter for player statistics endpoints (300 requests/minute per
+    player)
+
+    2. Sliding window limiter for matchmaking requests (5 requests/minute per session)
+
+    3. Token bucket rate limiter for replay uploads (200MB burst, 20MB/sec sustained)
+
+    4. Concurrency limiter for tournament bracket updates (max 50 concurrent per tournament)
+
+    Create custom partitioning by player rank and server region with adaptive limits
+    during peak hours.
+
+    Show Giraffe route handlers with rate limit information in response headers.'
+- id: dotnet_0010_exp_011
+  instruction: 'Implement a weather data API with rate limiting for different data
+    types:
+
+    1. Fixed window limiter for current conditions endpoints (60 requests/minute per
+    API key)
+
+    2. Sliding window limiter for forecast data (30 requests/5 minutes per location)
+
+    3. Token bucket rate limiter for historical data downloads (5000 records burst,
+    500/sec sustained)
+
+    4. Concurrency limiter for radar image processing (max 4 concurrent per region)
+
+    Create custom partitioning by data resolution (hourly, daily, monthly) and user
+    subscription tier.
+
+    Show Giraffe pipeline with geolocation-based rate limiting and quota reset scheduling.'
+- id: dotnet_0010_exp_013
+  instruction: 'Create a travel booking platform rate limiting system in F# ASP.NET
+    Core:
+
+    1. Fixed window rate limiter for flight search endpoints (200 requests/hour per
+    user)
+
+    2. Sliding window rate limiter for booking operations (10 bookings/30 minutes
+    per account)
+
+    3. Token bucket rate limiter for hotel image loading (100 images burst, 10/sec
+    sustained)
+
+    4. Concurrency limiter for payment processing (max 15 concurrent per merchant)
+
+    Add custom partitioning by travel agency size and season (peak/off-peak).
+
+    Show Giraffe route composition with rate limit headers and retry-after guidance.'
+- id: dotnet_0010_exp_012
+  instruction: 'Design a cryptocurrency exchange API rate limiting system using F#:
+
+    1. Fixed window rate limiter for market data endpoints (1000 requests/minute per
+    IP)
+
+    2. Sliding window rate limiter for order placement (50 orders/2 minutes per account)
+
+    3. Token bucket rate limiter for trade history exports (10000 trades burst, 1000/sec
+    sustained)
+
+    4. Concurrency limiter for wallet operations (max 3 concurrent per user)
+
+    Implement custom partitioning by trading volume tier and KYC verification level.
+
+    Show Giraffe middleware with real-time limit adjustment based on market volatility.'
+- id: dotnet_0010_exp_014
+  instruction: 'Implement a news aggregation API with rate limiting for content distribution:
+
+    1. Fixed window limiter for article retrieval endpoints (500 requests/minute per
+    publisher)
+
+    2. Sliding window rate limiter for content updates (20 updates/10 minutes per
+    editor)
+
+    3. Token bucket rate limiter for media streaming (1GB burst, 100MB/sec sustained)
+
+    4. Concurrency limiter for recommendation engine (max 100 concurrent per category)
+
+    Create custom partitioning by content type (text, video, audio) and distribution
+    channel.
+
+    Show Giraffe middleware with A/B testing for rate limit strategies.'
+- id: dotnet_0010_exp_016
+  instruction: 'Design a supply chain management API with rate limiting for logistics:
+
+    1. Fixed window limiter for shipment tracking endpoints (300 requests/hour per
+    carrier)
+
+    2. Sliding window rate limiter for inventory updates (50 updates/10 minutes per
+    warehouse)
+
+    3. Token bucket rate limiter for logistics document processing (100 documents
+    burst, 10/sec sustained)
+
+    4. Concurrency limiter for route optimization (max 5 concurrent per logistics
+    provider)
+
+    Create custom partitioning by shipment priority and carrier service level.
+
+    Show Giraffe middleware with rate limit quotas that reset at specific business
+    hours.'
+- id: dotnet_0010_exp_015
+  instruction: 'Build a legal document management system with rate limiting in F#:
+
+    1. Fixed window rate limiter for case search endpoints (100 requests/15 minutes
+    per firm)
+
+    2. Sliding window rate limiter for document annotations (30 annotations/5 minutes
+    per user)
+
+    3. Token bucket rate limiter for bulk document import (500 documents burst, 50/sec
+    sustained)
+
+    4. Concurrency limiter for compliance checking (max 10 concurrent per case)
+
+    Implement custom partitioning by case sensitivity level and user clearance.
+
+    Show Giraffe pipeline with audit logging for rate limit violations.'
+- id: dotnet_0010_exp_017
+  instruction: 'Implement a telehealth platform rate limiting system in F#:
+
+    1. Fixed window rate limiter for appointment availability checks (100 requests/minute
+    per clinic)
+
+    2. Sliding window rate limiter for patient messaging (20 messages/30 minutes per
+    patient)
+
+    3. Token bucket rate limiter for medical record uploads (50 records burst, 5/sec
+    sustained)
+
+    4. Concurrency limiter for video consultation sessions (max 20 concurrent per
+    provider)
+
+    Add custom partitioning by patient medical urgency and provider specialty.
+
+    Show Giraffe handlers with emergency bypass for critical care scenarios.'
+- id: dotnet_0010_exp_018
+  instruction: 'Create an advertising platform rate limiting system for ad delivery:
+
+    1. Fixed window rate limiter for ad impression endpoints (10000 requests/minute
+    per advertiser)
+
+    2. Sliding window rate limiter for click tracking (1000 clicks/5 minutes per campaign)
+
+    3. Token bucket rate limiter for creative asset uploads (500 assets burst, 50/sec
+    sustained)
+
+    4. Concurrency limiter for analytics reporting (max 50 concurrent per agency)
+
+    Implement custom partitioning by ad spend tier and campaign performance.
+
+    Show Giraffe middleware with dynamic rate limiting based on server load.'
+- id: dotnet_0010_exp_019
+  instruction: 'Build a research data repository with rate limiting in F# ASP.NET
+    Core:
+
+    1. Fixed window rate limiter for dataset search endpoints (200 requests/hour per
+    institution)
+
+    2. Sliding window rate limiter for data subset requests (10 requests/15 minutes
+    per researcher)
+
+    3. Token bucket rate limiter for large dataset downloads (10GB burst, 1GB/sec
+    sustained)
+
+    4. Concurrency limiter for data processing jobs (max 8 concurrent per project)
+
+    Create custom partitioning by data sensitivity level and research funding tier.
+
+    Show Giraffe pipeline with rate limit education in error responses.'
+- id: dotnet_0010_exp_020
+  instruction: 'Design a smart home automation API with rate limiting for device control:
+
+    1. Fixed window limiter for device status endpoints (500 requests/minute per home)
+
+    2. Sliding window rate limiter for automation rule updates (20 updates/5 minutes
+    per user)
+
+    3. Token bucket rate limiter for camera stream access (5 streams burst, 1 stream/sec
+    sustained)
+
+    4. Concurrency limiter for firmware updates (max 10 concurrent per hub)
+
+    Implement custom partitioning by device category and network bandwidth availability.
+
+    Show Giraffe middleware with rate limiting that adapts to time of day usage patterns.'
+- id: dotnet_0010_exp_021
+  instruction: 'Implement a job search platform rate limiting system using F#:
+
+    1. Fixed window rate limiter for job listing endpoints (1000 requests/hour per
+    recruiter)
+
+    2. Sliding window rate limiter for application submissions (30 applications/2
+    hours per job seeker)
+
+    3. Token bucket rate limiter for resume parsing (100 resumes burst, 10/sec sustained)
+
+    4. Concurrency limiter for interview scheduling (max 25 concurrent per company)
+
+    Create custom partitioning by company size and job seeker subscription status.
+
+    Show Giraffe route handlers with rate limit warnings before hard limits are reached.'
+- id: dotnet_0010_exp_022
+  instruction: 'Build a fitness tracking API with rate limiting for health data:
+
+    1. Fixed window rate limiter for workout history endpoints (200 requests/30 minutes
+    per user)
+
+    2. Sliding window rate limiter for biometric data uploads (50 readings/10 minutes
+    per device)
+
+    3. Token bucket rate limiter for video exercise streaming (20 videos burst, 2/sec
+    sustained)
+
+    4. Concurrency limiter for personalized plan generation (max 5 concurrent per
+    trainer)
+
+    Implement custom partitioning by fitness goal type and device sync frequency.
+
+    Show Giraffe middleware with rate limit exemptions for medical device integrations.'
+- id: dotnet_0010_exp_023
+  instruction: 'Design an event ticketing system with rate limiting for high-demand
+    sales:
+
+    1. Fixed window limiter for event listing endpoints (500 requests/minute per venue)
+
+    2. Sliding window rate limiter for ticket purchases (5 purchases/2 minutes per
+    buyer)
+
+    3. Token bucket rate limiter for seating chart updates (1000 seats burst, 100/sec
+    sustained)
+
+    4. Concurrency limiter for payment processing (max 100 concurrent per event)
+
+    Create custom partitioning by buyer history and ticket quantity.
+
+    Show Giraffe pipeline with virtual queue integration for rate limited requests.'
+- id: dotnet_0010_exp_024
+  instruction: 'Implement a language translation service with rate limiting in F#:
+
+    1. Fixed window rate limiter for language detection endpoints (1000 requests/hour
+    per client)
+
+    2. Sliding window rate limiter for text translation (1000 characters/30 seconds
+    per user)
+
+    3. Token bucket rate limiter for document translation (50 pages burst, 5 pages/sec
+    sustained)
+
+    4. Concurrency limiter for model fine-tuning (max 3 concurrent per organization)
+
+    Add custom partitioning by translation quality tier and language pair complexity.
+
+    Show Giraffe middleware with cost-based rate limiting for expensive language pairs.'
+- id: dotnet_0010_exp_025
+  instruction: 'Create a real estate platform rate limiting system for property listings:
+
+    1. Fixed window limiter for property search endpoints (300 requests/10 minutes
+    per agent)
+
+    2. Sliding window rate limiter for listing updates (10 updates/5 minutes per broker)
+
+    3. Token bucket rate limiter for property image uploads (100 images burst, 10/sec
+    sustained)
+
+    4. Concurrency limiter for mortgage calculator (max 50 concurrent per lender)
+
+    Implement custom partitioning by property value range and market region.
+
+    Show Giraffe handlers with rate limit differentiation for MLS vs public API access.'
+- id: dotnet_0010_exp_026
+  instruction: 'Build a code repository hosting service with rate limiting in F#:
+
+    1. Fixed window rate limiter for repository access endpoints (5000 requests/hour
+    per user)
+
+    2. Sliding window rate limiter for code pushes (20 pushes/5 minutes per repository)
+
+    3. Token bucket rate limiter for large file transfers (500MB burst, 50MB/sec sustained)
+
+    4. Concurrency limiter for CI/CD pipeline triggers (max 30 concurrent per organization)
+
+    Create custom partitioning by repository size and contributor count.
+
+    Show Giraffe middleware with rate limiting that respects repository visibility
+    (public/private).'
+- id: dotnet_0010_exp_027
+  instruction: 'Design a food delivery platform rate limiting system for order management:
+
+    1. Fixed window limiter for restaurant menu endpoints (200 requests/minute per
+    customer)
+
+    2. Sliding window rate limiter for order modifications (3 modifications/10 minutes
+    per order)
+
+    3. Token bucket rate limiter for driver location updates (1000 updates burst,
+    100/sec sustained)
+
+    4. Concurrency limiter for kitchen order processing (max 20 concurrent per restaurant)
+
+    Implement custom partitioning by order value and delivery distance.
+
+    Show Giraffe pipeline with surge pricing integration for rate limit adjustments.'
+- id: dotnet_0010_exp_028
+  instruction: 'Implement an educational platform rate limiting system for course
+    content:
+
+    1. Fixed window rate limiter for course catalog endpoints (100 requests/15 minutes
+    per student)
+
+    2. Sliding window rate limiter for quiz submissions (5 submissions/30 minutes
+    per course)
+
+    3. Token bucket rate limiter for video lecture streaming (10 lectures burst, 1
+    lecture/sec sustained)
+
+    4. Concurrency limiter for assignment grading (max 100 concurrent per instructor)
+
+    Create custom partitioning by student enrollment level and course difficulty.
+
+    Show Giraffe middleware with rate limiting that adapts during exam periods.'
+- id: dotnet_0011_exp_000
+  instruction: 'Implement JWT-based authentication middleware in F# ASP.NET Core using
+    Giraffe:
+
+    1. Token validation with custom signing key from configuration
+
+    2. Role-based authorization with different permission levels (user, admin, moderator)
+
+    3. Token refresh endpoint with sliding expiration
+
+    4. Blacklist for revoked tokens stored in Redis
+
+    Include rate limiting on login attempts and secure cookie storage for web clients.'
+- id: dotnet_0011_exp_001
+  instruction: 'Create a file upload service in F# ASP.NET Core for a healthcare application:
+
+    1. Accept medical images (DICOM format) with size validation (max 500MB)
+
+    2. Virus scanning integration using ClamAV
+
+    3. HIPAA-compliant storage with encrypted at-rest files
+
+    4. Progress tracking with Server-Sent Events (SSE)
+
+    Include validation for file type spoofing and secure temporary file cleanup.'
+- id: dotnet_0011_exp_003
+  instruction: 'Build a rate limiting middleware in F# ASP.NET Core for a fintech
+    API:
+
+    1. Token bucket algorithm implementation
+
+    2. Different limits per API key tier (free: 100/hr, premium: 10000/hr)
+
+    3. Distributed rate limiting using Redis for consistency across instances
+
+    4. Rate limit headers in responses (X-RateLimit-Limit, X-RateLimit-Remaining)
+
+    Include graceful degradation and circuit breaker patterns for dependent services.'
+- id: dotnet_0011_exp_009
+  instruction: 'Build a request validation pipeline in F# using applicative validation
+    with Giraffe:
+
+    1. Combine multiple validation rules with meaningful error messages
+
+    2. JSON schema validation with custom error formatting
+
+    3. Conditional validation based on user roles or request context
+
+    4. Async validation for checking uniqueness against database
+
+    Include localization of validation messages and error aggregation.'
+- id: dotnet_0011_exp_012
+  instruction: 'Build a WebSocket server in F# ASP.NET Core for a real-time trading
+    platform:
+
+    1. Binary protocol for market data (order book updates, trades)
+
+    2. Connection authentication via query string tokens
+
+    3. Heartbeat mechanism to detect stale connections
+
+    4. Backpressure handling for slow consumers
+
+    Include message compression and subscription management per connection.'
+- id: dotnet_0011_exp_014
+  instruction: 'Implement API versioning in F# ASP.NET Core with Giraffe:
+
+    1. Multiple versioning strategies (URL path, query string, headers)
+
+    2. Deprecation warnings in headers for old versions
+
+    3. Automatic routing to appropriate handler based on version
+
+    4. Version negotiation with fallback to latest
+
+    Include documentation generation per API version using Swagger/OpenAPI.'
+- id: dotnet_0011_exp_015
+  instruction: 'Build a middleware for request/response logging in F# with structured
+    logging:
+
+    1. Log correlation IDs across microservices
+
+    2. Sensitive data redaction (passwords, tokens, PII)
+
+    3. Performance timing for critical operations
+
+    4. Conditional logging based on request characteristics
+
+    Include log aggregation to Seq/ELK and sampling for high-traffic endpoints.'
+- id: dotnet_0011_exp_016
+  instruction: 'Create a distributed lock system in F# using Redis for inventory management:
+
+    1. Optimistic concurrency control for product stock updates
+
+    2. Deadlock detection and automatic resolution
+
+    3. Lock timeouts with automatic extension for long operations
+
+    4. Fair queueing for contested resources
+
+    Include lock statistics monitoring and alerting for contention issues.'
+- id: dotnet_0011_exp_018
+  instruction: 'Build a Webhook dispatcher in F# for a payment processing system:
+
+    1. Retry logic with exponential backoff and jitter
+
+    2. Dead letter queue for permanently failed webhooks
+
+    3. Signature verification for incoming webhooks
+
+    4. Webhook testing endpoint with mock responses
+
+    Include delivery guarantee (at-least-once vs at-most-once) configuration.'
+- id: dotnet_0011_exp_021
+  instruction: 'Build a middleware for request deduplication in F# for idempotent
+    operations:
+
+    1. Client-provided idempotency keys for POST/PUT requests
+
+    2. Storage of request results for replay protection
+
+    3. Automatic cleanup of old idempotency keys
+
+    4. Race condition handling for concurrent identical requests
+
+    Include idempotency key generation for clients that don''t provide them.'
+- id: dotnet_0011_exp_020
+  instruction: 'Implement a distributed cache layer in F# with Redis and memory cache
+    fallback:
+
+    1. Cache-aside pattern with cache stampede prevention
+
+    2. Cache invalidation via pub/sub for multi-instance deployments
+
+    3. Compression for large cache entries
+
+    4. Cache key generation with namespace support
+
+    Include cache hit ratio monitoring and automatic cache warming for hot data.'
+- id: dotnet_0011_exp_023
+  instruction: 'Implement a custom model binder in F# for Giraffe to handle complex
+    types:
+
+    1. Binding from multiple sources (body, query, route, headers)
+
+    2. Custom validation during binding process
+
+    3. Support for discriminated unions and optional fields
+
+    4. Async binding for database lookups during model creation
+
+    Include binding error messages with field path information.'
+- id: dotnet_0011_exp_024
+  instruction: 'Build a middleware for request throttling based on user quotas in
+    F#:
+
+    1. Monthly API call limits per subscription tier
+
+    2. Burst allowance for sudden traffic spikes
+
+    3. Quota reset schedules (calendar month, rolling 30 days)
+
+    4. Quota usage reporting in response headers
+
+    Include overage billing hooks and quota increase request endpoints.'
+- id: dotnet_0011_exp_025
+  instruction: 'Create a server-side rendering engine in F# for a React application:
+
+    1. Hydration data serialization and injection
+
+    2. Async component rendering with loading states
+
+    3. CSS-in-JS extraction for critical CSS
+
+    4. Caching of rendered pages with invalidation strategies
+
+    Include streaming SSR for progressive rendering and error boundaries.'
+- id: dotnet_0011_exp_029
+  instruction: 'Implement a custom session store in F# using distributed cache with
+    encryption:
+
+    1. Session data encryption at rest and in transit
+
+    2. Sliding expiration with renewal on activity
+
+    3. Concurrent session management for same user
+
+    4. Session fixation attack prevention
+
+    Include session migration during authentication escalation and cleanup of orphaned
+    sessions.'
+- id: dotnet_0012_exp_002
+  instruction: 'Create a banking transaction API with audit logging requirements:
+
+    1. Use Minimal APIs with endpoint filters for validation
+
+    2. Use Giraffe HttpHandlers with warbler for DI
+
+    3. Compare: Error handling strategies, request/response pipeline customization
+
+    4. Discuss which approach better supports regulatory compliance requirements
+
+    Implement deposit, withdrawal, and balance check endpoints with transaction logging.'
+- id: dotnet_0012_exp_006
+  instruction: 'Create a multiplayer game scoreboard API with real-time updates:
+
+    1. Use Minimal APIs with SignalR integration
+
+    2. Use Giraffe with custom WebSocket handlers
+
+    3. Compare: Real-time communication patterns, connection state management
+
+    4. Evaluate scalability considerations for each approach
+
+    Implement leaderboards, player stats, and match history endpoints.'
+- id: dotnet_0012_exp_008
+  instruction: 'Implement a document processing API with background jobs:
+
+    1. Create with Minimal APIs using IHostedService integration
+
+    2. Create with Giraffe with custom middleware for job queuing
+
+    3. Compare: Background task orchestration, progress tracking endpoints
+
+    4. Evaluate cancellation token propagation in long-running operations
+
+    Handle PDF conversion, OCR processing, and document metadata extraction.'
+- id: dotnet_0012_exp_010
+  instruction: 'Create a weather data aggregation API with multiple data sources:
+
+    1. Implement with Minimal APIs using IHttpClientFactory
+
+    2. Implement with Giraffe using HttpContext service resolution
+
+    3. Compare: External service integration patterns, circuit breaker implementation
+
+    4. Show caching strategies for each approach (response caching vs distributed
+    cache)
+
+    Aggregate data from multiple weather APIs with fallback mechanisms.'
+- id: dotnet_0012_exp_014
+  instruction: 'Design a flight booking API with complex pricing rules:
+
+    1. Implement with Minimal APIs using route parameter binding
+
+    2. Implement with Giraffe using bindQuery for complex query strings
+
+    3. Compare: Complex model binding scenarios, custom value parsers
+
+    4. Show validation of interdependent parameters (dates, passenger counts)
+
+    Handle seat selection, baggage options, and fare calculation with validation.'
+- id: dotnet_0012_exp_016
+  instruction: 'Create a cryptocurrency trading API with WebSocket support:
+
+    1. Implement with Minimal APIs using new WebSocket API
+
+    2. Implement with Giraffe with custom WebSocket handlers
+
+    3. Compare: Bidirectional communication patterns, message serialization
+
+    4. Analyze connection pooling and resource management
+
+    Handle real-time price updates, order placement, and portfolio streaming.'
+- id: dotnet_0012_exp_019
+  instruction: 'Create a real estate property listing API with geospatial queries:
+
+    1. Build with Minimal APIs with spatial data binding
+
+    2. Build with Giraffe with custom JSON converters for spatial types
+
+    3. Compare: Complex query parameter handling, search optimization
+
+    4. Evaluate performance for distance-based searches
+
+    Implement property search by location, radius filtering, and polygon area queries.'
+- id: dotnet_0012_exp_023
+  instruction: 'Design a ride-sharing API with dynamic pricing:
+
+    1. Build with Minimal APIs with request localization
+
+    2. Build with Giraffe with culture-aware response formatting
+
+    3. Compare: Internationalization support, multi-currency handling
+
+    4. Evaluate surge pricing algorithm integration
+
+    Implement fare estimation, ride booking, and driver dispatch endpoints.'
+- id: dotnet_0012_exp_027
+  instruction: 'Build a digital asset management API with versioning:
+
+    1. Use Minimal APIs with form binding for metadata
+
+    2. Use Giraffe with multipart form data handling
+
+    3. Compare: Large file upload handling, progress tracking
+
+    4. Evaluate asset transformation pipeline integration
+
+    Implement asset upload with metadata, version control, and thumbnail generation.'
+- id: dotnet_0013_exp_002
+  instruction: 'Create a multi-player game lobby system with F# and SignalR. Design
+    a hub that:
+
+    1. Manages game rooms with capacity limits and player readiness states
+
+    2. Broadcasts game state changes to all players in a room
+
+    3. Uses cookie-based authentication with session management
+
+    4. Includes Giraffe endpoints for creating games and fetching leaderboards
+
+    5. Show Vue.js client code that updates player positions and chat in real-time
+
+    Handle disconnections gracefully with player timeout buffers.'
+- id: dotnet_0013_exp_005
+  instruction: 'Build a real-time IoT device monitoring dashboard with F# and SignalR.
+    Develop a hub that:
+
+    1. Streams sensor data (temperature, humidity, pressure) from multiple devices
+
+    2. Groups connections by device categories for efficient broadcasting
+
+    3. Uses certificate-based authentication for device connections
+
+    4. Includes Giraffe endpoints for device registration and alert configuration
+
+    5. Provide React Native mobile app code displaying real-time gauge charts
+
+    Handle intermittent connectivity and data buffering for unreliable networks.'
+- id: dotnet_0013_exp_015
+  instruction: 'Implement a real-time energy grid monitoring system with F# and SignalR.
+    Build a hub that:
+
+    1. Streams power generation, consumption, and grid stability metrics
+
+    2. Groups connections by utility regions and alert categories
+
+    3. Uses industrial control system authentication protocols
+
+    4. Includes Giraffe endpoints for grid control actions and historical data
+
+    5. Provide TypeScript client code with real-time dials and trend graphs
+
+    Implement failover mechanisms and critical state change notifications.'
+- id: dotnet_0013_exp_016
+  instruction: 'Design a live classroom interaction platform with F# and SignalR.
+    Create a hub that:
+
+    1. Broadcasts teacher slides, annotations, and student questions
+
+    2. Manages raised hands queue and breakout room assignments
+
+    3. Uses LMS integration for student authentication and enrollment
+
+    4. Includes Giraffe endpoints for attendance tracking and material distribution
+
+    5. Show Vue.js client code with interactive whiteboard and participant list
+
+    Handle bandwidth adaptation for different connection qualities.'
+- id: dotnet_0013_exp_019
+  instruction: 'Implement a real-time air traffic control simulation with F# and SignalR.
+    Build a hub that:
+
+    1. Broadcasts aircraft positions, altitudes, and flight plans
+
+    2. Groups connections by airspace sectors and control roles
+
+    3. Uses certificate-based authentication with role authorization
+
+    4. Includes Giraffe endpoints for flight plan submission and weather data
+
+    5. Provide TypeScript/WebGL client code with 3D radar display and conflict alerts
+
+    Implement collision detection algorithms and emergency protocol handling.'
+- id: dotnet_0013_exp_024
+  instruction: 'Design a live music streaming collaboration platform with F# and SignalR.
+    Create a hub that:
+
+    1. Broadcasts audio waveforms, playhead positions, and mixer settings
+
+    2. Synchronizes playback across multiple listeners with low latency
+
+    3. Uses music service OAuth (Spotify/Apple Music) for track access
+
+    4. Includes Giraffe endpoints for playlist management and session recording
+
+    5. Show React client code with waveform visualizer and collaborative playlist
+
+    Implement audio buffer management and network jitter compensation.'
+- id: dotnet_0014_exp_000
+  instruction: 'Design a structured error handling system for a healthcare appointment
+    booking API using Giraffe:
+
+    1. Define a MedicalError DU with cases like AppointmentConflict, PatientNotFound,
+    DoctorUnavailable, InsuranceValidationFailed, and HIPAAViolation
+
+    2. Create middleware that captures exceptions and maps them to MedicalError with
+    appropriate logging (PII redaction required)
+
+    3. Implement a ProblemDetails response formatter that includes severity levels
+    (INFO, WARN, ERROR) and suggested actions
+
+    4. Show how route handlers return Result<Appointment, MedicalError> and handle
+    validation of medical codes (CPT, ICD-10)
+
+    5. Include audit trail IDs in error responses and log to a HIPAA-compliant logging
+    service'
+- id: dotnet_0014_exp_003
+  instruction: 'Create a structured error system for a social media content moderation
+    API:
+
+    1. Define ModerationError DU with ContentViolation, UserBanned, SpamDetection,
+    ImageProcessingFailed, and RateLimitHit
+
+    2. Write middleware that handles image/video processing failures and external
+    API timeouts
+
+    3. Implement error responses with user-friendly messages (internationalized) and
+    moderation rule references
+
+    4. Demonstrate Giraffe handlers returning Result<Post, ModerationError> with async
+    validation workflows
+
+    5. Include trace IDs and moderation decision IDs in errors for audit compliance'
+- id: dotnet_0014_exp_005
+  instruction: 'Implement error handling for a multiplayer game matchmaking service:
+
+    1. Define MatchmakingError DU with PlayerNotFound, MMRMismatch, RegionUnavailable,
+    PartySizeInvalid, and GameVersionMismatch
+
+    2. Write middleware that handles WebSocket disconnections and real-time event
+    processing failures
+
+    3. Create error responses with retry delays, alternative regions, and player skill
+    bracket suggestions
+
+    4. Demonstrate Giraffe handlers returning Result<Match, MatchmakingError> with
+    ELO rating validation
+
+    5. Include match IDs, player IDs, and latency measurements in error responses'
+- id: dotnet_0014_exp_004
+  instruction: 'Design error handling for an e-commerce inventory management system:
+
+    1. Define InventoryError DU with OutOfStock, SKUNotFound, WarehouseClosed, ShippingRestriction,
+    and PricingError
+
+    2. Create exception middleware that handles database deadlocks and connection
+    pool exhaustion gracefully
+
+    3. Build ProblemDetails responses with inventory suggestions (alternative products,
+    restock dates)
+
+    4. Show route handlers returning Result<InventoryReservation, InventoryError>
+    with concurrent inventory checks
+
+    5. Include cart/session IDs and business transaction IDs in all error responses'
+- id: dotnet_0014_exp_008
+  instruction: 'Create error handling for a ride-sharing dispatch system:
+
+    1. Define DispatchError DU with NoDriversAvailable, SurgePricingActive, DestinationUnserviceable,
+    RideCancelled, and PaymentMethodInvalid
+
+    2. Build middleware that handles real-time location tracking failures and ETA
+    calculation errors
+
+    3. Implement error responses with wait time estimates, price alternatives, and
+    service area boundaries
+
+    4. Show handlers returning Result<DispatchAssignment, DispatchError> with driver
+    proximity validation
+
+    5. Include ride IDs, driver IDs, and pricing calculation IDs in error correlation
+    data'
+- id: dotnet_0014_exp_010
+  instruction: 'Design error handling for a food delivery order management system:
+
+    1. Define DeliveryError DU with RestaurantClosed, DeliveryRangeExceeded, MenuItemUnavailable,
+    PreparationDelay, and DriverAssignmentFailed
+
+    2. Write middleware that handles real-time order status updates and inventory
+    synchronization failures
+
+    3. Create error responses with estimated resolution times, alternative restaurants,
+    and compensation offers
+
+    4. Show handlers returning Result<OrderConfirmation, DeliveryError> with delivery
+    time window validation
+
+    5. Include order IDs, restaurant IDs, and delivery partner IDs in error correlation'
+- id: dotnet_0014_exp_011
+  instruction: 'Build error handling for a video streaming quality control API:
+
+    1. Define StreamingError DU with CodecUnsupported, BitrateUnavailable, DRMError,
+    ContentGeoBlocked, and AdaptiveSwitchFailed
+
+    2. Create middleware that handles CDN failures and bandwidth estimation errors
+    gracefully
+
+    3. Implement error responses with alternative quality levels, supported devices,
+    and region availability
+
+    4. Demonstrate Giraffe handlers returning Result<StreamManifest, StreamingError>
+    with device capability validation
+
+    5. Include session IDs, content IDs, and CDN provider info in error diagnostics'
+- id: dotnet_0014_exp_012
+  instruction: 'Implement error handling for a cryptocurrency wallet service:
+
+    1. Define CryptoError DU with InsufficientBalance, NetworkFeeTooHigh, InvalidAddress,
+    TransactionStuck, and SmartContractError
+
+    2. Write middleware that handles blockchain node connectivity issues and nonce
+    management errors
+
+    3. Create error responses with gas price suggestions, transaction status links,
+    and recovery instructions
+
+    4. Show handlers returning Result<TransactionReceipt, CryptoError> with address
+    validation and checksums
+
+    5. Include wallet IDs, transaction hashes, and blockchain network IDs in error
+    metadata'
+- id: dotnet_0014_exp_013
+  instruction: 'Design error handling for a flight booking and check-in system:
+
+    1. Define AviationError DU with SeatUnavailable, FlightOverbooked, PassengerDocumentInvalid,
+    BaggageLimitExceeded, and CheckinWindowClosed
+
+    2. Build middleware that handles airline GDS system failures and fare calculation
+    discrepancies
+
+    3. Implement error responses with alternative flights, seat maps, and policy references
+
+    4. Demonstrate Giraffe handlers returning Result<BoardingPass, AviationError>
+    with passport/visa validation
+
+    5. Include PNRs, flight numbers, and passenger name records in error correlation
+    (with PII masking)'
+- id: dotnet_0014_exp_014
+  instruction: 'Create error handling for a laboratory sample tracking system:
+
+    1. Define LabError DU with SampleContaminated, TestCancelled, InstrumentCalibrationNeeded,
+    ResultOutOfRange, and ChainOfCustodyBroken
+
+    2. Write middleware that handles barcode scanning failures and LIMS integration
+    errors
+
+    3. Build error responses with retest recommendations, QC failure details, and
+    regulatory compliance flags
+
+    4. Show handlers returning Result<TestResult, LabError> with sample stability
+    time window validation
+
+    5. Include sample IDs, batch numbers, and lab technician IDs in error audit trails'
+- id: dotnet_0014_exp_015
+  instruction: 'Implement error handling for a property rental booking platform:
+
+    1. Define RentalError DU with PropertyUnavailable, PriceChanged, HostCancelled,
+    VerificationFailed, and CleaningFeeDispute
+
+    2. Create middleware that handles calendar synchronization failures and payment
+    gateway timeouts
+
+    3. Design error responses with alternative properties, price guarantees, and cancellation
+    policies
+
+    4. Demonstrate Giraffe handlers returning Result<BookingConfirmation, RentalError>
+    with minimum stay validation
+
+    5. Include property IDs, booking references, and host IDs in error context'
+- id: dotnet_0014_exp_016
+  instruction: 'Design error handling for a podcast hosting and distribution service:
+
+    1. Define PodcastError DU with EpisodeProcessingFailed, RSSFeedInvalid, DistributionRejected,
+    TranscriptionError, and MetadataValidationFailed
+
+    2. Build middleware that handles audio file processing failures and CDN distribution
+    errors
+
+    3. Create error responses with file format requirements, distribution status,
+    and retry schedules
+
+    4. Show handlers returning Result<PublishedEpisode, PodcastError> with episode
+    duration/bitrate validation
+
+    5. Include podcast IDs, episode GUIDs, and distribution channel IDs in error diagnostics'
+- id: dotnet_0014_exp_019
+  instruction: 'Design error handling for a ticket scanning and validation system:
+
+    1. Define TicketingError DU with TicketAlreadyUsed, EventCancelled, VenueFull,
+    AccessLevelInsufficient, and BarcodeInvalid
+
+    2. Write middleware that handles offline scanning scenarios and ticket format
+    version mismatches
+
+    3. Create error responses with ticket status, refund policies, and upgrade options
+
+    4. Demonstrate Giraffe handlers returning Result<AdmissionGranted, TicketingError>
+    with ticket expiration validation
+
+    5. Include ticket IDs, event IDs, and scanner device IDs in error audit logs'
+- id: dotnet_0014_exp_020
+  instruction: 'Build error handling for a plant monitoring and irrigation control
+    system:
+
+    1. Define AgricultureError DU with SoilSensorFault, WaterPressureLow, NutrientImbalance,
+    GrowthStageMismatch, and ClimateControlFailed
+
+    2. Create middleware that handles sensor network outages and irrigation schedule
+    conflicts
+
+    3. Implement error responses with sensor calibration instructions, watering schedules,
+    and environmental targets
+
+    4. Show handlers returning Result<IrrigationCommand, AgricultureError> with soil
+    moisture threshold validation
+
+    5. Include greenhouse IDs, plant batch IDs, and sensor node IDs in error diagnostics'
+- id: dotnet_0014_exp_021
+  instruction: 'Implement error handling for a code deployment and CI/CD pipeline
+    API:
+
+    1. Define DeploymentError DU with BuildFailed, TestsBroken, EnvironmentLocked,
+    RollbackRequired, and SecurityScanFailed
+
+    2. Write middleware that handles version control system failures and artifact
+    storage errors
+
+    3. Create error responses with build logs, test results, and rollback procedures
+
+    4. Demonstrate Giraffe handlers returning Result<DeploymentStatus, DeploymentError>
+    with environment promotion validation
+
+    5. Include deployment IDs, commit SHAs, and pipeline run IDs in error correlation'
+- id: dotnet_0014_exp_024
+  instruction: 'Implement error handling for a 3D printing job submission service:
+
+    1. Define PrintingError DU with ModelUnprintable, MaterialUnavailable, PrinterOffline,
+    SupportGenerationFailed, and SlicingError
+
+    2. Create middleware that handles STL file parsing errors and printer communication
+    failures
+
+    3. Design error responses with model repair suggestions, material alternatives,
+    and printer status
+
+    4. Show handlers returning Result<PrintJob, PrintingError> with model geometry
+    validation
+
+    5. Include model IDs, printer IDs, and material batch IDs in error diagnostics'
+- id: dotnet_0014_exp_026
+  instruction: 'Build error handling for a survey data collection and analysis API:
+
+    1. Define SurveyError DU with QuestionLogicError, RespondentQuotaFull, ResponseInconsistent,
+    BranchingInvalid, and AnalysisFailed
+
+    2. Write middleware that handles survey progress synchronization and data export
+    failures
+
+    3. Implement error responses with survey logic explanations, quota status, and
+    data quality flags
+
+    4. Show handlers returning Result<SurveyResponse, SurveyError> with answer validation
+    and branching logic
+
+    5. Include survey IDs, respondent IDs, and collection wave IDs in error metadata'
+- id: dotnet_0014_exp_028
+  instruction: 'Design error handling for a augmented reality content delivery API:
+
+    1. Define ARError DU with AnchorLost, SurfaceDetectionFailed, ContentPlacementInvalid,
+    DeviceCapabilityInsufficient, and WorldMappingError
+
+    2. Write middleware that handles spatial tracking losses and 3D content loading
+    failures
+
+    3. Create error responses with calibration instructions, device requirements,
+    and content alternatives
+
+    4. Show handlers returning Result<ARExperience, ARError> with device pose/orientation
+    validation
+
+    5. Include session IDs, anchor IDs, and content bundle IDs in error diagnostics'
+- id: dotnet_0014_exp_029
+  instruction: 'Create error handling for a carbon footprint tracking and offset system:
+
+    1. Define SustainabilityError DU with CalculationInvalid, OffsetUnavailable, DataSourceUnreliable,
+    VerificationFailed, and ReportingPeriodClosed
+
+    2. Build middleware that handles emissions factor database errors and offset purchase
+    failures
+
+    3. Implement error responses with calculation methodologies, alternative offsets,
+    and data quality scores
+
+    4. Demonstrate Giraffe handlers returning Result<CarbonReport, SustainabilityError>
+    with emission boundary validation
+
+    5. Include organization IDs, report periods, and verification certificate IDs
+    in error context'
+- id: dotnet_0015_exp_001
+  instruction: Design a FluentMigrator-based schema evolution system for a multi-tenant
+    SaaS application. Each tenant has isolated schemas, and migrations need to be
+    applied to all tenant schemas. Create a migration runner that can apply migrations
+    to multiple schemas concurrently, with progress tracking and the ability to rollback
+    failed migrations on specific tenants without affecting others.
+- id: dotnet_0015_exp_003
+  instruction: Create a FluentMigrator extension for generating database documentation
+    from migration classes. The tool should parse migration attributes and SQL expressions
+    to produce markdown documentation of the schema evolution, including column types,
+    constraints, and relationships between tables.
+- id: dotnet_0015_exp_005
+  instruction: Build a migration testing framework using FluentMigrator and TestContainers.
+    Write tests that verify migrations can be applied and rolled back without data
+    loss, that foreign key constraints are correctly maintained, and that performance-critical
+    indexes are created. Include integration tests for complex data migrations.
+- id: dotnet_0015_exp_007
+  instruction: Design a database versioning system for a mobile app backend that supports
+    schema migrations on SQLite for local device storage and PostgreSQL for server
+    storage. Use FluentMigrator to write compatible migrations for both database systems,
+    handling their SQL dialect differences through abstractions.
+- id: dotnet_0015_exp_010
+  instruction: Write a complex migration that refactors a polymorphic association
+    (using type and id columns) to proper foreign keys with junction tables. Include
+    data migration that preserves all relationships, handles orphaned records, and
+    maintains referential integrity. Add appropriate indexes for performance.
+- id: dotnet_0015_exp_011
+  instruction: Implement a database migration rollback strategy for failed deployments.
+    Create a FluentMigrator-based tool that can detect failed migrations, automatically
+    revert to the last known good version, and send alerts to the DevOps team. Include
+    support for both forward and backward migrations.
+- id: dotnet_0015_exp_014
+  instruction: Implement a data quality validation migration that checks for common
+    data issues after schema changes. Write FluentMigrator migrations that add check
+    constraints, validate referential integrity, and flag orphaned records. Include
+    reporting of found issues without blocking the migration process.
+- id: dotnet_0015_exp_017
+  instruction: Implement a migration that converts application-level enums to database
+    lookup tables with foreign key constraints. Migrate existing data to the new lookup
+    tables, preserve referential integrity, and provide backward compatibility views
+    for legacy queries during transition.
+- id: dotnet_0015_exp_018
+  instruction: Design a FluentMigrator-based database seeding system for test environments.
+    Create migrations that insert reference data, generate synthetic test data with
+    realistic distributions, and reset sequences. Include configuration to skip seeding
+    in production environments.
+- id: dotnet_0015_exp_024
+  instruction: Implement a migration that normalizes a legacy database with composite
+    primary keys across multiple tables. Replace composite keys with surrogate keys,
+    update all foreign key relationships, and ensure data consistency throughout the
+    transformation.
+- id: dotnet_0015_exp_029
+  instruction: Create a migration that implements database sharding for horizontal
+    scaling. Use FluentMigrator to create shard maps, distribute existing data across
+    shards based on a sharding key, and set up routing logic. Include support for
+    adding new shards without downtime.
+system_prompt: 'You are an expert .NET developer writing F#-first ASP.NET Core applications.
+
+  Show ASP.NET Core patterns from the F# perspective -- use F# syntax, not C#.
+
+  Follow these conventions:
+
+  - Use F# functions and partial application for DI where possible
+
+  - Show idiomatic F# interop with C#-designed ASP.NET Core APIs
+
+  - Include necessary `open` statements
+
+  - Target .NET 9 / ASP.NET Core 9
+
+  - Write concise explanations (2-3 sentences max) before the code
+
+  Be concise. Return only the code and a brief explanation.
+
+  '
+teacher: glm51
+temperature: 0.6

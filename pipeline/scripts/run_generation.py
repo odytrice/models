@@ -84,15 +84,34 @@ TEACHERS = {
         "top_p": 0.95,
         "num_predict": 16384,
     },
+    "glm51": {
+        "model": "glm-5.1:cloud",
+        "temperature": 0.7,
+        "top_p": 0.95,
+        "num_predict": 262144,  # 256K -- GLM-5.1 thinking tokens eat budget
+    },
     "kimi": {
         "model": "kimi-k2.5:cloud",
         "temperature": 0.7,
         "top_p": 0.9,
         "num_predict": 8192,
     },
+    "kimi26": {
+        "model": "kimi-k2.6:cloud",
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "num_predict": 262144,  # 256K -- K2.6 thinking tokens eat budget
+    },
+    "deepseek": {
+        "model": "deepseek-v3.2:cloud",
+        "temperature": 0.6,
+        "top_p": 0.9,
+        "num_predict": 8192,
+    },
 }
 
-OLLAMA_CHAT_URL = "http://localhost:11434/api/chat"
+OLLAMA_CHAT_URL = os.environ.get("OLLAMA_HOST", "http://localhost:11434") + "/api/chat"
+OLLAMA_API_KEY = os.environ.get("OLLAMA_API_KEY", "")
 
 # ── Data Classes ───────────────────────────────────────────────
 
@@ -245,6 +264,7 @@ async def generate_one(
                 response = await client.post(
                     OLLAMA_CHAT_URL,
                     json=payload,
+                    headers={"Authorization": f"Bearer {OLLAMA_API_KEY}"} if OLLAMA_API_KEY else {},
                     timeout=600.0,
                 )
                 response.raise_for_status()

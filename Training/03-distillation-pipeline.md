@@ -9,8 +9,58 @@ No existing distillation datasets exist for any of the three teachers. All train
 | Teacher | Ollama Command | Notes |
 |---------|---------------|-------|
 | **Kimi K2.5** | `ollama run kimi-k2.5:cloud` | 256K context |
+| **Kimi K2.6** | `ollama run kimi-k2.6:cloud` | 256K context, thinking mode (max output 262144) |
 | **MiniMax M2.7** | `ollama run minimax-m2.7:cloud` | 200K context |
 | **DeepSeek V3.2** | `ollama run deepseek-v3.2:cloud` | 128K context |
+| **GLM-5** | `ollama run glm-5:cloud` | 128K context |
+| **GLM-5.1** | `ollama run glm-5.1:cloud` | 128K context, thinking mode (max output 131072) |
+
+### Provider Configuration
+
+The pipeline supports two providers for running teacher models:
+
+| Provider | Flag | Host Env Var | Auth | Default URL |
+|----------|------|-------------|------|-------------|
+| **Ollama Cloud** | `--provider ollama_cloud` | `OLLAMA_HOST` | `OLLAMA_API_KEY` (Bearer) | `http://localhost:11434` |
+| **Xeon-AI** | `--provider xeon_ai` | `XEON_AI_HOST` | None | `http://xeon-ai:11434` |
+
+**Ollama Cloud** -- requires an active Ollama cloud subscription. Set `OLLAMA_API_KEY` in your environment:
+```bash
+# One-time: add to shell profile
+export OLLAMA_API_KEY="your-api-key"
+export OLLAMA_HOST="http://localhost:11434"  # default, omit if using localhost
+```
+
+**Xeon-AI** -- local or network Ollama instance with pre-pulled models. No auth required. Set `XEON_AI_HOST` if using a non-default address:
+```bash
+# One-time: add to shell profile
+export XEON_AI_HOST="http://xeon-ai:11434"  # default, omit if using default
+
+# Pull models on Xeon-AI before running
+ssh xeon-ai "ollama pull glm-5.1:cloud"
+ssh xeon-ai "ollama pull kimi-k2.6:cloud"
+```
+
+### Benchmark Runner
+
+```bash
+# Run all pending benchmarks (generates, verifies, compares)
+python pipeline/scripts/run_benchmark.py --provider ollama_cloud --concurrency 5 --verbose
+
+# Run specific teachers
+python pipeline/scripts/run_benchmark.py --teachers glm51 kimi26 --provider ollama_cloud
+
+# Run via Xeon-AI
+python pipeline/scripts/run_benchmark.py --teachers glm51 kimi26 --provider xeon_ai
+
+# Skip generation, just verify + compare existing data
+python pipeline/scripts/run_benchmark.py --verify-only
+
+# Just print comparison table
+python pipeline/scripts/run_benchmark.py --compare-only
+```
+
+**Important**: Thinking models (K2.6, GLM-5.1) need high `num_predict` because their internal reasoning tokens consume the output budget before visible code appears. The YAML configs set `max_tokens: 262144` (K2.6) and `max_tokens: 131072` (GLM-5.1) respectively. Do NOT lower these values or you'll get empty responses.
 
 ### Data Generation Strategy
 

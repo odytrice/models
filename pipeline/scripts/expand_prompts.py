@@ -23,6 +23,7 @@ import argparse
 import asyncio
 import json
 import logging
+import os
 import re
 import time
 from pathlib import Path
@@ -42,12 +43,16 @@ PIPELINE_DIR = SCRIPT_DIR.parent
 PROMPTS_DIR = PIPELINE_DIR / "prompts"
 EXPANDED_DIR = PROMPTS_DIR / "expanded"
 
-OLLAMA_CHAT_URL = "http://localhost:11434/api/chat"
+OLLAMA_CHAT_URL = os.environ.get("OLLAMA_HOST", "http://localhost:11434") + "/api/chat"
+OLLAMA_API_KEY = os.environ.get("OLLAMA_API_KEY", "")
 
 TEACHERS = {
     "kimi": "kimi-k2.5:cloud",
+    "kimi26": "kimi-k2.6:cloud",
     "minimax": "minimax-m2.7:cloud",
+    "deepseek": "deepseek-v3.2:cloud",
     "glm5": "glm-5:cloud",
+    "glm51": "glm-5.1:cloud",
 }
 
 EXPANSION_SYSTEM_PROMPT = """\
@@ -184,6 +189,7 @@ async def expand_seed(
         response = await client.post(
             OLLAMA_CHAT_URL,
             json=payload,
+            headers={"Authorization": f"Bearer {OLLAMA_API_KEY}"} if OLLAMA_API_KEY else {},
             timeout=600.0,
         )
         response.raise_for_status()
@@ -439,7 +445,21 @@ def main():
     parser.add_argument(
         "--concurrency", type=int, default=2, help="Max concurrent Ollama requests"
     )
+    parser.add_argument(
+        "--provider",
+        type=str,
+        default="default",
+        choices=["default", "ollama_cloud", "xeon_ai"],
+        help="Override API provider (default: use OLLAMA_HOST env var)",
+    )
     args = parser.parse_args()
+
+    # Override OLLAMA_CHAT_URL based on provider
+    if args.provider == "xeon_ai":
+        OLLAMA_CHAT_URL_ref = os.environ.get("XEON_AI_HOST", "http://xeon-ai:11434") + "/api/chat"
+        # Patch the module-level variable used by expand_seed
+        global OLLAMA_CHAT_URL
+        OLLAMA_CHAT_URL = OLLAMA_CHAT_URL_ref
 
     if args.all:
         asyncio.run(expand_all(args.variations, args.with_docs, args.concurrency))

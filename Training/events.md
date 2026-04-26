@@ -2027,3 +2027,46 @@ Despite the training failure, the project produced useful artifacts:
 3. **Test the trained model early** — the 3-epoch overfitting wasn't caught until after both models completed full training runs
 4. **VL models are dramatically harder to fine-tune** than text-only models (7 attention implementation attempts, monkey-patches, H200 required)
 5. **The pipeline was over-engineered for the wrong problem** — beautiful infrastructure solving a fundamentally mismatched goal
+
+---
+
+## 2026-04-24: Kimi K2.6 and GLM-5.1 Benchmarks
+
+Added two new teacher models to the benchmark pipeline.
+
+### New Models Benchmarked
+
+- **Kimi K2.6** (`kimi-k2.6:cloud`) — Updated version of Kimi K2.5
+- **GLM-5.1** (`glm-5.1:cloud`) — Updated version of GLM-5
+
+### Benchmark Results
+
+| Domain | Kimi K2.5 | Kimi K2.6 | MiniMax M2.7 | GLM-5 | GLM-5.1 |
+|--------|-----------|-----------|--------------|-------|---------|
+| **fsharp_core** (427 prompts) | 34.9% | **2.6%** | **76.6%** | 70.6% | 11.1% |
+| **fsharp_libraries** (122 prompts) | 20.5% | **0.8%** | **56.6%** | 14.9% | 29.8% |
+| **dotnet_aspnet** (208 prompts) | 0% (empty) | N/A | N/A | **97.1%** | 80.3% |
+
+### Key Findings
+
+- **Kimi K2.6 is dramatically worse than K2.5 at F# code generation**, with skip rates of 96%+ on fsharp_core and 99% on fsharp_libraries. The model returns prose explanations instead of F# code blocks. This is a major regression from K2.5 which had 41-61% skip rates (bad, but at least generated some code).
+- **GLM-5.1 shows mixed results vs GLM-5**: improved on fsharp_libraries (29.8% vs 14.9%) but regressed significantly on fsharp_core (11.1% vs 70.6%) and dotnet_aspnet (80.3% vs 97.1%). The high skip rate on fsharp_core (64%) suggests reliability issues.
+- **MiniMax M2.7 remains the best F# code generator** by a large margin.
+- **GLM-5 remains the best choice for .NET/ASP.NET** at 97.1% pass rate.
+
+### Pipeline Changes
+
+- Added provider configuration to `generate_data.py`, `expand_prompts.py`, `run_generation.py`, and `run_benchmark.py` supporting multiple Ollama-compatible endpoints
+- Providers: `ollama_cloud` (with `OLLAMA_API_KEY` env var), `xeon_ai` (no auth)
+- Added `--provider` flag to `run_benchmark.py` and `generate_data.py`
+- Auth headers automatically included via Bearer token from `OLLAMA_API_KEY`
+
+### Data Generated
+
+| File | Model | Prompts | Samples |
+|------|-------|---------|---------|
+| `fsharp_core_glm51.jsonl` | GLM-5.1 | 63 | 63 |
+| `fsharp_libraries_glm51.jsonl` | GLM-5.1 | 47 | 47 |
+| `dotnet_aspnet_glm51.jsonl` | GLM-5.1 | 208 | 208 |
+| `fsharp_core_kimi26.jsonl` | Kimi K2.6 | 427 | 427 |
+| `fsharp_libraries_kimi26.jsonl` | Kimi K2.6 | 122 | 122 |

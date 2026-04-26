@@ -5,14 +5,19 @@ Runs teacher models on prompts that the original teacher failed on,
 then verifies and compares pass rates across all teachers.
 
 Supports running specific teachers via --teachers flag.
+Supports multiple providers via --provider flag (default, ollama_cloud, xeon_ai).
+
+Set OLLAMA_API_KEY env var for Ollama Cloud authentication.
 
 Usage:
     python run_benchmark.py                         # Run all pending benchmarks
     python run_benchmark.py --teachers glm5         # Run GLM-5 only
+    python run_benchmark.py --teachers kimi26 glm51 # Run K2.6 and GLM-5.1
     python run_benchmark.py --verbose               # Per-line logs
     python run_benchmark.py --verify-only           # Skip generation, just verify + compare
     python run_benchmark.py --compare-only          # Just print comparison table
     python run_benchmark.py --concurrency 5         # Custom concurrency
+    python run_benchmark.py --provider xeon_ai      # Route all teachers through Xeon-AI
 """
 
 import argparse
@@ -35,7 +40,7 @@ MAIN_VERIFIED_DIR = PROJECT_DIR / "data" / "verified"
 
 # All benchmark files: (yaml_stem, output_name, teacher, domain)
 ALL_BENCHMARK_FILES = [
-    # Kimi benchmarks (from previous run)
+    # Kimi K2.5 benchmarks (from previous run)
     ("fsharp_core_kimi", "fsharp_core_kimi", "Kimi", "fsharp_core"),
     ("fsharp_libraries_kimi", "fsharp_libraries_kimi", "Kimi", "fsharp_libraries"),
     # MiniMax benchmarks (from previous run)
@@ -46,10 +51,27 @@ ALL_BENCHMARK_FILES = [
         "MiniMax",
         "fsharp_libraries",
     ),
-    # GLM-5 benchmarks (new)
+    # GLM-5 benchmarks (from previous run)
     ("fsharp_core_glm5", "fsharp_core_glm5", "GLM-5", "fsharp_core"),
     ("fsharp_libraries_glm5", "fsharp_libraries_glm5", "GLM-5", "fsharp_libraries"),
     ("dotnet_aspnet_glm5", "dotnet_aspnet_glm5", "GLM-5", "dotnet_aspnet"),
+    # Kimi K2.6 benchmarks (new)
+    ("fsharp_core_kimi26", "fsharp_core_kimi26", "Kimi-K2.6", "fsharp_core"),
+    (
+        "fsharp_libraries_kimi26",
+        "fsharp_libraries_kimi26",
+        "Kimi-K2.6",
+        "fsharp_libraries",
+    ),
+    # GLM-5.1 benchmarks (new)
+    ("fsharp_core_glm51", "fsharp_core_glm51", "GLM-5.1", "fsharp_core"),
+    (
+        "fsharp_libraries_glm51",
+        "fsharp_libraries_glm51",
+        "GLM-5.1",
+        "fsharp_libraries",
+    ),
+    ("dotnet_aspnet_glm51", "dotnet_aspnet_glm51", "GLM-5.1", "dotnet_aspnet"),
 ]
 
 logging.basicConfig(
@@ -80,15 +102,17 @@ def get_benchmark_files(teachers: list[str] = None) -> list[tuple]:
         return ALL_BENCHMARK_FILES
     teacher_map = {
         "kimi": "Kimi",
+        "kimi26": "Kimi-K2.6",
         "minimax": "MiniMax",
         "glm5": "GLM-5",
+        "glm51": "GLM-5.1",
     }
     teacher_names = {teacher_map.get(t, t) for t in teachers}
     return [f for f in ALL_BENCHMARK_FILES if f[2] in teacher_names]
 
 
 async def run_generate(
-    config: Path, output: Path, concurrency: int, label: str, verbose: bool
+    config: Path, output: Path, concurrency: int, label: str, verbose: bool, provider: str = "default"
 ):
     """Run generate_data.py on a benchmark YAML."""
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -114,6 +138,8 @@ async def run_generate(
         str(concurrency),
         "--progress-every",
         "1",
+        "--provider",
+        provider,
     ]
 
     if verbose:
@@ -140,13 +166,13 @@ async def run_generate(
     log.info(f"[{label}] Done: {final} samples")
 
 
-async def run_teacher_files(teacher: str, files: list, concurrency: int, verbose: bool):
+async def run_teacher_files(teacher: str, files: list, concurrency: int, verbose: bool, provider: str = "default"):
     """Run all benchmark files for a single teacher sequentially."""
     for yaml_stem, output_name, _, domain in files:
         config = BENCHMARK_DIR / f"{yaml_stem}.yaml"
         output = RAW_DIR / f"{output_name}.jsonl"
         label = f"{teacher}:{domain}"
-        await run_generate(config, output, concurrency, label, verbose)
+        await run_generate(config, output, concurrency, label, verbose, provider=provider)
 
 
 def print_status(benchmark_files: list, start_time: float = None):
@@ -229,7 +255,7 @@ async def status_loop(
         await asyncio.sleep(check_interval)
 
 
-async def generate_all(benchmark_files: list, concurrency: int, verbose: bool):
+async def generate_all(benchmark_files: list, concurrency: int, verbose: bool, provider: str = "default"):
     """Run all teachers in parallel."""
     start_time = time.monotonic()
 
@@ -243,13 +269,13 @@ async def generate_all(benchmark_files: list, concurrency: int, verbose: bool):
 
     if verbose:
         tasks = [
-            run_teacher_files(teacher, files, concurrency, verbose=True)
+            run_teacher_files(teacher, files, concurrency, verbose=True, provider=provider)
             for teacher, files in teacher_groups.items()
         ]
         await asyncio.gather(*tasks)
     else:
         gen_tasks = [
-            run_teacher_files(teacher, files, concurrency, verbose=False)
+            run_teacher_files(teacher, files, concurrency, verbose=False, provider=provider)
             for teacher, files in teacher_groups.items()
         ]
         gen_task = asyncio.gather(*gen_tasks)
@@ -346,24 +372,26 @@ def print_comparison():
         "fsharp_core": {
             "original_teacher": "DeepSeek",
             "original_verified": MAIN_VERIFIED_DIR / "fsharp_core.jsonl",
-            "benchmark_teachers": ["Kimi", "MiniMax", "GLM-5"],
+            "benchmark_teachers": ["Kimi", "Kimi-K2.6", "MiniMax", "GLM-5", "GLM-5.1"],
         },
         "fsharp_libraries": {
             "original_teacher": "DeepSeek",
             "original_verified": MAIN_VERIFIED_DIR / "fsharp_libraries.jsonl",
-            "benchmark_teachers": ["Kimi", "MiniMax", "GLM-5"],
+            "benchmark_teachers": ["Kimi", "Kimi-K2.6", "MiniMax", "GLM-5", "GLM-5.1"],
         },
         "dotnet_aspnet": {
             "original_teacher": "Kimi",
             "original_verified": MAIN_VERIFIED_DIR / "dotnet_aspnet.jsonl",
-            "benchmark_teachers": ["GLM-5"],
+            "benchmark_teachers": ["GLM-5", "GLM-5.1"],
         },
     }
 
     teacher_file_map = {
         "Kimi": "kimi",
+        "Kimi-K2.6": "kimi26",
         "MiniMax": "minimax",
         "GLM-5": "glm5",
+        "GLM-5.1": "glm51",
     }
 
     for domain, config in domains.items():
@@ -446,7 +474,7 @@ def print_comparison():
         print(
             f"    Original ({domains[domain]['original_teacher']}): {len(orig_passing)} passed"
         )
-        for teacher_name in ["Kimi", "MiniMax", "GLM-5"]:
+        for teacher_name in ["Kimi", "Kimi-K2.6", "MiniMax", "GLM-5", "GLM-5.1"]:
             if teacher_name in passing and passing[teacher_name]:
                 print(
                     f"    + {teacher_name}: {len(passing[teacher_name])} passed "
@@ -456,20 +484,27 @@ def print_comparison():
             f"    = Combined: {combined_total}/{total} ({combined_total / total * 100:.1f}%)"
         )
 
-    # dotnet_aspnet overlap (only GLM-5 benchmark)
+    # dotnet_aspnet overlap (GLM-5 and GLM-5.1 benchmarks)
     domain = "dotnet_aspnet"
-    glm5_passing = load_passing_ids(VERIFIED_DIR / "dotnet_aspnet_glm5.jsonl")
     orig_passing = load_passing_ids(MAIN_VERIFIED_DIR / "dotnet_aspnet.jsonl")
     orig_stats = load_verified_stats(MAIN_VERIFIED_DIR / "dotnet_aspnet.jsonl")
     total = orig_stats["total"]
-    combined = len(orig_passing) + len(glm5_passing)
+    combined = len(orig_passing)
 
     print(f"\n  dotnet_aspnet ({total} total prompts):")
     print(f"    Original (Kimi): {len(orig_passing)} passed")
-    print(
-        f"    + GLM-5: {len(glm5_passing)} passed ({len(glm5_passing - orig_passing)} exclusive)"
-    )
-    print(f"    = Combined: {combined}/{total} ({combined / total * 100:.1f}%)")
+
+    for teacher_name, teacher_key in [("GLM-5", "glm5"), ("GLM-5.1", "glm51")]:
+        path = VERIFIED_DIR / f"dotnet_aspnet_{teacher_key}.jsonl"
+        passing = load_passing_ids(path)
+        if passing:
+            combined = max(combined, len(orig_passing | passing))
+            exclusive = len(passing - orig_passing)
+            print(
+                f"    + {teacher_name}: {len(passing)} passed ({exclusive} exclusive)"
+            )
+
+    print(f"    = Best combined: {combined}/{total} ({combined / total * 100:.1f}%)")
 
     # Summary
     print(f"\n  {'=' * 65}")
@@ -491,10 +526,12 @@ def print_comparison():
             print(f"  {domain:25s} -> {best_teacher} ({best_rate:.1f}%)")
 
     # dotnet_aspnet
-    glm5_stats = load_verified_stats(VERIFIED_DIR / "dotnet_aspnet_glm5.jsonl")
-    if glm5_stats["total"] > 0:
-        rate = glm5_stats["pass"] / glm5_stats["total"] * 100
-        print(f"  {'dotnet_aspnet':25s} -> GLM-5 ({rate:.1f}%) vs Kimi original")
+    for teacher_name, teacher_key in [("GLM-5", "glm5"), ("GLM-5.1", "glm51")]:
+        path = VERIFIED_DIR / f"dotnet_aspnet_{teacher_key}.jsonl"
+        stats = load_verified_stats(path)
+        if stats["total"] > 0:
+            rate = stats["pass"] / stats["total"] * 100
+            print(f"  {'dotnet_aspnet':25s} -> {teacher_name} ({rate:.1f}%)")
 
     print(f"\n{'=' * 75}\n")
 
@@ -528,6 +565,13 @@ def main():
         default=None,
         help="Run specific teachers only (e.g., --teachers glm5)",
     )
+    parser.add_argument(
+        "--provider",
+        type=str,
+        default="default",
+        choices=["default", "ollama_cloud", "xeon_ai"],
+        help="Override provider for all teachers (default: use teacher's default provider)",
+    )
     args = parser.parse_args()
 
     benchmark_files = get_benchmark_files(args.teachers)
@@ -537,7 +581,7 @@ def main():
         return
 
     if not args.verify_only:
-        asyncio.run(generate_all(benchmark_files, args.concurrency, args.verbose))
+        asyncio.run(generate_all(benchmark_files, args.concurrency, args.verbose, provider=args.provider))
 
     run_verify(benchmark_files)
     print_comparison()

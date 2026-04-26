@@ -1,24 +1,28 @@
 """
 Multi-Teacher Data Generation Pipeline
 
-Generates training data from three teacher models via Ollama cloud API:
-  - Kimi K2.5:      Svelte, TypeScript, long-context, cross-domain
-  - MiniMax M2.7:   Agentic coding, Docker/K8s, multi-step SWE
-  - DeepSeek V3.2:  F#, Akka.NET, .NET/ASP.NET Core
+Generates training data from teacher models via Ollama-compatible API providers:
+  - Ollama Cloud:   Kimi K2.5/K2.6, MiniMax M2.7, DeepSeek V3.2, GLM-5/5.1
+  - Xeon-AI:        Self-hosted models at http://xeon-ai:11434
 
 Each teacher is assigned prompts from its strongest domains.
 Output is JSONL with one sample per line.
 
+Authentication:
+  Ollama Cloud reads API key from OLLAMA_API_KEY env var.
+  Xeon-AI requires no authentication.
+
 Usage:
   python generate_data.py --config ../prompts/fsharp_core.yaml --output ../../data/raw/fsharp_core.jsonl
   python generate_data.py --config ../prompts/svelte.yaml --output ../../data/raw/svelte.jsonl --concurrency 5
-  python generate_data.py --config ../prompts/fsharp_core.yaml --output ../../data/raw/fsharp_core.jsonl --with-docs
+  python generate_data.py --config ../prompts/fsharp_core.yaml --output ../../data/raw/fsharp_core.jsonl --provider xeon-ai
 """
 
 import argparse
 import asyncio
 import json
 import logging
+import os
 import time
 import uuid
 from dataclasses import dataclass, asdict
@@ -34,17 +38,27 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-# Ollama API endpoint (local Ollama server proxying to cloud models)
-OLLAMA_API_BASE = "http://localhost:11434"
-OLLAMA_CHAT_URL = f"{OLLAMA_API_BASE}/api/chat"
-OLLAMA_GENERATE_URL = f"{OLLAMA_API_BASE}/api/generate"
+# ── Provider Configuration ─────────────────────────────────────
 
-# Teacher model identifiers for Ollama cloud
+PROVIDERS = {
+    "ollama_cloud": {
+        "base_url": os.environ.get("OLLAMA_HOST", "http://localhost:11434"),
+        "auth": "bearer",  # reads from OLLAMA_API_KEY env var
+    },
+    "xeon_ai": {
+        "base_url": os.environ.get("XEON_AI_HOST", "http://xeon-ai:11434"),
+        "auth": None,
+    },
+}
+
+# Teacher model identifiers: teacher_key -> (provider, model_name)
 TEACHERS = {
-    "kimi": "kimi-k2.5:cloud",
-    "minimax": "minimax-m2.7:cloud",
-    "deepseek": "deepseek-v3.2:cloud",
-    "glm5": "glm-5:cloud",
+    "kimi":     ("ollama_cloud", "kimi-k2.5:cloud"),
+    "kimi26":   ("ollama_cloud", "kimi-k2.6:cloud"),
+    "minimax":  ("ollama_cloud", "minimax-m2.7:cloud"),
+    "deepseek": ("ollama_cloud", "deepseek-v3.2:cloud"),
+    "glm5":     ("ollama_cloud", "glm-5:cloud"),
+    "glm51":    ("ollama_cloud", "glm-5.1:cloud"),
 }
 
 # Default generation parameters per teacher
@@ -53,6 +67,11 @@ TEACHER_DEFAULTS = {
         "temperature": 0.7,
         "top_p": 0.9,
         "num_predict": 8192,
+    },
+    "kimi26": {
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "num_predict": 262144,  # 256K -- K2.6 thinking tokens eat budget; lower values cause empty responses
     },
     "minimax": {
         "temperature": 0.4,  # Lower temp to reduce verbosity
@@ -69,7 +88,50 @@ TEACHER_DEFAULTS = {
         "top_p": 0.95,
         "num_predict": 16384,
     },
+    "glm51": {
+        "temperature": 0.7,
+        "top_p": 0.95,
+        "num_predict": 131072,  # 128K -- GLM-5.1 max output; thinking tokens eat budget
+    },
 }
+
+
+def get_provider_base_url(provider_name: str) -> str:
+    """Resolve base URL for a provider."""
+    provider = PROVIDERS.get(provider_name)
+    if not provider:
+        raise ValueError(f"Unknown provider: {provider_name}")
+    return provider["base_url"]
+
+
+def get_chat_url(provider_name: str) -> str:
+    """Build the /api/chat endpoint URL for a provider."""
+    return f"{get_provider_base_url(provider_name)}/api/chat"
+
+
+def get_auth_headers(provider_name: str) -> dict:
+    """Build auth headers for a provider."""
+    provider = PROVIDERS.get(provider_name)
+    if not provider:
+        return {}
+    if provider["auth"] == "bearer":
+        api_key = os.environ.get("OLLAMA_API_KEY", "")
+        if api_key:
+            return {"Authorization": f"Bearer {api_key}"}
+    return {}
+
+
+def resolve_teacher(teacher_key: str, provider_override: str = None) -> tuple:
+    """Resolve a teacher key to (provider_name, model_name).
+
+    If provider_override is set, the model name is stripped of the
+    :cloud suffix and used as-is against the override provider.
+    """
+    default_provider, model_name = TEACHERS[teacher_key]
+    if provider_override:
+        # Use override provider but keep model name
+        return provider_override, model_name
+    return default_provider, model_name
 
 
 @dataclass
@@ -79,7 +141,8 @@ class Prompt:
     id: str
     instruction: str
     system_prompt: str
-    teacher: str  # "kimi", "minimax", or "deepseek"
+    teacher: str  # teacher key, e.g. "kimi26", "glm51"
+    provider: str  # provider name, e.g. "ollama_cloud", "xeon_ai"
     domain: str
     context: str = ""  # optional documentation context to include
     temperature: Optional[float] = None
@@ -150,12 +213,15 @@ async def generate_response(
     semaphore: asyncio.Semaphore,
     max_retries: int = 5,
 ) -> Optional[GeneratedSample]:
-    """Send a single prompt to the appropriate teacher via Ollama API.
+    """Send a single prompt to the appropriate teacher via the configured provider.
 
     Retries with exponential backoff on 429 (rate limit) and 5xx errors.
     """
     async with semaphore:
-        model = TEACHERS[prompt.teacher]
+        provider_name, model = resolve_teacher(prompt.teacher)
+        # CLI provider override takes precedence
+        provider_name = prompt.provider or provider_name
+        chat_url = get_chat_url(provider_name)
         defaults = TEACHER_DEFAULTS[prompt.teacher]
 
         temperature = prompt.temperature or defaults["temperature"]
@@ -194,19 +260,23 @@ async def generate_response(
             },
         }
 
+        # Build auth headers for this provider
+        headers = get_auth_headers(provider_name)
+
         for attempt in range(max_retries + 1):
             start = time.monotonic()
             try:
                 if attempt == 0:
-                    log.info(f"[{prompt.id}] Sending to {model}...")
+                    log.info(f"[{prompt.id}] Sending to {model} via {provider_name}...")
                 else:
                     log.info(
-                        f"[{prompt.id}] Retry {attempt}/{max_retries} to {model}..."
+                        f"[{prompt.id}] Retry {attempt}/{max_retries} to {model} via {provider_name}..."
                     )
 
                 response = await client.post(
-                    OLLAMA_CHAT_URL,
+                    chat_url,
                     json=payload,
+                    headers=headers,
                     timeout=600.0,  # 10 min timeout for long responses
                 )
                 response.raise_for_status()
@@ -352,13 +422,16 @@ async def generate_batch(
     log.info("=" * 60)
 
 
-def build_prompts(config: PromptConfig, context: str, doc_lookup=None) -> list[Prompt]:
+def build_prompts(config: PromptConfig, context: str, doc_lookup=None, provider_override: str = None) -> list[Prompt]:
     """Build Prompt objects from a loaded config.
 
     If doc_lookup is provided, prompts with a `context_query` field will have
     their context enriched with relevant documentation fetched on-demand.
     """
     prompts = []
+    # Resolve provider for this teacher
+    resolved_provider = provider_override or resolve_teacher(config.teacher)[0]
+
     for i, prompt_data in enumerate(config.prompts):
         prompt_id = prompt_data.get("id", f"{config.domain}_{i:04d}")
         instruction = prompt_data["instruction"]
@@ -388,6 +461,7 @@ def build_prompts(config: PromptConfig, context: str, doc_lookup=None) -> list[P
                 instruction=instruction,
                 system_prompt=config.system_prompt,
                 teacher=config.teacher,
+                provider=resolved_provider,
                 domain=config.domain,
                 context=prompt_context,
                 temperature=temperature,
@@ -402,8 +476,13 @@ async def main_async(args):
     config_path = args.config.resolve()
     config = load_prompt_config(config_path)
 
+    # Resolve provider
+    provider_override = args.provider if args.provider != "default" else None
+    resolved_provider, model_name = resolve_teacher(config.teacher, provider_override)
+
     log.info(
-        f"Loaded config: teacher={config.teacher}, domain={config.domain}, "
+        f"Loaded config: teacher={config.teacher}, provider={resolved_provider}, "
+        f"model={model_name}, domain={config.domain}, "
         f"{len(config.prompts)} prompts"
     )
 
@@ -420,7 +499,7 @@ async def main_async(args):
         doc_lookup = DocLookup()
         log.info("Doc lookup enabled -- will fetch docs for prompts with context_query")
 
-    prompts = build_prompts(config, context, doc_lookup)
+    prompts = build_prompts(config, context, doc_lookup, provider_override=provider_override)
 
     if doc_lookup:
         doc_lookup.close()
@@ -477,6 +556,13 @@ def main():
         type=int,
         default=10,
         help="Log progress every N completions (default: 10, use 1 for benchmarks)",
+    )
+    parser.add_argument(
+        "--provider",
+        type=str,
+        default="default",
+        choices=["default", "ollama_cloud", "xeon_ai"],
+        help="Override provider for all teachers (default: use teacher's default provider)",
     )
     args = parser.parse_args()
 
