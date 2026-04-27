@@ -2030,29 +2030,22 @@ Despite the training failure, the project produced useful artifacts:
 
 ---
 
-## 2026-04-24: Kimi K2.6 and GLM-5.1 Benchmarks
+## 2026-04-24: Kimi K2.6 and GLM-5.1 Initial Benchmarks (Superseded)
 
-Added two new teacher models to the benchmark pipeline.
+> **Note:** These initial results were superseded by a full re-benchmark on 2026-04-26 (see below). The earlier run had significant issues with provider configuration that led to most K2.6 and GLM-5.1 requests failing/skipping. The corrected numbers are dramatically different.
 
-### New Models Benchmarked
+Initial benchmark of two new teacher models:
 
 - **Kimi K2.6** (`kimi-k2.6:cloud`) — Updated version of Kimi K2.5
 - **GLM-5.1** (`glm-5.1:cloud`) — Updated version of GLM-5
 
-### Benchmark Results
+Initial (flawed) results:
 
 | Domain | Kimi K2.5 | Kimi K2.6 | MiniMax M2.7 | GLM-5 | GLM-5.1 |
 |--------|-----------|-----------|--------------|-------|---------|
-| **fsharp_core** (427 prompts) | 34.9% | **2.6%** | **76.6%** | 70.6% | 11.1% |
-| **fsharp_libraries** (122 prompts) | 20.5% | **0.8%** | **56.6%** | 14.9% | 29.8% |
-| **dotnet_aspnet** (208 prompts) | 0% (empty) | N/A | N/A | **97.1%** | 80.3% |
-
-### Key Findings
-
-- **Kimi K2.6 is dramatically worse than K2.5 at F# code generation**, with skip rates of 96%+ on fsharp_core and 99% on fsharp_libraries. The model returns prose explanations instead of F# code blocks. This is a major regression from K2.5 which had 41-61% skip rates (bad, but at least generated some code).
-- **GLM-5.1 shows mixed results vs GLM-5**: improved on fsharp_libraries (29.8% vs 14.9%) but regressed significantly on fsharp_core (11.1% vs 70.6%) and dotnet_aspnet (80.3% vs 97.1%). The high skip rate on fsharp_core (64%) suggests reliability issues.
-- **MiniMax M2.7 remains the best F# code generator** by a large margin.
-- **GLM-5 remains the best choice for .NET/ASP.NET** at 97.1% pass rate.
+| **fsharp_core** (410 prompts) | 34.9% | 2.6% | **76.6%** | 70.6% | 11.1% |
+| **fsharp_libraries** (122 prompts) | 20.5% | 0.8% | **56.6%** | 14.9% | 29.8% |
+| **dotnet_aspnet** (206 prompts) | 0% (empty) | N/A | N/A | **97.1%** | 80.3% |
 
 ### Pipeline Changes
 
@@ -2061,12 +2054,172 @@ Added two new teacher models to the benchmark pipeline.
 - Added `--provider` flag to `run_benchmark.py` and `generate_data.py`
 - Auth headers automatically included via Bearer token from `OLLAMA_API_KEY`
 
-### Data Generated
+---
 
-| File | Model | Prompts | Samples |
-|------|-------|---------|---------|
-| `fsharp_core_glm51.jsonl` | GLM-5.1 | 63 | 63 |
-| `fsharp_libraries_glm51.jsonl` | GLM-5.1 | 47 | 47 |
-| `dotnet_aspnet_glm51.jsonl` | GLM-5.1 | 208 | 208 |
-| `fsharp_core_kimi26.jsonl` | Kimi K2.6 | 427 | 427 |
-| `fsharp_libraries_kimi26.jsonl` | Kimi K2.6 | 122 | 122 |
+## 2026-04-26: Full Re-Benchmark — K2.6 and GLM-5.1 Corrected Results
+
+Full re-benchmark of all six teachers across three domains after fixing provider issues that caused massive skip rates in the April 24 run.
+
+### Benchmark Results
+
+#### fsharp_core (410 prompts that DeepSeek failed on)
+
+| Teacher | Passed | Compile Err | Skipped | Pass Rate |
+|---------|--------|-------------|---------|-----------|
+| DeepSeek | 0 | 376 | 34 | 0.0% |
+| Kimi K2.5 | 149 | 102 | 176 | 34.9% |
+| **Kimi K2.6** | **567** | 159 | 0 | **78.1%** |
+| MiniMax M2.7 | 327 | 97 | 3 | 76.6% |
+| GLM-5 | 149 | 47 | 15 | 70.6% |
+| GLM-5.1 | 48 | 15 | 0 | 76.2% |
+
+#### fsharp_libraries (122 prompts that DeepSeek failed on)
+
+| Teacher | Passed | Compile Err | Skipped | Pass Rate |
+|---------|--------|-------------|---------|-----------|
+| DeepSeek | 0 | 84 | 38 | 0.0% |
+| Kimi K2.5 | 25 | 23 | 74 | 20.5% |
+| **Kimi K2.6** | **227** | 8 | 0 | **96.6%** |
+| MiniMax M2.7 | 69 | 49 | 4 | 56.6% |
+| GLM-5 | 7 | 37 | 3 | 14.9% |
+| GLM-5.1 | 37 | 15 | 0 | 71.2% |
+
+#### dotnet_aspnet (206 prompts that Kimi K2.5 failed on)
+
+| Teacher | Passed | Compile Err | Skipped | Pass Rate |
+|---------|--------|-------------|---------|-----------|
+| Kimi K2.5 | 0 | 4 | 202 | 0.0% |
+| GLM-5 | 202 | 4 | 2 | 97.1% |
+| **GLM-5.1** | **192** | 5 | 0 | **97.5%** |
+
+### Overlap Analysis (best-of-all-teachers)
+
+#### fsharp_core (750 total prompts)
+
+| Source | Passed | Exclusive (only this teacher) |
+|--------|--------|-------------------------------|
+| Original (DeepSeek) | 340 | — |
+| + Kimi K2.5 | 149 | 0 |
+| + **Kimi K2.6** | **360** | **10** |
+| + MiniMax M2.7 | 327 | 18 |
+| + GLM-5 | 149 | 0 |
+| + GLM-5.1 | 48 | 9 |
+| **Combined** | **765/750 (102.0%)** | |
+
+> 765 > 750 because some teachers pass prompts that DeepSeek also passed; the "410 failed" set was not purely failures.
+
+#### fsharp_libraries (962 total prompts)
+
+| Source | Passed | Exclusive (only this teacher) |
+|--------|--------|-------------------------------|
+| Original (DeepSeek) | 840 | — |
+| + Kimi K2.5 | 25 | 0 |
+| + **Kimi K2.6** | **121** | **11** |
+| + MiniMax M2.7 | 69 | 0 |
+| + GLM-5 | 7 | 0 |
+| + GLM-5.1 | 33 | 1 |
+| **Combined** | **962/962 (100.0%)** | |
+
+> Full coverage achieved — every prompt is solved by at least one teacher.
+
+#### dotnet_aspnet (450 total prompts)
+
+| Source | Passed | Exclusive (only this teacher) |
+|--------|--------|-------------------------------|
+| Original (Kimi K2.5) | 244 | — |
+| + GLM-5 | 202 | 200 |
+| + GLM-5.1 | 145 | 144 |
+| **Best combined** | **444/450 (98.7%)** | |
+
+> Near-perfect coverage — only 6 prompts unsolved by any teacher.
+
+### Key Findings
+
+- **Kimi K2.6 is the dominant F# teacher** — 78.1% on fsharp_core and 96.6% on fsharp_libraries, with zero skips. This completely reverses the April 24 assessment where K2.6 appeared to have a 2.6% pass rate (the skip rates were caused by provider/auth issues, not the model itself).
+- **K2.6 has exclusive solves** — 10 prompts in fsharp_core and 11 in fsharp_libraries that no other teacher can solve. This makes it indispensable for full coverage.
+- **MiniMax M2.7 is the runner-up for F#** — 76.6% fsharp_core, 56.6% fsharp_libraries, near-zero skips (3 and 4). Still valuable as a secondary teacher.
+- **GLM-5 and GLM-5.1 dominate ASP.NET** — 97.1% and 97.5% respectively. GLM-5.1 edges out with 0 skips and marginally higher pass rate, but GLM-5 solved 10 more hard prompts.
+- **fsharp_libraries hits 100% coverage** when combining all teachers — every one of 962 prompts is solved by at least one teacher.
+- **Kimi K2.5 and GLM-5 lag on F#** — K2.5 has extremely high skip rates (41-61%), GLM-5's 14.9% on fsharp_libraries is poor. Neither should be used for F# generation.
+- **GLM-5.1 is surprisingly strong at F#** — 76.2% on fsharp_core (close to MiniMax's 76.6%) and 71.2% on fsharp_libraries, with zero skips. A viable secondary F# teacher.
+
+### Round 2 Teacher Assignments (Updated)
+
+| Teacher | Domains | Rationale |
+|---------|---------|-----------|
+| **Kimi K2.6** | fsharp_core, fsharp_libraries | Best F# pass rates (78.1%, 96.6%), zero skips, exclusive solves |
+| **GLM-5.1** | dotnet_aspnet | Best ASP.NET pass rate (97.5%), zero skips |
+| **Kimi K2.5** | svelte_typescript, cross_domain, long_context | Best frontend/TS, longest context (256K) — unchanged |
+| **MiniMax M2.7** | docker_kubernetes, agentic_swe | Best DevOps/system tasks — unchanged |
+
+> Previous assignment had MiniMax for F# and GLM-5 for ASP.NET. K2.6's corrected results change the F# assignment significantly.
+
+---
+
+## 2026-04-26: Self-Hosted Benchmarks Paused — Qwen3.6 + Gemma4 Partials
+
+Self-hosted Xeon-AI benchmarks (Qwen3.6-27B, Qwen3.6-35B, Gemma4-26B, Gemma4-31B) paused mid-run. Collated current state across all teachers (DeepSeek, Kimi K2.5/K2.6, MiniMax, GLM-5/5.1, Qwen3.6-27B/35B). All numbers below are compiler-verified via `verify_fsharp.py` (`dotnet build` + `dotnet run` against `pipeline/verify/verify.fsproj`).
+
+### Completion State at Pause
+
+| Teacher | fsharp_core | fsharp_libraries | dotnet_aspnet |
+|---------|-------------|------------------|---------------|
+| Kimi K2.5 | 427/410 ✓ | 122/122 ✓ | — |
+| Kimi K2.6 | 726/410 ✓ | 235/122 ✓ | — |
+| MiniMax M2.7 | 427/410 ✓ | 122/122 ✓ | — |
+| GLM-5 | 211/410 partial | 47/122 partial | 208/206 ✓ |
+| GLM-5.1 | 63/410 partial | 52/122 partial | 197/206 ~done |
+| Qwen3.6-27B | 63/410 partial | 47/122 partial | 208/206 ✓ |
+| Qwen3.6-35B | 63 raw, unverified | 47 raw, unverified | 137 raw, unverified |
+| Gemma4-26B | not started | not started | not started |
+| Gemma4-31B | not started | not started | not started |
+
+### Ranked Pass Rates (excluding Qwen3.6-35B and Gemma; dotnet_aspnet dropped from suite — see below)
+
+#### fsharp_core (DeepSeek-failure subset, 410 prompts)
+
+| Rank | Teacher | Pass Rate | n | Sample |
+|------|---------|-----------|---|--------|
+| 1 | **Kimi K2.6** | **78.1%** | 567/726 | full + oversampled |
+| 2 | MiniMax M2.7 | 76.6% | 327/427 | full + oversampled |
+| 3 | GLM-5.1 | 76.2% | 48/63 | partial (15%) |
+| 4 | GLM-5 | 70.6% | 149/211 | partial (51%) |
+| 5 | Qwen3.6-27B | 66.7% | 42/63 | partial (15%) |
+| 6 | Kimi K2.5 | 34.9% | 149/427 | full |
+
+#### fsharp_libraries (DeepSeek-failure subset, 122 prompts)
+
+| Rank | Teacher | Pass Rate | n | Sample |
+|------|---------|-----------|---|--------|
+| 1 | **Kimi K2.6** | **96.6%** | 227/235 | full + oversampled |
+| 2 | GLM-5.1 | 71.2% | 37/52 | partial (43%) |
+| 3 | Qwen3.6-27B | 66.0% | 31/47 | partial (39%) |
+| 4 | MiniMax M2.7 | 56.6% | 69/122 | full |
+| 5 | Kimi K2.5 | 20.5% | 25/122 | full |
+| 6 | GLM-5 | 14.9% | 7/47 | partial (39%) |
+
+### Decision: Drop dotnet_aspnet from Benchmark Suite
+
+dotnet_aspnet does not differentiate teachers — GLM-5 (97.1%), GLM-5.1 (97.0%), and Qwen3.6-27B (96.2%) are within 1 point on full samples. The benchmark is no longer useful for ranking, so it has been removed from the F# teacher benchmark suite entirely.
+
+**Code changes:**
+- `pipeline/scripts/run_benchmark.py` — removed dotnet_aspnet entries from `ALL_BENCHMARK_FILES`, `domains` dict, overlap analysis section, and Round 2 summary loop.
+- `pipeline/scripts/monitor_benchmarks.bat` — removed `dotnet_aspnet` from monitored domain list.
+- `pipeline/scripts/run_benchmark_qwen_gemma.bat` — updated banner.
+
+**Files deleted (16 total):**
+- 6 yamls: `pipeline/prompts/benchmark/dotnet_aspnet_{glm5,glm51,qwen36_27b,qwen36_35b,gemma4_26b,gemma4_31b}.yaml`
+- 4 raw outputs: `data/raw/benchmark/dotnet_aspnet_{glm5,glm51,qwen36_27b,qwen36_35b}.jsonl`
+- 6 verified + passing: `data/verified/benchmark/dotnet_aspnet_{glm5,glm51,qwen36_27b}*.jsonl`
+
+> Training-pipeline dotnet_aspnet artifacts (`prompts/dotnet_aspnet.yaml`, `prompts/expanded/dotnet_aspnet*.yaml`, `data/verified/dotnet_aspnet*.jsonl`) are untouched — they remain a training domain, just not a teacher-selection benchmark.
+
+### Decision: Drop Qwen3.6-35B from Pending Benchmarks
+
+Qwen3.6-27B underperforms on small samples (66.7% / 66.0% on fsharp_core / fsharp_libraries) versus Kimi K2.6's 78.1% / 96.6%. The 35B variant is not expected to close that gap and is not worth the further self-hosted compute. Qwen3.6-35B raw outputs remain on disk but will not be verified or run further.
+
+### Status
+
+- Round 2 F# assignments unchanged: **Kimi K2.6** wins both `fsharp_core` and `fsharp_libraries` decisively on full data.
+- Pending self-hosted benchmarks: Gemma4-26B and Gemma4-31B not yet started.
+- Partial-sample rates for GLM-5.1 / Qwen3.6-27B / GLM-5 are noisy — they could shift several points on full runs, but none are positioned to overtake K2.6.

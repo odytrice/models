@@ -1,0 +1,584 @@
+domain: fsharp_core
+max_tokens: 32768
+prompts:
+- id: fsharp_core_0002_exp_000
+  instruction: 'Implement active patterns in F# for classifying network connection states:
+
+    1. A partial active pattern that identifies "Connected", "Disconnected", or "Connecting" states from a status code
+
+    2. A parameterized active pattern that validates URLs against specific protocols (http/https)
+
+    3. A multi-case active pattern that categorizes latency as Excellent, Good, Fair, or Poor
+
+    Include match expressions demonstrating each pattern with real-world networking scenarios.'
+- id: fsharp_core_0002_exp_014
+  instruction: 'Construct F# active patterns for music library organization:
+
+    1. A partial active pattern that identifies music genres (Rock, Jazz, Classical, Electronic)
+
+    2. A parameterized active pattern that validates audio file formats and bitrates
+
+    3. A multi-case active pattern that classifies song popularity as Unknown, Niche, Popular, or Viral
+
+    Demonstrate with metadata parsing including incomplete/corrupted tags.'
+- id: fsharp_core_0002_exp_026
+  instruction: 'Create F# active patterns for insurance claim processing:
+
+    1. A partial active pattern that categorizes claim types (Auto, Home, Health, Life)
+
+    2. A parameterized active pattern that validates policy numbers against underwriting rules
+
+    3. A multi-case active pattern that classifies claim complexity as Simple, Moderate, Complex, or Fraudulent
+
+    Include regulatory compliance checks and multi-jurisdiction handling.'
+- id: fsharp_core_0002_exp_029
+  instruction: 'Construct F# active patterns for quantum computing simulations:
+
+    1. A partial active pattern that identifies quantum states (|0⟩, |1⟩, |+⟩, |−⟩)
+
+    2. A parameterized active pattern that validates quantum gate operations
+
+    3. A multi-case active pattern that classifies circuit complexity as Trivial, Simple, Moderate, or Complex
+
+    Demonstrate with superposition and entanglement scenarios including error correction.'
+- id: fsharp_core_0003_exp_009
+  instruction: 'Design a file search query evaluator in F# using a recursive discriminated union.
+
+    Support: FilenameContains, ExtensionEquals, SizeGreaterThan, ModifiedAfter,
+
+    AndQuery, OrQuery, NotQuery. Write an eval function that filters file paths,
+
+    and a pretty-print function that shows the query in natural language.'
+- id: fsharp_core_0003_exp_015
+  instruction: 'Design a smart home automation trigger system in F# using a recursive DU.
+
+    Support: MotionDetected, TimeBetween, LightLevelBelow, AndTrigger, OrTrigger.
+
+    Write an eval function that activates devices when triggers fire,
+
+    and a pretty-print function that describes the automation scenario.'
+- id: fsharp_core_0004_exp_017
+  instruction: 'Design an F# discriminated union for a insurance policy system with policies, riders, exclusions, and beneficiaries.
+
+    Implement these functions using pattern matching:
+
+    - totalCoverage: calculates sum insured across all policies
+
+    - adjustPremiums: updates premiums based on risk factors
+
+    - foldClaims: aggregates historical claim amounts
+
+    - consolidatePolicies: merges duplicate coverage types'
+- id: fsharp_core_0005_exp_001
+  instruction: Create an F# "Transaction" computation expression builder for banking operations that accumulates authorization failures. The Transaction type should be either Approved<'T> or Denied<string list>. Implement Bind, Return, and MergeSources. Show a multi-step transaction validation checking account balance, fraud score, and daily limits.
+- id: fsharp_core_0005_exp_006
+  instruction: Design an F# "GameState" computation expression builder for game logic validation that accumulates rule violations. The GameState type should be Legal<'T> or Illegal<string list>. Include Bind, Return, and MergeSources. Demonstrate with chess move validation checking piece movement, check status, and turn order.
+- id: fsharp_core_0005_exp_028
+  instruction: Implement an F# "Climate" computation expression builder for environmental data validation that accumulates measurement anomalies. The Dataset type should be Reliable<'T> or Unreliable<string list>. Include Bind, Return, and MergeSources. Demonstrate with weather station validation checking sensor calibration, temporal consistency, and geographic plausibility.
+- id: fsharp_core_0006_exp_004
+  instruction: 'Explain F# async expressions for IoT device management:
+
+    1. Sequential device registration (authenticate → configure)
+
+    2. Parallel sensor data collection from multiple devices
+
+    3. Interop with device SDK using Async.AwaitTask
+
+    Show how to handle disconnected devices and retry logic.'
+- id: fsharp_core_0006_exp_014
+  instruction: 'Design an F# async computation for a stock inventory system:
+
+    1. Sequential order processing (reserve → pick → pack)
+
+    2. Parallel stock level updates across multiple locations
+
+    3. Integration with barcode scanner using Async.AwaitTask
+
+    Handle concurrent modifications and race conditions.'
+- id: fsharp_core_0006_exp_016
+  instruction: 'Explain F# async expressions for a cryptocurrency exchange:
+
+    1. Sequential trade execution (validate → match → settle)
+
+    2. Parallel market data feeds from different sources
+
+    3. Integration with blockchain node using Async.AwaitTask
+
+    Show how to handle network partitions and rollbacks.'
+- id: fsharp_core_0006_exp_022
+  instruction: 'Design an F# async computation for a restaurant ordering system:
+
+    1. Sequential order flow (menu → customization → payment)
+
+    2. Parallel kitchen ticket distribution
+
+    3. Integration with delivery platform using Async.AwaitTask
+
+    Handle special dietary requirements and modifications.'
+- id: fsharp_core_0006_exp_021
+  instruction: 'Implement an F# async workflow for a classroom management system:
+
+    1. Sequential lesson delivery (content → quiz → feedback)
+
+    2. Parallel student progress tracking
+
+    3. Integrate with video conferencing using Async.AwaitTask
+
+    Handle varying connection speeds and accessibility needs.'
+- id: fsharp_core_0007_exp_006
+  instruction: 'Design an F# task computation expression for IoT device management that:
+
+    1. Polls multiple sensors concurrently
+
+    2. Normalizes measurement units
+
+    3. Detects anomaly patterns across devices
+
+    4. Triggers alerts via multiple channels (SMS, email)
+
+    Handle device timeouts, calibration errors, and alert throttling to prevent spam.'
+- id: fsharp_core_0008_exp_004
+  instruction: 'Create F# code demonstrating composition and piping for Financial Transaction analysis.
+
+    Transaction record has TransactionId, Amount, Currency, Date, and Status fields:
+
+    1. Filter to USD transactions over $10,000 from the last quarter
+
+    2. Sort by amount descending
+
+    3. Group by transaction status
+
+    4. Map to regulatory reporting objects
+
+    Include date range validation and show both pipeline and composition with custom operators.'
+- id: fsharp_core_0008_exp_016
+  instruction: 'Create F# pipeline and composition for Fitness Tracker Activity records.
+
+    Activity record includes UserId, Steps, CaloriesBurned, Duration, and ActivityDate:
+
+    1. Filter activities with steps > 10000 and calories > 500 from the last month
+
+    2. Sort by calories burned descending
+
+    3. Group by UserId
+
+    4. Map to achievement award notifications
+
+    Include date range filtering and show both point-free and pointful composition styles.'
+- id: fsharp_core_0009_exp_014
+  instruction: 'Design a caching system in F# using partial application.
+
+    Create a base cache function, then use currying to generate caches with different:
+
+    - Expiration policies
+
+    - Storage backends (memory, Redis, file)
+
+    - Key generation strategies
+
+    Show how to create type-safe cache accessors for different data types.'
+- id: fsharp_core_0010_exp_005
+  instruction: 'Implement a financial transaction audit trail using F# records with custom equality.
+
+    Show: implementing IEquatable<T> for record types, handling decimal precision
+
+    in equality comparisons, and creating immutable audit entries with cryptographic hashes.
+
+    Include performance considerations for large-scale comparison operations.'
+- id: fsharp_core_0010_exp_004
+  instruction: 'Create a game entity system comparing F# struct records, classes, and C# structs.
+
+    Demonstrate: update patterns for 10,000 game entities in a tight loop,
+
+    memory layout considerations, and interop with a C# game engine.
+
+    Include A/B performance tests for position/velocity updates.'
+- id: fsharp_core_0010_exp_015
+  instruction: 'Build a compiler AST representation comparing F# records, discriminated unions, and classes.
+
+    Show: pattern matching exhaustiveness, visitor pattern alternatives,
+
+    and performance for large syntax trees. Include incremental recompilation support.'
+- id: fsharp_core_0010_exp_016
+  instruction: 'Create a streaming data ingestion system using F# records with structural comparison.
+
+    Demonstrate: distributed deduplication, windowed aggregation performance,
+
+    and comparison with anonymous records for schema-on-read scenarios.'
+- id: fsharp_core_0010_exp_026
+  instruction: 'Design a voice recognition feature extraction pipeline using F# records.
+
+    Demonstrate: real-time audio frame processing, memory pooling with struct records,
+
+    and comparison with mutable buffers. Include embedded system constraints.'
+- id: fsharp_core_0011_exp_005
+  instruction: 'Develop F# code with units of measure for electrical engineering:
+
+    1. Define units for volts, amps, ohms, watts, and derived units (V/A, W*hour)
+
+    2. Write functions to calculate power, resistance, energy consumption using Ohm''s law
+
+    3. Show how the compiler prevents mixing incompatible units in circuit calculations
+
+    4. Demonstrate converting between AC and DC power measurements'
+- id: fsharp_core_0011_exp_017
+  instruction: 'Develop F# code with units of measure for a structural engineering application:
+
+    1. Define units for newtons, pascals, meters, and derived units (N/m², bending moments)
+
+    2. Write functions to calculate stress, strain, load-bearing capacity, and safety factors
+
+    3. Show how the compiler prevents mixing incompatible units in structural calculations
+
+    4. Implement conversion between different building code measurement systems'
+- id: fsharp_core_0011_exp_020
+  instruction: 'Develop F# code with units of measure for a solar energy system:
+
+    1. Define units for watts, watt-hours, square meters, and derived units (W/m², efficiency percentages)
+
+    2. Write functions to calculate panel output, system efficiency, and payback period
+
+    3. Show how the compiler prevents mixing incompatible units in energy calculations
+
+    4. Implement conversion between different energy measurement standards'
+- id: fsharp_core_0013_exp_002
+  instruction: 'Design a financial transaction monitoring system in F# using Seq module functions.
+
+    Given a sequence of banking transactions (timestamp, accountId, amount, type), implement functions using
+
+    Seq.groupBy, Seq.sortBy, Seq.choose, Seq.collect, Seq.partition, and Seq.scan
+
+    to detect suspicious activity and calculate running balances. Include explanatory comments.'
+- id: fsharp_core_0014_exp_016
+  instruction: 'Create a digital asset management system for media:
+
+    1. Validate file formats against supported codecs
+
+    2. Check resolution requirements for different delivery platforms
+
+    3. Validate metadata completeness (title, creator, rights)
+
+    4. Return Result<MediaAsset, ValidationError list> with all issues
+
+    Implement progressive validation where early failures don''t stop all checks.'
+- id: fsharp_core_0015_exp_000
+  instruction: 'Implement F# functions for a healthcare patient record system that safely accesses nested data:
+
+    1. Use Option.bind to retrieve medication allergies from patient records (may be missing)
+
+    2. Use Option.filter to only return severe allergies
+
+    3. Use Option.defaultValue with "No known severe allergies" for empty results
+
+    4. Pattern match to handle different allergy severity levels
+
+    5. Include a function using Option.ofObj to safely read from a legacy C# API that returns null
+
+    Create a pipeline that chains these operations for patient risk assessment.'
+- id: fsharp_core_0016_exp_028
+  instruction: 'Design a F# e-wallet money transfer system:
+
+    - Transfer can be Initiated, Processing, Completed, or Failed
+
+    - Initiated has amount and recipient, Processing adds transaction ID and timestamp, Failed adds error code
+
+    - Validate sufficient balance before processing, idempotent retry for failures
+
+    - Explain how this prevents duplicate transfers.'
+- id: fsharp_core_0018_exp_004
+  instruction: Debug a memory leak in an F# analytics service that uses a C# machine learning library. The leak occurs when passing F# records with optional fields to C# methods. Use memory profiling tools and fix the interop issue.
+- id: fsharp_core_0018_exp_005
+  instruction: Implement a high-frequency trading order book in F# that interoperates with a C# risk engine. Use struct tuples for performance, handle concurrent modifications with locks, and benchmark the interop overhead.
+- id: fsharp_core_0018_exp_018
+  instruction: Refactor a C# blockchain transaction validator to be called from F#. Handle big integer arithmetic interop, convert C# iterator patterns to F# sequences, and implement Merkle tree verification functionally.
+- id: fsharp_core_0018_exp_021
+  instruction: Build an F# natural language processing pipeline using a C# ML.NET model. Preprocess text with F# string operations, batch score documents efficiently, and handle model version switching without downtime.
+- id: fsharp_core_0018_exp_023
+  instruction: Implement real-time collaborative editing in F# using a C# WebSocket library. Convert operational transformations between F# and C# data structures, handle concurrent edits with conflict resolution, and benchmark performance.
+- id: fsharp_core_0018_exp_025
+  instruction: Build an F# genomic sequence analyzer that calls C# bioinformatics libraries. Handle large memory buffers with native interop, parallelize computations across cores, and visualize results with C# charting libraries.
+- id: fsharp_core_0020_exp_010
+  instruction: Design a game state synchronization agent in F# for a multiplayer online game. The agent should process PlayerAction(playerId, action), GetGameState, and BroadcastUpdate messages while maintaining consistency, handling player disconnects, and supporting rollback for lag compensation.
+- id: fsharp_core_0022_exp_006
+  instruction: 'Implement a network packet parser using struct records in F#.
+
+    1. Create struct records for different packet headers (Ethernet, IP, TCP)
+
+    2. Write a zero-copy parser that extracts fields without allocations
+
+    3. Show performance gains when processing 1Gbps network traffic
+
+    4. Include error handling for malformed packets using Result types
+
+    5. Compare with C-style structs for interoperability'
+- id: fsharp_core_0022_exp_008
+  instruction: 'Build a stock trading order system using struct records.
+
+    1. Create struct records for Order, Trade, and Quote types
+
+    2. Implement matching engine logic that processes orders without allocations
+
+    3. Show microsecond-level latency improvements over reference types
+
+    4. Include concurrency considerations for lock-free data structures
+
+    5. Demonstrate memory pooling for frequently allocated order objects'
+- id: fsharp_core_0022_exp_009
+  instruction: 'Design a configuration parsing library with struct discriminated unions.
+
+    1. Create struct DUs for configuration values (String, Int, Float, Bool, Array)
+
+    2. Implement a type-safe parser that converts JSON/YAML to the DU
+
+    3. Show performance when loading and validating large configuration files
+
+    4. Discuss memory efficiency for embedded systems with limited RAM
+
+    5. Include support for environment variable overrides'
+- id: fsharp_core_0022_exp_011
+  instruction: 'Create a weather data processing pipeline with struct discriminated unions.
+
+    1. Design struct DUs for weather phenomena (Temperature, Precipitation, Wind, Pressure)
+
+    2. Implement aggregation functions for time-series data
+
+    3. Show allocation efficiency when processing historical weather datasets
+
+    4. Include error handling for sensor malfunctions and missing data
+
+    5. Compare with Python data structures for interoperability'
+- id: fsharp_core_0022_exp_014
+  instruction: 'Implement a CSV/TSV parser using struct records for row representation.
+
+    1. Create struct records for typed columns (IntColumn, FloatColumn, StringColumn)
+
+    2. Design a zero-allocation parser for high-volume data processing
+
+    3. Show performance comparison with popular CSV libraries
+
+    4. Include memory-mapped file support for large datasets
+
+    5. Discuss trade-offs for schema inference and dynamic typing'
+- id: fsharp_core_0022_exp_018
+  instruction: 'Implement a blockchain transaction structure using struct discriminated unions.
+
+    1. Create struct DUs for transaction types (Coinbase, Transfer, SmartContract)
+
+    2. Design Merkle tree nodes as struct records for efficient hashing
+
+    3. Show performance benefits when validating transaction blocks
+
+    4. Include cryptographic signature verification optimizations
+
+    5. Discuss memory pooling for mining operations'
+- id: fsharp_core_0022_exp_023
+  instruction: 'Create a social media notification system using struct records.
+
+    1. Design struct records for Notification, User, and Engagement types
+
+    2. Implement real-time delivery pipeline without GC pauses
+
+    3. Show scalability benefits for millions of daily notifications
+
+    4. Include prioritization and rate limiting logic
+
+    5. Compare with message queue serialization formats'
+- id: fsharp_core_0022_exp_028
+  instruction: 'Build a competitive programming solution using struct discriminated unions.
+
+    1. Create struct DUs for graph nodes (for BFS/DFS algorithms)
+
+    2. Implement Dijkstra''s algorithm with priority queue using struct tuples
+
+    3. Show performance benefits in time-limited judging environments
+
+    4. Include memory constraints for large test cases
+
+    5. Discuss when to use mutable structs for in-place updates'
+- id: fsharp_core_0023_exp_003
+  instruction: 'Design an F# computation expression for form validation in a healthcare application.
+
+    Validate patient data: name (non-empty), birthdate (valid date), blood type (valid enum), and insurance ID (format XXX-XX-XXXX).
+
+    Accumulate ALL errors using `and!`. Include custom error messages for each field.'
+- id: fsharp_core_0023_exp_005
+  instruction: 'Create an F# parsing CE for CSV rows using applicative style.
+
+    Parse a string into a record with: int ID, string name, decimal price, and DateTime timestamp.
+
+    Use `and!` to parse each column independently, accumulating ALL parsing errors (not just first).'
+- id: fsharp_core_0023_exp_009
+  instruction: 'Create an F# computation expression for concurrent API response combination.
+
+    Call three independent microservices: user service, order service, inventory service.
+
+    Combine responses using `and!` into a dashboard view, handling partial failures gracefully.'
+- id: fsharp_core_0023_exp_012
+  instruction: 'Implement an F# smart home automation rule validator.
+
+    Validate trigger conditions: time range (valid), device status (available), and user permissions (async check).
+
+    Run validations concurrently with `and!` and accumulate ALL validation failures.'
+- id: fsharp_core_0023_exp_024
+  instruction: 'Implement an F# content moderation system with concurrent rule checking.
+
+    Check text against: profanity filter, hate speech detector (async), spam probability (async), and copyright scanner (async).
+
+    Use `and!` to run checks in parallel and accumulate ALL violation flags.'
+- id: fsharp_core_0023_exp_026
+  instruction: 'Build an F# cryptocurrency trading validator with parallel risk checks.
+
+    Validate: wallet balance (async), transaction size limits, market volatility threshold, and regulatory compliance (async).
+
+    Accumulate ALL risk violations using `and!` before executing trade.'
+- id: fsharp_core_0023_exp_028
+  instruction: 'Implement an F# document processing pipeline with parallel metadata extraction.
+
+    Extract and validate: author information, creation date, security classification, and language detection concurrently.
+
+    Use `and!` to accumulate ALL extraction errors before indexing document.'
+- id: fsharp_core_0023_exp_029
+  instruction: 'Create an F# manufacturing quality control system using applicative style.
+
+    Validate product measurements: length tolerance, weight range, material purity, and surface finish.
+
+    Run checks concurrently with `and!` and accumulate ALL quality defects for a batch report.'
+- id: fsharp_core_0024_exp_006
+  instruction: 'Create an F# script for managing AWS infrastructure:
+
+    1. Reference AWSSDK and infrastructure-as-code libraries
+
+    2. Parse CloudFormation or Terraform templates as command-line arguments
+
+    3. Validate template syntax and security configurations
+
+    4. Deploy stacks with environment-specific parameters
+
+    5. Monitor deployment progress with timeout and rollback on failure
+
+    6. Clean up unused resources older than specified retention period'
+- id: fsharp_core_0024_exp_007
+  instruction: 'Write an F# automation script for social media content scheduling:
+
+    1. Reference Twitter and Mastodon API client libraries
+
+    2. Read scheduled posts from Markdown files with metadata headers
+
+    3. Validate content against platform-specific constraints (length, media)
+
+    4. Post to multiple platforms simultaneously with error isolation
+
+    5. Log engagement metrics to analytics database
+
+    6. Reschedule failed posts with exponential backoff'
+- id: fsharp_core_0024_exp_013
+  instruction: 'Write an F# script for automated mobile app build and signing:
+
+    1. Reference Xamarin and mobile development tooling packages
+
+    2. Accept platform (iOS/Android) and build mode (debug/release) as arguments
+
+    3. Manage code signing certificates and provisioning profiles securely
+
+    4. Run platform-specific build commands with architecture variations
+
+    5. Execute UI automation tests on device farms/emulators
+
+    6. Distribute builds to app stores and internal test groups'
+- id: fsharp_core_0024_exp_017
+  instruction: 'Develop an F# script for game asset compilation:
+
+    1. Reference image processing and audio conversion libraries
+
+    2. Process sprites, textures, and sound files with platform-specific optimizations
+
+    3. Generate asset bundles with LOD (level of detail) variants
+
+    4. Create asset manifest with dependency mapping and versioning
+
+    5. Upload to content delivery network with cache invalidation
+
+    6. Verify asset integrity with checksum validation'
+- id: fsharp_core_0024_exp_019
+  instruction: 'Write an F# script for legal document analysis:
+
+    1. Reference PDF extraction and legal NLP libraries
+
+    2. Extract clauses, definitions, and obligations from contract documents
+
+    3. Compare document versions with redline highlighting
+
+    4. Validate against clause libraries and regulatory requirements
+
+    5. Generate executive summary with risk scoring
+
+    6. Maintain chain of custody for document modifications'
+- id: fsharp_core_0025_exp_009
+  instruction: 'Create a logistics route optimization algorithm:
+
+    1. Recursive pathfinding that overflows on complex networks
+
+    2. Tail-recursive Dijkstra implementation with priority queue accumulator
+
+    3. CPS-based route search with constraint propagation
+
+    4. Use `Seq.unfold` to generate possible routes iteratively
+
+    Discuss stack safety in mission-critical transportation systems.'
+- id: fsharp_core_0025_exp_017
+  instruction: 'Implement a cryptographic hash chain verifier:
+
+    1. Recursive chain validation that overflows on long chains
+
+    2. Tail-recursive Merkle tree builder with hash accumulator
+
+    3. CPS-based proof verification with side channel protection
+
+    4. Use `Seq.pairwise` and `Seq.fold` for iterative verification
+
+    Discuss constant-time execution requirements in security algorithms.'
+- id: fsharp_core_0025_exp_018
+  instruction: 'Build a quantum circuit simulator:
+
+    1. Recursive gate application that fails on deep circuits
+
+    2. Tail-recursive state vector evolution with linear algebra accumulator
+
+    3. CPS-based measurement simulation with probability context
+
+    4. Use `Seq.fold` over gates for iterative simulation
+
+    Explain recursion optimization in F# with large stack-allocated data.'
+- id: fsharp_core_0025_exp_021
+  instruction: 'Build a version control system diff algorithm:
+
+    1. Recursive Myers diff that fails on large files
+
+    2. Tail-recursive patience diff with matching accumulator
+
+    3. CPS-based line matching with edit script generation
+
+    4. Use `Seq.fold` over lines for iterative comparison
+
+    Discuss recursion in F# interactive and scripting contexts.'
+system_prompt: 'You are an expert F# developer. Write idiomatic, production-quality F# code.
+
+  Follow these conventions:
+
+  - Use pipeline operators (|>) for data transformations
+
+  - Prefer immutable data (records, DUs) over mutable state
+
+  - Use pattern matching extensively
+
+  - Use computation expressions where appropriate
+
+  - Include type annotations on public APIs
+
+  - Write concise explanations (2-3 sentences max) before the code
+
+  - All code must compile with .NET 9 and F# 9
+
+  '
+teacher: gemma4_31b
+temperature: 0.6

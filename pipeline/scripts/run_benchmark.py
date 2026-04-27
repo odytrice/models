@@ -54,7 +54,6 @@ ALL_BENCHMARK_FILES = [
     # GLM-5 benchmarks (from previous run)
     ("fsharp_core_glm5", "fsharp_core_glm5", "GLM-5", "fsharp_core"),
     ("fsharp_libraries_glm5", "fsharp_libraries_glm5", "GLM-5", "fsharp_libraries"),
-    ("dotnet_aspnet_glm5", "dotnet_aspnet_glm5", "GLM-5", "dotnet_aspnet"),
     # Kimi K2.6 benchmarks (new)
     ("fsharp_core_kimi26", "fsharp_core_kimi26", "Kimi-K2.6", "fsharp_core"),
     (
@@ -71,7 +70,38 @@ ALL_BENCHMARK_FILES = [
         "GLM-5.1",
         "fsharp_libraries",
     ),
-    ("dotnet_aspnet_glm51", "dotnet_aspnet_glm51", "GLM-5.1", "dotnet_aspnet"),
+    # Qwen 3.6 27B benchmarks (self-hosted Xeon-AI)
+    ("fsharp_core_qwen36_27b", "fsharp_core_qwen36_27b", "Qwen3.6-27B", "fsharp_core"),
+    (
+        "fsharp_libraries_qwen36_27b",
+        "fsharp_libraries_qwen36_27b",
+        "Qwen3.6-27B",
+        "fsharp_libraries",
+    ),
+    # Qwen 3.6 35B benchmarks (self-hosted Xeon-AI)
+    ("fsharp_core_qwen36_35b", "fsharp_core_qwen36_35b", "Qwen3.6-35B", "fsharp_core"),
+    (
+        "fsharp_libraries_qwen36_35b",
+        "fsharp_libraries_qwen36_35b",
+        "Qwen3.6-35B",
+        "fsharp_libraries",
+    ),
+    # Gemma 4 26B benchmarks (self-hosted Xeon-AI)
+    ("fsharp_core_gemma4_26b", "fsharp_core_gemma4_26b", "Gemma4-26B", "fsharp_core"),
+    (
+        "fsharp_libraries_gemma4_26b",
+        "fsharp_libraries_gemma4_26b",
+        "Gemma4-26B",
+        "fsharp_libraries",
+    ),
+    # Gemma 4 31B benchmarks (self-hosted Xeon-AI)
+    ("fsharp_core_gemma4_31b", "fsharp_core_gemma4_31b", "Gemma4-31B", "fsharp_core"),
+    (
+        "fsharp_libraries_gemma4_31b",
+        "fsharp_libraries_gemma4_31b",
+        "Gemma4-31B",
+        "fsharp_libraries",
+    ),
 ]
 
 logging.basicConfig(
@@ -106,6 +136,10 @@ def get_benchmark_files(teachers: list[str] = None) -> list[tuple]:
         "minimax": "MiniMax",
         "glm5": "GLM-5",
         "glm51": "GLM-5.1",
+        "qwen36_27b": "Qwen3.6-27B",
+        "qwen36_35b": "Qwen3.6-35B",
+        "gemma4_26b": "Gemma4-26B",
+        "gemma4_31b": "Gemma4-31B",
     }
     teacher_names = {teacher_map.get(t, t) for t in teachers}
     return [f for f in ALL_BENCHMARK_FILES if f[2] in teacher_names]
@@ -372,17 +406,12 @@ def print_comparison():
         "fsharp_core": {
             "original_teacher": "DeepSeek",
             "original_verified": MAIN_VERIFIED_DIR / "fsharp_core.jsonl",
-            "benchmark_teachers": ["Kimi", "Kimi-K2.6", "MiniMax", "GLM-5", "GLM-5.1"],
+            "benchmark_teachers": ["Kimi", "Kimi-K2.6", "MiniMax", "GLM-5", "GLM-5.1", "Qwen3.6-27B", "Qwen3.6-35B", "Gemma4-26B", "Gemma4-31B"],
         },
         "fsharp_libraries": {
             "original_teacher": "DeepSeek",
             "original_verified": MAIN_VERIFIED_DIR / "fsharp_libraries.jsonl",
-            "benchmark_teachers": ["Kimi", "Kimi-K2.6", "MiniMax", "GLM-5", "GLM-5.1"],
-        },
-        "dotnet_aspnet": {
-            "original_teacher": "Kimi",
-            "original_verified": MAIN_VERIFIED_DIR / "dotnet_aspnet.jsonl",
-            "benchmark_teachers": ["GLM-5", "GLM-5.1"],
+            "benchmark_teachers": ["Kimi", "Kimi-K2.6", "MiniMax", "GLM-5", "GLM-5.1", "Qwen3.6-27B", "Qwen3.6-35B", "Gemma4-26B", "Gemma4-31B"],
         },
     }
 
@@ -392,6 +421,10 @@ def print_comparison():
         "MiniMax": "minimax",
         "GLM-5": "glm5",
         "GLM-5.1": "glm51",
+        "Qwen3.6-27B": "qwen36_27b",
+        "Qwen3.6-35B": "qwen36_35b",
+        "Gemma4-26B": "gemma4_26b",
+        "Gemma4-31B": "gemma4_31b",
     }
 
     for domain, config in domains.items():
@@ -474,7 +507,7 @@ def print_comparison():
         print(
             f"    Original ({domains[domain]['original_teacher']}): {len(orig_passing)} passed"
         )
-        for teacher_name in ["Kimi", "Kimi-K2.6", "MiniMax", "GLM-5", "GLM-5.1"]:
+        for teacher_name in ["Kimi", "Kimi-K2.6", "MiniMax", "GLM-5", "GLM-5.1", "Qwen3.6-27B", "Qwen3.6-35B", "Gemma4-26B", "Gemma4-31B"]:
             if teacher_name in passing and passing[teacher_name]:
                 print(
                     f"    + {teacher_name}: {len(passing[teacher_name])} passed "
@@ -483,28 +516,6 @@ def print_comparison():
         print(
             f"    = Combined: {combined_total}/{total} ({combined_total / total * 100:.1f}%)"
         )
-
-    # dotnet_aspnet overlap (GLM-5 and GLM-5.1 benchmarks)
-    domain = "dotnet_aspnet"
-    orig_passing = load_passing_ids(MAIN_VERIFIED_DIR / "dotnet_aspnet.jsonl")
-    orig_stats = load_verified_stats(MAIN_VERIFIED_DIR / "dotnet_aspnet.jsonl")
-    total = orig_stats["total"]
-    combined = len(orig_passing)
-
-    print(f"\n  dotnet_aspnet ({total} total prompts):")
-    print(f"    Original (Kimi): {len(orig_passing)} passed")
-
-    for teacher_name, teacher_key in [("GLM-5", "glm5"), ("GLM-5.1", "glm51")]:
-        path = VERIFIED_DIR / f"dotnet_aspnet_{teacher_key}.jsonl"
-        passing = load_passing_ids(path)
-        if passing:
-            combined = max(combined, len(orig_passing | passing))
-            exclusive = len(passing - orig_passing)
-            print(
-                f"    + {teacher_name}: {len(passing)} passed ({exclusive} exclusive)"
-            )
-
-    print(f"    = Best combined: {combined}/{total} ({combined / total * 100:.1f}%)")
 
     # Summary
     print(f"\n  {'=' * 65}")
@@ -524,14 +535,6 @@ def print_comparison():
                     best_teacher = teacher_name
         if best_teacher:
             print(f"  {domain:25s} -> {best_teacher} ({best_rate:.1f}%)")
-
-    # dotnet_aspnet
-    for teacher_name, teacher_key in [("GLM-5", "glm5"), ("GLM-5.1", "glm51")]:
-        path = VERIFIED_DIR / f"dotnet_aspnet_{teacher_key}.jsonl"
-        stats = load_verified_stats(path)
-        if stats["total"] > 0:
-            rate = stats["pass"] / stats["total"] * 100
-            print(f"  {'dotnet_aspnet':25s} -> {teacher_name} ({rate:.1f}%)")
 
     print(f"\n{'=' * 75}\n")
 
