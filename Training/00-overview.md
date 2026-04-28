@@ -18,7 +18,7 @@ This project attempted to distill domain-specialized coding capabilities (F#, .N
 |----------|-------------|------|
 | **kenichi-sft** | 7,953 verified coding samples (ChatML + Mistral) | [odytrice/kenichi-sft](https://huggingface.co/datasets/odytrice/kenichi-sft) |
 | **F# verification pipeline** | Automated F# compiler verification with NuGet routing | `pipeline/scripts/verify_fsharp.py` |
-| **Teacher benchmarks** | Empirical F# pass rates for MiniMax, GLM-5, Kimi, DeepSeek | [events.md](events.md) |
+| **Teacher benchmarks** | Empirical F# pass rates for all six teachers | [events.md](events.md) |
 
 ## Document Index
 
@@ -40,6 +40,7 @@ This project attempted to distill domain-specialized coding capabilities (F#, .N
 
 | Teacher | Best For | Ollama Command |
 |---------|----------|----------------|
-| **MiniMax M2.7** | F# core, F# libraries (76.6% F# pass rate) | `ollama run minimax-m2.7:cloud` |
-| **GLM-5** | .NET/ASP.NET (97.1% pass rate), general coding | `ollama run glm-5:cloud` |
+| **Kimi K2.6** | F# core, F# libraries (78.1%, 96.6% pass rates) | `ollama run kimi-k2.6:cloud` |
+| **GLM-5.1** | .NET/ASP.NET (97.5% pass rate), F# secondary | `ollama run glm-5.1:cloud` |
 | **Kimi K2.5** | Svelte, TypeScript, long-context, cross-domain | `ollama run kimi-k2.5:cloud` |
+| **MiniMax M2.7** | Docker, Kubernetes, agentic/DevOps | `ollama run minimax-m2.7:cloud` |

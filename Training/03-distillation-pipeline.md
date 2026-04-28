@@ -69,8 +69,9 @@ python pipeline/scripts/run_benchmark.py --compare-only
 3. Generate instruction/response pairs biased 85% toward target stack, 15% general
 4. Include long-context samples (32K-204K tokens) generated exclusively by K2.5 (only teacher with 256K context)
 5. Use M2.7 for agentic/multi-step prompts that require real-world SWE reasoning
-6. Use V3.2 for all F# and .NET content where corpus breadth matters most
-7. **Verify all F# and .NET code samples with the compiler before including in dataset** (see Verification Pipeline below)
+6. Use K2.6 for all F# content (78.1% fsharp_core, 96.6% fsharp_libraries — best by large margin)
+7. Use GLM-5.1 for all .NET/ASP.NET content (97.5% pass rate, zero skips)
+8. **Verify all F# and .NET code samples with the compiler before including in dataset** (see Verification Pipeline below)
 
 ### Data Requirements
 - 5K-50K high-quality examples depending on scope
@@ -188,7 +189,7 @@ dotnet build /tmp/verify/verify.fsproj --nologo -v q
 
 Scrape these directly and feed as context to the appropriate teacher.
 
-### F# (highest priority -- generated via DeepSeek V3.2)
+### F# (highest priority -- generated via Kimi K2.6)
 
 | Source | URL | Notes |
 |--------|-----|-------|
@@ -220,7 +221,7 @@ Scrape these directly and feed as context to the appropriate teacher.
 | Docker Docs | https://docs.docker.com | Dockerfile, compose, multi-stage builds |
 | Kubernetes Docs | https://kubernetes.io/docs | Deployments, services, Helm |
 
-### .NET (generated via DeepSeek V3.2)
+### .NET (generated via GLM-5.1)
 
 | Source | URL | Notes |
 |--------|-----|-------|

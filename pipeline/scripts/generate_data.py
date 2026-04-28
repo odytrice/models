@@ -59,6 +59,11 @@ TEACHERS = {
     "deepseek": ("ollama_cloud", "deepseek-v3.2:cloud"),
     "glm5":     ("ollama_cloud", "glm-5:cloud"),
     "glm51":    ("ollama_cloud", "glm-5.1:cloud"),
+    # Self-hosted models on Xeon-AI
+    "qwen36_27b": ("xeon_ai", "qwen3.6:27b"),
+    "qwen36_35b": ("xeon_ai", "qwen3.6:35b"),
+    "gemma4_26b": ("xeon_ai", "gemma4:26b"),
+    "gemma4_31b": ("xeon_ai", "gemma4:31b"),
 }
 
 # Default generation parameters per teacher
@@ -92,6 +97,27 @@ TEACHER_DEFAULTS = {
         "temperature": 0.7,
         "top_p": 0.95,
         "num_predict": 131072,  # 128K -- GLM-5.1 max output; thinking tokens eat budget
+    },
+    # Self-hosted models on Xeon-AI
+    "qwen36_27b": {
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "num_predict": 32768,
+    },
+    "qwen36_35b": {
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "num_predict": 32768,
+    },
+    "gemma4_26b": {
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "num_predict": 32768,
+    },
+    "gemma4_31b": {
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "num_predict": 32768,
     },
 }
 

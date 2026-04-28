@@ -23,7 +23,7 @@
 - Not the best at real-world SWE tasks -- 76.8% SWE-bench Verified, beaten by MiniMax M2.5 (80.2%) and M2.7
 - Terminal/system tasks lag -- 50.8% Terminal-Bench 2, beaten by M2.7 (57.0%)
 - No self-evolution or agent-team native behaviors
-- F# capability unproven -- no F# benchmarks exist; large corpus helps but not verified
+- F# capability weak — 34.9% fsharp_core pass rate with 41% skip rate; K2.6 is far superior at 78.1%/96.6%
 - Requires 8x A100 80GB to self-host -- API-only for most people
 
 **Best used for**: Svelte/SvelteKit, TypeScript, long-context samples (32K-204K), cross-domain prompts, instructional content
@@ -117,44 +117,53 @@
 
 | Dimension | Kimi K2.5 | MiniMax M2.7 | GLM-5 | DeepSeek V3.2 (retired) | Kimi K2.6 | GLM-5.1 |
 |-----------|-----------|--------------|-------|------------------------|-----------|---------|
-| **Overall intelligence** | **Best** | Good | Strong | Good | Good | Strong |
+| **Overall intelligence** | **Best** | Good | Strong | Good | Strong | Strong |
 | **SWE-bench Verified** | Good (76.8%) | Good (SWE-Pro 56.2%) | **Best (77.8%)** | Weakest (73.1%) | TBD | TBD |
 | **SWE-bench Multilingual** | Good (73.0%) | Good (76.5%) | **Best (73.3%)** | Good (70.2%) | TBD | TBD |
 | **System/DevOps** | Good (50.8%) | **Best** (57.0%) | Strong (56.2%) | Weakest (46.4%) | TBD | TBD |
 | **Math/reasoning** | **Best** (AIME 96.1%) | Moderate | Strong (AIME 92.7%) | Strong (Speciale 96.0%) | TBD | TBD |
-| **Instruction following** | **Best** (IFEval 94%) | Good (97% skill adherence) | Good | Good | TBD | TBD |
-| **Long context** | **Best** (256K native) | Good (200K) | Good (198K) | Weakest (128K) | Good (256K?) | Good (198K?) |
-| **F# pass rate (benchmarked)** | 34.9% | **76.6%** | 70.6% | 43.1% (original) | **2.6%** | 11.1% |
-| **F# libraries pass rate** | 20.5% | **56.6%** | 14.9% | 87.3% (original) | **0.8%** | 29.8% |
-| **dotnet_aspnet pass rate** | 0% (empty) | N/A | **97.1%** | N/A | N/A | 80.3% |
+| **Instruction following** | **Best** (IFEval 94%) | Good (97% skill adherence) | Good | Good | Good | Good |
+| **Long context** | **Best** (256K native) | Good (200K) | Good (198K) | Weakest (128K) | Good (256K) | Good (198K) |
+| **F# pass rate (benchmarked)** | 34.9% | 76.6% | 70.6% | 43.1% (original) | **78.1%** | 76.2% |
+| **F# libraries pass rate** | 20.5% | 56.6% | 14.9% | 87.3% (original) | **96.6%** | 71.2% |
+| **dotnet_aspnet pass rate** | 0% (empty) | N/A | 97.1% | N/A | N/A | **97.5%** |
 | **Frontend/Svelte/TS** | **Best** | Good | Good | Good | TBD | TBD |
 | **Docker/K8s** | Good | **Best** | Strong | Weakest | TBD | TBD |
 | **Agentic tasks** | Good | **Best** | Strong | Good | TBD | TBD |
 | **License** | Modified MIT | Cloud-only | **MIT** | **MIT** | Modified MIT | MIT |
 | **Availability** | Ollama cloud | Ollama cloud | Ollama cloud | Ollama cloud + open weights | Ollama cloud | Ollama cloud |
-| **Skip rate (empty responses)** | High (41-61%) | **Near zero** | TBD | Low | **Very high (96%+)** | Moderate (16-19%) |
+| **Skip rate (empty responses)** | High (41-61%) | **Near zero** | Low (1-12%) | Low | **Zero** | **Zero** |
+| **F# exclusive solves** | 0 | 18 | 0 | — | **11+10** | 9+1 |
 
-### Current Teacher Assignments (Round 2)
+### Current Teacher Assignments (Round 2 — Updated April 26)
 
 | Teacher | Domains | Rationale |
 |---------|---------|-----------|
-| **MiniMax M2.7** | fsharp_core, fsharp_libraries | 76.6% F# pass rate (best), near-zero skip rate |
+| **Kimi K2.6** | fsharp_core, fsharp_libraries | Best F# pass rates (78.1%, 96.6%), zero skips, 11+ exclusive solves |
+| **GLM-5.1** | dotnet_aspnet | Best ASP.NET pass rate (97.5%), zero skips |
 | **Kimi K2.5** | svelte_typescript, cross_domain, long_context | Best frontend/TS, longest context (256K) |
-| **GLM-5** | dotnet_aspnet, docker_kubernetes, agentic_swe, general_coding | Best SWE-bench scores, replaces DeepSeek |
+| **MiniMax M2.7** | docker_kubernetes, agentic_swe | Best DevOps/system tasks, near-zero skips |
 
 ### New Model Benchmarks (April 2026)
 
 #### Kimi K2.6 (Moonshot AI)
 
 - **Ollama**: `kimi-k2.6:cloud`
-- **F# core pass rate**: 2.6% (11/427 passed, 96.3% Skipped -- returns prose instead of code)
-- **F# libraries pass rate**: 0.8% (1/122 passed, 99.2% Skipped)
-- **Assessment**: Despite being an updated model, K2.6 performs significantly worse than K2.5 on F# tasks, with extremely high skip rates (411/427 and 121/122 for fsharp_core and fsharp_libraries respectively). The model frequently returns explanations in prose instead of wrapped F# code blocks. Not suitable for F# distillation.
+- **F# core pass rate**: 78.1% (567/726 passed, 0 Skipped)
+- **F# libraries pass rate**: 96.6% (227/235 passed, 0 Skipped)
+- **dotnet_aspnet**: Not benchmarked (K2.5 scored 0% on this domain)
+- **Exclusive solves**: 10 in fsharp_core, 11 in fsharp_libraries — prompts no other teacher can solve
+- **Assessment**: The dominant F# teacher by a large margin. Zero skip rate means it generates code for every prompt. The 96.6% on fsharp_libraries is particularly impressive — 227/235 with only 8 compile errors. The initial April 24 benchmark showing 2.6% was caused by provider/auth issues, not the model itself. Assigned to fsharp_core and fsharp_libraries for Round 2.
 
 #### GLM-5.1 (Z.ai)
 
 - **Ollama**: `glm-5.1:cloud`
-- **F# core pass rate**: 11.1% (7/63 passed)
-- **F# libraries pass rate**: 29.8% (14/47 passed)
-- **dotnet_aspnet pass rate**: 80.3% (167/208 passed)
-- **Assessment**: Mixed results. GLM-5.1 shows improvement over GLM-5 on fsharp_libraries (29.8% vs 14.9%) but dramatic regression on fsharp_core (11.1% vs 70.6%) and dotnet_aspnet (80.3% vs 97.1%). The high skip rate on fsharp_core (40/63) suggests the model frequently fails to generate code for F# core language topics. For dotnet_aspnet, the 39 Skipped samples (out of 208) are notable -- K2.5 had 200+ skips on the same domain. GLM-5 remains the better choice for .NET/ASP.NET tasks.
+- **F# core pass rate**: 76.2% (48/63 passed, 0 Skipped)
+- **F# libraries pass rate**: 71.2% (37/52 passed, 0 Skipped)
+- **dotnet_aspnet pass rate**: 97.5% (192/197 passed, 0 Skipped)
+- **Exclusive solves**: 9 in fsharp_core (via overlap analysis)
+- **Assessment**: Strong across all three benchmarked domains. Zero skips everywhere. The 97.5% on dotnet_aspnet edges out GLM-5's 97.1% with zero skips vs 2 skipped. Assigned to dotnet_aspnet for Round 2. Also a viable secondary F# teacher (76.2% fsharp_core, 71.2% fsharp_libraries). The initial April 24 benchmark showing 11.1%/29.8%/80.3% was caused by provider/auth issues.
+
+### Benchmark History Note
+
+The April 24, 2026 benchmark run showed dramatically lower numbers for K2.6 (2.6%/0.8%) and GLM-5.1 (11.1%/29.8%/80.3%) due to provider configuration issues causing most requests to fail/timeout. A full re-benchmark on April 26 with fixed provider settings revealed the true capabilities of both models. The corrected numbers are reflected above.
