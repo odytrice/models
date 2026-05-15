@@ -1,0 +1,16 @@
+# Gemma 4 26B — RTX 5090 (32 GB VRAM)
+# Target: NVFP4 (Blackwell tensor-core 4-bit). Ollama currently consumes GGUF (Q4_K_M today);
+# this Modelfile will pivot to an NVFP4-backed FROM source once Ollama supports it.
+#
+# Create:
+#   ollama create odytrice/gemma4-26b:5090 -f Modelfile.gemma4-26b
+#
+# Run:
+#   ollama run odytrice/gemma4-26b:5090
+#
+# Push:
+#   ollama push odytrice/gemma4-26b:5090
+
+FROM gemma4:26b
+
+PARAMETER num_ctx 153600
