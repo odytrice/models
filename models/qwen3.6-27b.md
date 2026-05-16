@@ -32,15 +32,27 @@ so both GPU profiles live under this one card.
 
 ### Why these context sizes
 
-- **4090 (64K):** The xeon-ai gateway config calls for 190K, but on 24 GB
+- **4090 (64K):** The gateway config calls for 190K, but on 24 GB
   that would need ~30 GB of KV cache at q8_0 alone - infeasible. 64K is
   the realistic ceiling with ~17 GB Q4 weights.
-- **5090 (190000):** Mirrors the xeon-ai gateway config exactly. 32 GB
+- **5090 (190000):** matches the gateway config exactly. 32 GB
   comfortably fits the weights plus q8_0 KV cache for 190K context. Below
   the model's 262K native window - no YaRN scaling required.
 
 If `ollama ps` shows CPU% on the 4090 tag: drop to 32K or switch KV cache
 to `q4_0`.
+
+## Environment
+
+Always set these before running Ollama:
+
+```
+set OLLAMA_KV_CACHE_TYPE=q4_0    # Windows
+set OLLAMA_FLASH_ATTENTION=1
+
+export OLLAMA_KV_CACHE_TYPE=q4_0   # Linux/macOS
+export OLLAMA_FLASH_ATTENTION=1
+```
 
 ## Sampling
 
@@ -89,7 +101,7 @@ To disable thinking: pass `enable_thinking=False` via
 
 ## See also
 
-- `qwen3.6-35b.md` - A3B MoE sibling (35B total / 3B active)
+- Qwen 3.6 35B A3B MoE card - A3B MoE sibling (35B total / 3B active)
 - Hugging Face: https://huggingface.co/Qwen/Qwen3.6-27B
 - Hugging Face NVFP4: https://huggingface.co/unsloth/Qwen3.6-27B-NVFP4
 - Hugging Face FP8: https://huggingface.co/Qwen/Qwen3.6-27B-FP8

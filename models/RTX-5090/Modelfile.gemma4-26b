@@ -13,4 +13,4 @@
 
 FROM gemma4:26b
 
-PARAMETER num_ctx 153600
+PARAMETER num_ctx 131072

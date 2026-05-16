@@ -25,19 +25,25 @@ so both GPU profiles live under this one card.
 
 | Tag | GPU | Quantization | KV cache | `num_ctx` |
 |---|---|---|---|---|
-| `odytrice/gemma4-26b:4090` | RTX 4090 (24 GB Ada) | Q4_K_M (~17 GB) | q8_0 | 65536 (64K) |
-| `odytrice/gemma4-26b:5090` | RTX 5090 (32 GB Blackwell) | Q4_K_M (~17 GB), NVFP4 future | q8_0 | 153600 |
+| `odytrice/gemma4-26b:4090` | RTX 4090 (24 GB Ada) | Q4_K_M (~17 GB) | q8_0 | 131072 |
+| `odytrice/gemma4-26b:5090` | RTX 5090 (32 GB Blackwell) | Q4_K_M (~17 GB), NVFP4 future | q8_0 | 131072 |
 
-### Why these context sizes
+### Why this context size
 
-- **4090 (64K):** With ~17 GB Q4 weights plus OS overhead, only ~6 GB remains
-  for the KV cache on 24 GB. q8_0 at 64K fits with headroom; 128K is
-  borderline and likely to spill to CPU.
-- **5090 (153600):** Matches the xeon-ai gateway config exactly. 32 GB
-  comfortably holds the weights plus q8_0 KV cache for ~150K context. Note
-  this exceeds the model's nominal 128K - YaRN-style RoPE extension applies.
+131072 (128K) is the model's nominal native context window. Both GPU tiers
+target it: the 4090 at q4_0 KV cache and the 5090 at q8_0.
 
-If `ollama ps` shows any CPU%, drop `num_ctx` or switch KV cache to `q4_0`.
+## Environment
+
+Always set these before running Ollama:
+
+```
+set OLLAMA_KV_CACHE_TYPE=q4_0    # Windows
+set OLLAMA_FLASH_ATTENTION=1
+
+export OLLAMA_KV_CACHE_TYPE=q4_0   # Linux/macOS
+export OLLAMA_FLASH_ATTENTION=1
+```
 
 ## Sampling
 
@@ -63,10 +69,10 @@ from your client (OpenCode, Aider, etc.). Not baked into the Modelfiles.
 
 ## Caveats
 
-- 4090: KV cache budget is tight - keep `num_ctx` at 64K; no FP4 tensor-core
-  acceleration on Ada
-- 5090: 153K exceeds the model's nominal 128K - some quality degradation
-  past 128K is expected via YaRN
+- 4090: 131072 at q4_0 KV cache is tight - verify with `ollama ps`; no FP4
+  tensor-core acceleration on Ada
+- 5090: 131072 at q8_0 fits with headroom; NVFP4 will reduce weight footprint
+  further when Ollama supports it
 - NVFP4 weights exist upstream but Ollama does not yet load them; the
   5090 tag will pivot when support lands
 

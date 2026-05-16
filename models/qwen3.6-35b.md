@@ -32,7 +32,7 @@ on a 24 GB 4090.
 
 ### Why 190K (and why no 4090 tag)
 
-- **5090 (190000):** Mirrors the xeon-ai gateway config. With ~23 GB Q4
+- **5090 (190000):** mirrors the gateway config. With ~23 GB Q4
   weights and 32 GB VRAM, q8_0 KV cache for 190K context is feasible -
   though it is the tightest fit among the four models in this set. Below
   the 262K native window. Verify with `ollama ps`; if CPU% appears, drop
@@ -40,6 +40,18 @@ on a 24 GB 4090.
 - **No 4090 tag:** At ~23 GB the weights alone barely fit on a 24 GB
   card, leaving no headroom for KV cache. The dense Qwen 3.6 27B or
   Gemma 4 26B-A4B are the practical 24 GB options.
+
+## Environment
+
+Always set these before running Ollama:
+
+```
+set OLLAMA_KV_CACHE_TYPE=q4_0    # Windows
+set OLLAMA_FLASH_ATTENTION=1
+
+export OLLAMA_KV_CACHE_TYPE=q4_0   # Linux/macOS
+export OLLAMA_FLASH_ATTENTION=1
+```
 
 ## Architecture note
 
@@ -97,7 +109,7 @@ To preserve thinking across turns: `chat_template_kwargs={"preserve_thinking": T
 
 ## See also
 
-- `qwen3.6-27b.md` - dense sibling, lower total params, has a 4090 tag
+- Qwen 3.6 27B card - dense sibling, lower total params, has a 4090 tag
 - Hugging Face: https://huggingface.co/Qwen/Qwen3.6-35B-A3B
 - Hugging Face NVFP4 (unsloth): https://huggingface.co/unsloth/Qwen3.6-35B-A3B-NVFP4
 - Hugging Face NVFP4 (Red Hat): https://huggingface.co/RedHatAI/Qwen3.6-35B-A3B-NVFP4

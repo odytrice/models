@@ -34,12 +34,24 @@ so both GPU profiles live under this one card.
   ~4 GB remains for KV cache on 24 GB. q8_0 at 64K is the realistic ceiling;
   anything higher overflows into system RAM. This model is genuinely happier
   on the 5090.
-- **5090 (153600):** Mirrors the xeon-ai gateway config. 32 GB holds the
+- **5090 (153600):** mirrors the gateway config. 32 GB holds the
   ~19 GB weights plus q8_0 KV cache for ~150K context with overhead. Note
   this exceeds the model's nominal 128K - YaRN-style RoPE extension applies.
 
 If `ollama ps` shows CPU% on the 4090 tag: drop `num_ctx` to 32K or switch
 KV cache to `q4_0`.
+
+## Environment
+
+Always set these before running Ollama:
+
+```
+set OLLAMA_KV_CACHE_TYPE=q4_0    # Windows
+set OLLAMA_FLASH_ATTENTION=1
+
+export OLLAMA_KV_CACHE_TYPE=q4_0   # Linux/macOS
+export OLLAMA_FLASH_ATTENTION=1
+```
 
 ## Sampling
 
@@ -67,7 +79,7 @@ Set via `/set parameter` or pass from your client.
 
 ## See also
 
-- `gemma4-26b.md` - faster A4B MoE sibling
+- Gemma 4 26B A4B MoE card - faster A4B MoE sibling
 - Hugging Face: https://huggingface.co/google/gemma-4-31B-it
 - Hugging Face NVFP4: https://huggingface.co/nvidia/Gemma-4-31B-IT-NVFP4
 - 24 GB tier guide at the repo root
