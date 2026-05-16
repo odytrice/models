@@ -25,13 +25,14 @@ so both GPU profiles live under this one card.
 
 | Tag | GPU | Quantization | KV cache | `num_ctx` |
 |---|---|---|---|---|
-| `odytrice/gemma4-26b:4090` | RTX 4090 (24 GB Ada) | Q4_K_M (~17 GB) | q4_0 | 131072 |
-| `odytrice/gemma4-26b:5090` | RTX 5090 (32 GB Blackwell) | Q4_K_M (~17 GB), NVFP4 future | q8_0 | 131072 |
+| `odytrice/gemma4-26b:4090` | RTX 4090 (24 GB Ada) | Q4_K_M (~17 GB) | q4_0 | 262144 |
+| `odytrice/gemma4-26b:5090` | RTX 5090 (32 GB Blackwell) | Q4_K_M (~17 GB), NVFP4 future | q8_0 | 262144 |
 
 ### Why this context size
 
-131072 (128K) is well within the model's native 256K window. Both GPU tiers
-target it: the 4090 at q4_0 KV cache and the 5090 at q8_0.
+262144 (256K) is the model's native window. The MoE architecture with only
+~4B active params leaves enough KV cache headroom for full native context
+on both tiers: the 4090 at q4_0 KV cache and the 5090 at q8_0.
 
 ## Environment
 
@@ -69,10 +70,9 @@ from your client (OpenCode, Aider, etc.). Not baked into the Modelfiles.
 
 ## Caveats
 
-- 4090: 131072 at q4_0 KV cache is tight - verify with `ollama ps`; no FP4
-  tensor-core acceleration on Ada
-- 5090: 131072 at q8_0 fits with headroom well within the native 256K
-  window; NVFP4 will reduce weight footprint further when Ollama supports it
+- 4090: 262144 at q4_0 KV cache fits on 24 GB; verify with `ollama ps`;
+  no FP4 tensor-core acceleration on Ada
+- 5090: 262144 at q8_0 fits with headroom; full native context achieved
 - NVFP4 weights exist upstream but Ollama does not yet load them; the
   5090 tag will pivot when support lands
 
