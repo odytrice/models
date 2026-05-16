@@ -39,7 +39,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # folder | modelfile | tag
 MODELS=(
   "RTX-4090|Modelfile.gemma4-26b|odytrice/gemma4-26b:4090"
-  "RTX-4090|Modelfile.gemma4-31b|odytrice/gemma4-31b:4090"
   "RTX-4090|Modelfile.qwen3.6-27b|odytrice/qwen3.6-27b:4090"
   "RTX-5090|Modelfile.gemma4-26b|odytrice/gemma4-26b:5090"
   "RTX-5090|Modelfile.gemma4-31b|odytrice/gemma4-31b:5090"

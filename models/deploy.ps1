@@ -38,7 +38,6 @@ if (-not $scriptRoot) { $scriptRoot = Split-Path $MyInvocation.MyCommand.Path }
 
 $models = @(
   @{ Folder = "RTX-4090"; File = "Modelfile.gemma4-26b";   Tag = "odytrice/gemma4-26b:4090"   },
-  @{ Folder = "RTX-4090"; File = "Modelfile.gemma4-31b";   Tag = "odytrice/gemma4-31b:4090"   },
   @{ Folder = "RTX-4090"; File = "Modelfile.qwen3.6-27b";  Tag = "odytrice/qwen3.6-27b:4090"  },
   @{ Folder = "RTX-5090"; File = "Modelfile.gemma4-26b";   Tag = "odytrice/gemma4-26b:5090"   },
   @{ Folder = "RTX-5090"; File = "Modelfile.gemma4-31b";   Tag = "odytrice/gemma4-31b:5090"   },
