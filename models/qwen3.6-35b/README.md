@@ -109,7 +109,7 @@ To preserve thinking across turns: `chat_template_kwargs={"preserve_thinking": T
 
 ## See also
 
-- Qwen 3.6 27B card - dense sibling, lower total params, has a 4090 tag
+- Qwen 3.6 27B card - dense sibling, lower total params, 5090 only
 - Hugging Face: https://huggingface.co/Qwen/Qwen3.6-35B-A3B
 - Hugging Face NVFP4 (unsloth): https://huggingface.co/unsloth/Qwen3.6-35B-A3B-NVFP4
 - Hugging Face NVFP4 (Red Hat): https://huggingface.co/RedHatAI/Qwen3.6-35B-A3B-NVFP4
