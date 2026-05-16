@@ -18,7 +18,7 @@ so both GPU profiles live under this one card.
 | Modalities | Text + Image (vision) |
 | Languages | 140+ |
 | Tool calling | Native (structured JSON) |
-| Native context | 128K |
+| Native context | 256K |
 | License | Gemma Terms of Use |
 
 ## Tags
@@ -35,8 +35,8 @@ so both GPU profiles live under this one card.
   anything higher overflows into system RAM. This model is genuinely happier
   on the 5090.
 - **5090 (153600):** mirrors the gateway config. 32 GB holds the
-  ~19 GB weights plus q8_0 KV cache for ~150K context with overhead. Note
-  this exceeds the model's nominal 128K - YaRN-style RoPE extension applies.
+  ~19 GB weights plus q8_0 KV cache for ~150K context with overhead. Well
+  within the model's native 256K window - no YaRN scaling needed.
 
 If `ollama ps` shows CPU% on the 4090 tag: drop `num_ctx` to 32K or switch
 KV cache to `q4_0`.
@@ -74,7 +74,8 @@ Set via `/set parameter` or pass from your client.
 
 - Dense ~31B is slower per token than the A4B MoE 26B variant
 - 4090: severely KV-budget-limited at Q4_K_M, 64K is the practical max
-- 5090: 153K exceeds the nominal 128K window - YaRN extension applies
+- 5090: 153K is well within the native 256K window - no YaRN scaling
+  needed
 - NVFP4 weights exist upstream but Ollama does not yet load them
 
 ## See also
