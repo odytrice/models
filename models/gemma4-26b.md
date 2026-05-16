@@ -53,35 +53,6 @@ top_k         64
 Set via `/set parameter` inside `ollama run` or pass as request options
 from your client (OpenCode, Aider, etc.). Not baked into the Modelfiles.
 
-## Build & run
-
-```bash
-# 4090 profile
-ollama create odytrice/gemma4-26b:4090 -f RTX-4090/Modelfile.gemma4-26b
-ollama run    odytrice/gemma4-26b:4090
-
-# 5090 profile
-ollama create odytrice/gemma4-26b:5090 -f RTX-5090/Modelfile.gemma4-26b
-ollama run    odytrice/gemma4-26b:5090
-
-# Push to registry (both share the model page)
-ollama push   odytrice/gemma4-26b:4090
-ollama push   odytrice/gemma4-26b:5090
-```
-
-Or use the deploy script in this folder:
-
-```bash
-./deploy.ps1 -Filter gemma4-26b    # PowerShell
-./deploy.sh  --filter gemma4-26b   # bash
-```
-
-Verify 100% GPU offload after loading:
-
-```bash
-ollama ps
-```
-
 ## Strengths
 
 - MoE with only ~4B active params -> fast inference (~150 tok/s class on Ada)

@@ -51,28 +51,6 @@ top_k         64
 
 Set via `/set parameter` or pass from your client.
 
-## Build & run
-
-```bash
-# 4090 profile
-ollama create odytrice/gemma4-31b:4090 -f RTX-4090/Modelfile.gemma4-31b
-ollama run    odytrice/gemma4-31b:4090
-
-# 5090 profile
-ollama create odytrice/gemma4-31b:5090 -f RTX-5090/Modelfile.gemma4-31b
-ollama run    odytrice/gemma4-31b:5090
-
-ollama push   odytrice/gemma4-31b:4090
-ollama push   odytrice/gemma4-31b:5090
-```
-
-Or use the deploy script:
-
-```bash
-./deploy.ps1 -Filter gemma4-31b
-./deploy.sh  --filter gemma4-31b
-```
-
 ## Strengths
 
 - Best reasoning in the Gemma 4 family (MMLU Pro, AIME, Codeforces leader)

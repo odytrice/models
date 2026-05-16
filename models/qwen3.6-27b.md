@@ -71,28 +71,6 @@ presence_penalty   1.5
 To disable thinking: pass `enable_thinking=False` via
 `chat_template_kwargs` (vLLM/SGLang).
 
-## Build & run
-
-```bash
-# 4090 profile
-ollama create odytrice/qwen3.6-27b:4090 -f RTX-4090/Modelfile.qwen3.6-27b
-ollama run    odytrice/qwen3.6-27b:4090
-
-# 5090 profile
-ollama create odytrice/qwen3.6-27b:5090 -f RTX-5090/Modelfile.qwen3.6-27b
-ollama run    odytrice/qwen3.6-27b:5090
-
-ollama push   odytrice/qwen3.6-27b:4090
-ollama push   odytrice/qwen3.6-27b:5090
-```
-
-Or use the deploy script:
-
-```bash
-./deploy.ps1 -Filter qwen3.6-27b
-./deploy.sh  --filter qwen3.6-27b
-```
-
 ## Strengths
 
 - Strong reasoning + coding balance in the dense 27B band

@@ -78,21 +78,6 @@ presence_penalty   1.5
 Output length: 32,768 tokens default; 81,920 for hard math/code.
 To preserve thinking across turns: `chat_template_kwargs={"preserve_thinking": True}`.
 
-## Build & run
-
-```bash
-ollama create odytrice/qwen3.6-35b:5090 -f RTX-5090/Modelfile.qwen3.6-35b
-ollama run    odytrice/qwen3.6-35b:5090
-ollama push   odytrice/qwen3.6-35b:5090
-```
-
-Or use the deploy script:
-
-```bash
-./deploy.ps1 -Filter qwen3.6-35b
-./deploy.sh  --filter qwen3.6-35b
-```
-
 ## Strengths
 
 - MoE with only 3B active params - dramatically faster than dense 32B class
