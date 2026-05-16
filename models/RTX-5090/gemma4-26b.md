@@ -1,36 +1,36 @@
 # Gemma 4 26B - RTX 5090 (32 GB VRAM)
 
-Local profile for the RTX 5090 (32 GB Blackwell). Currently Q4_K_M GGUF
-via Ollama. Target: NVFP4 once Ollama supports it natively (Blackwell
-tensor cores accelerate FP4; will pivot the `FROM` source when available).
+> Gemma 4 26B-A4B (MoE, ~26B total / 4B active), vision + native tool calling, 153K context, NVFP4-ready on Blackwell.
 
-> Note: `gemma4:26b` is not on the public Ollama library today (the live
-> page covers `gemma3` up to 27B). This card describes the local tag you
-> have pulled and extrapolates from the Gemma 3 family page.
+Local profile for the RTX 5090 (32 GB Blackwell). Currently Q4_K_M GGUF
+via Ollama. Target: NVFP4 once Ollama supports it natively - the
+quantized checkpoint already exists upstream as `nvidia/Gemma-4-26B-A4B-NVFP4`.
 
 ## Summary
 
 | Field | Value |
 |---|---|
+| Upstream | `google/gemma-4-26B-A4B-it` |
+| NVFP4 source | `nvidia/Gemma-4-26B-A4B-NVFP4` |
 | Family | Gemma 4 (Google) |
-| Architecture | Mixture-of-Experts (MoE) |
-| Total / Active params | 25.2B / 3.8B |
+| Architecture | Mixture-of-Experts (A4B) |
+| Total / Active params | ~26B / 4B |
 | Modalities | Text + Image (vision) |
 | Languages | 140+ |
-| Tool calling | Native (structured JSON) |
-| Native context | 256K |
+| Tool calling | Native |
+| Native context | 128K |
 | License | Gemma Terms of Use |
-| Local quantization | Q4_K_M (~17 GB) |
-| Future target | NVFP4 (Blackwell-accelerated) |
+| Local quantization | Q4_K_M today (~17 GB), NVFP4 future |
 | KV cache | q8_0 |
 | Local `num_ctx` | **153600** |
 
 ## Why 153600 here
 
-This matches the gateway (`xeon-ai`) config exactly so the local Ollama
-tag mirrors the limits the rest of your stack is expecting. The 5090's
-32 GB is enough to hold ~17 GB of weights plus the q8_0 KV cache for
-150K-class context with headroom for compute buffers.
+Matches the xeon-ai gateway config exactly so the local Ollama tag mirrors
+the limits the rest of your stack expects. The 5090's 32 GB holds ~17 GB
+of weights plus q8_0 KV cache for ~150K context with headroom for compute
+buffers. Note this exceeds the model's nominal 128K - YaRN-style RoPE
+extension applies; expect some quality degradation past 128K.
 
 ## Sampling
 
@@ -53,11 +53,13 @@ ollama push   odytrice/gemma4-26b:5090
 ## Strengths (vs the 4090 profile)
 
 - Full 153K context - matches gateway expectations
-- Same MoE speed advantage (~3.8B active params)
-- Headroom for FP4 acceleration once Ollama exposes it on Blackwell
+- Same MoE speed advantage (~4B active params)
+- Headroom for FP4 tensor-core acceleration once Ollama exposes NVFP4
+  on Blackwell
 
 ## See also
 
-- `../RTX-4090/gemma4-26b.md` - 24 GB profile (64K ctx)
-- `../../32GB-GPU.md` - generic 32 GB tier guidance
-- Ollama Gemma 3 upstream: https://ollama.com/library/gemma3
+- 24 GB profile for the same model (RTX 4090 folder) - 64K ctx
+- 32 GB tier guide at the repo root
+- Hugging Face: https://huggingface.co/google/gemma-4-26B-A4B-it
+- Hugging Face NVFP4: https://huggingface.co/nvidia/Gemma-4-26B-A4B-NVFP4

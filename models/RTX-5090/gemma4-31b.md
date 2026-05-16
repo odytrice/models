@@ -1,34 +1,35 @@
 # Gemma 4 31B - RTX 5090 (32 GB VRAM)
 
-Local profile for the RTX 5090 (32 GB Blackwell). Currently Q4_K_M GGUF
-via Ollama. Target: NVFP4 once Ollama supports it natively.
+> Gemma 4 31B dense, vision + native tool calling, 153K context, NVFP4-ready on Blackwell.
 
-> Note: `gemma4:31b` is not on the public Ollama library today (the live
-> page covers `gemma3` up to 27B). This card describes the local tag and
-> extrapolates from the Gemma 3 family page and the project's
-> `32GB-GPU.md` notes.
+Local profile for the RTX 5090 (32 GB Blackwell). Currently Q4_K_M GGUF
+via Ollama. Target: NVFP4 once Ollama supports it natively - the
+quantized checkpoint already exists upstream as `nvidia/Gemma-4-31B-IT-NVFP4`.
 
 ## Summary
 
 | Field | Value |
 |---|---|
+| Upstream | `google/gemma-4-31B-it` |
+| NVFP4 source | `nvidia/Gemma-4-31B-IT-NVFP4` |
 | Family | Gemma 4 (Google) |
 | Architecture | Dense |
-| Params | 30.7B |
+| Params | ~31B (33B on HF card) |
 | Modalities | Text + Image (vision) |
 | Languages | 140+ |
 | Tool calling | Native |
-| Native context | 256K |
+| Native context | 128K |
 | License | Gemma Terms of Use |
-| Local quantization | Q4_K_M (~19 GB) |
-| Future target | NVFP4 |
+| Local quantization | Q4_K_M today (~19 GB), NVFP4 future |
 | KV cache | q8_0 |
 | Local `num_ctx` | **153600** |
 
 ## Why 153600 here
 
-Mirrors the gateway (`xeon-ai`) config. On a 32 GB 5090, ~19 GB of weights
-plus q8_0 KV cache for ~150K context fits comfortably with overhead.
+Mirrors the xeon-ai gateway config. On a 32 GB 5090, ~19 GB of Q4 weights
+plus q8_0 KV cache for ~150K context fits with overhead. Note this
+exceeds the model's nominal 128K - YaRN-style RoPE extension applies
+beyond that.
 
 ## Sampling
 
@@ -48,19 +49,21 @@ ollama push   odytrice/gemma4-31b:5090
 
 ## Strengths
 
-- Best reasoning in the Gemma 4 family (MMLU Pro / AIME / Codeforces lead)
+- Best reasoning in the Gemma 4 family (MMLU Pro, AIME, Codeforces leader)
 - Native vision + tool calling
 - 153K context with room to spare on Blackwell
-- Apache 2.0-style license - commercial-friendly
+- Gemma Terms - commercial use permitted
+- NVFP4 path already exists upstream (NVIDIA-published)
 
 ## Trade-offs
 
-- Dense 30.7B - slower per token than the MoE 26B
-- If you need maximum throughput, use `gemma4-26b:5090` instead
+- Dense ~31B - slower per token than the A4B MoE 26B
+- If maximum throughput is the priority, use `gemma4-26b:5090` instead
 
 ## See also
 
-- `gemma4-26b.md` - MoE sibling (faster, same context)
-- `../RTX-4090/gemma4-31b.md` - 24 GB profile (64K ctx)
-- `../../32GB-GPU.md`
-- Ollama Gemma 3 upstream: https://ollama.com/library/gemma3
+- Gemma 4 26B A4B MoE card (same folder) - faster sibling, same context
+- 24 GB profile for the same model (RTX 4090 folder) - 64K ctx
+- 32 GB tier guide at the repo root
+- Hugging Face: https://huggingface.co/google/gemma-4-31B-it
+- Hugging Face NVFP4: https://huggingface.co/nvidia/Gemma-4-31B-IT-NVFP4

@@ -1,53 +1,63 @@
 # Qwen 3.6 27B - RTX 5090 (32 GB VRAM)
 
-Local profile for the RTX 5090 (32 GB Blackwell). Currently Q4_K_M GGUF
-via Ollama. Target: NVFP4 once Ollama supports it natively.
+> Qwen 3.6 27B dense, multimodal (text + image + video), thinking + native tool calling, 190K context (262K native), NVFP4-ready on Blackwell.
 
-> Note: `qwen3.6:27b` is not on the public Ollama library today (the live
-> page lists `qwen3` 0.6B through 235B). This card describes the local
-> tag you have pulled.
+Local profile for the RTX 5090 (32 GB Blackwell). Currently Q4_K_M GGUF
+via Ollama. Target: NVFP4 once Ollama supports it natively -
+`unsloth/Qwen3.6-27B-NVFP4` and `Qwen/Qwen3.6-27B-FP8` already exist
+upstream for Blackwell hardware.
 
 ## Summary
 
 | Field | Value |
 |---|---|
+| Upstream | `Qwen/Qwen3.6-27B` |
+| NVFP4 source | `unsloth/Qwen3.6-27B-NVFP4` |
 | Family | Qwen 3.6 (Alibaba) |
 | Architecture | Dense |
-| Params | ~27B |
-| Modalities | Text |
+| Params | ~27-28B |
+| Modalities | Text + Image + Video (vision) |
 | Languages | 100+ |
-| Tool calling | Native |
-| Thinking mode | Yes (toggleable) |
-| Native context | 256K class |
+| Tool calling | Native (`qwen3_coder` parser) |
+| Thinking mode | Default on; togglable via `enable_thinking` |
+| Native context | 262,144 (extensible to 1,010,000 via YaRN) |
 | License | Apache 2.0 |
-| Local quantization | Q4_K_M (~17 GB) |
-| Future target | NVFP4 |
+| Local quantization | Q4_K_M today (~17 GB), NVFP4 future |
 | KV cache | q8_0 |
 | Local `num_ctx` | **190000** |
 
 ## Why 190000 here
 
-Mirrors the gateway (`xeon-ai`) config exactly. With ~17 GB of Q4 weights
-and 32 GB of VRAM, q8_0 KV cache for 190K context fits with reasonable
-overhead headroom on the 5090.
+Mirrors the xeon-ai gateway config exactly. With ~17 GB Q4 weights and
+32 GB VRAM, q8_0 KV cache for 190K context fits with reasonable headroom
+on the 5090. Below the model's 262K native window - no YaRN scaling needed.
 
 ## Sampling
 
-Non-thinking mode (default for code agents):
+Per the Qwen team's published guidance:
 
 ```
-temperature       0.7
-top_p             0.8
-top_k             20
-repeat_penalty    1.05
+# Thinking mode - general tasks (default)
+temperature        1.0
+top_p              0.95
+top_k              20
+min_p              0.0
+presence_penalty   1.5
+
+# Thinking mode - precise coding
+temperature        0.6
+top_p              0.95
+top_k              20
+presence_penalty   0.0
+
+# Instruct (non-thinking) mode
+temperature        0.7
+top_p              0.80
+top_k              20
+presence_penalty   1.5
 ```
 
-Thinking mode (heavier reasoning):
-
-```
-temperature       0.6
-top_p             0.95
-```
+To disable thinking: `chat_template_kwargs={"enable_thinking": False}`.
 
 ## Build & run
 
@@ -59,14 +69,17 @@ ollama push   odytrice/qwen3.6-27b:5090
 
 ## Strengths
 
-- Full 190K context - matches gateway expectations
-- Strong tool calling (OpenCode / Aider / Cline)
-- Reasoning via thinking mode when needed
-- Multilingual
+- Full 190K context - matches gateway expectations, well below 262K native
+- Native vision (text + image + video input)
+- Strong tool calling (OpenCode / Aider / Cline via `qwen3_coder`)
+- Thinking mode for heavier reasoning workloads
+- 100+ languages
+- Apache 2.0 licensed
 
 ## See also
 
-- `qwen3.6-35b.md` - larger sibling on the same card
-- `../RTX-4090/qwen3.6-27b.md` - 24 GB profile (64K ctx)
-- `../../32GB-GPU.md`
-- Ollama Qwen 3 upstream: https://ollama.com/library/qwen3
+- Qwen 3.6 35B A3B MoE card (same folder) - MoE sibling on the same card
+- 24 GB profile for the same model (RTX 4090 folder) - 64K ctx
+- 32 GB tier guide at the repo root
+- Hugging Face: https://huggingface.co/Qwen/Qwen3.6-27B
+- Hugging Face NVFP4: https://huggingface.co/unsloth/Qwen3.6-27B-NVFP4
