@@ -31,7 +31,7 @@ length, so only a 5090 profile is provided.
 
 ### Why this context size
 
-190000 matches the earlier 5090 gateway profile while using the known-good
+190000 matches the tuned OpenCode 5090 profile while using the known-good
 Ollama Q4_K_M artifact. It stays below the model's 262K native window - no
 YaRN scaling required. The direct HF NVFP4-GGUF import currently produces
 a malformed template artifact on the remote Ollama 0.23.x server.

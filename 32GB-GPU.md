@@ -117,14 +117,14 @@ ollama pull qwen3:14b
 | GPT-OSS 20B | ~13 GB | ~18 GB | ~128K (full) |
 | Devstral-Small-2 24B | ~15 GB | ~16 GB | ~128K+ |
 | Mistral Small 3.2 24B | ~15 GB | ~16 GB | ~128K (full) |
-| Gemma 4 26B (MoE, Q4_K_M fallback) | ~17 GB | ~14 GB | 128K |
+| Gemma 4 26B (MoE, Q4_K_M fallback) | ~17 GB | tuned | 256K |
 | GLM-4.7-Flash (MoE) | ~18.3 GB | ~12.7 GB | ~96-128K |
 | Qwen3-Coder 30B (MoE) | ~18.6 GB | ~12.4 GB | ~96-128K |
 | DeepSeek R1 32B | ~19 GB | ~12 GB | ~64-96K |
 | Qwen 2.5 Coder 32B | ~19 GB | ~12 GB | ~64-96K |
-| Gemma 4 31B (Q4_K_M fallback) | ~19 GB | ~12 GB | 150K |
-| Qwen 3.6 27B (Q4_K_M fallback) | ~17 GB | ~14 GB | 190K |
-| Qwen 3.6 35B-A3B (Q4_K_M fallback) | ~23 GB | ~8 GB | 128K |
+| Gemma 4 31B (Q4_K_M fallback) | ~19 GB | tuned | 150K |
+| Qwen 3.6 27B (Q4_K_M fallback) | ~17 GB | tuned | 190K |
+| Qwen 3.6 35B-A3B (Q4_K_M fallback) | ~23 GB | tuned | 190K |
 | Granite 4.0 H-Small | ~19.5 GB | ~11.5 GB | ~64-96K |
 | GLM-4-32B-0414 | ~20 GB | ~11 GB | ~64-96K |
 | Qwen3 32B | ~20 GB | ~11 GB | ~64-96K |
@@ -139,10 +139,10 @@ Ollama defaults to 4096 tokens. Always increase this after pulling a model.
 
 | Model | Ollama Tag | num_ctx | Context |
 |---|---|---|---|
-| Gemma 4 26B 5090 GGUF | `odytrice/gemma4-26b:5090` | 131072 | 128K |
+| Gemma 4 26B 5090 Q4 fallback | `odytrice/gemma4-26b:5090` | 262144 | 256K |
 | Gemma 4 31B 5090 Q4 fallback | `odytrice/gemma4-31b:5090` | 153600 | 150K |
 | Qwen 3.6 27B 5090 Q4 fallback | `odytrice/qwen3.6-27b:5090` | 190000 | 190K |
-| Qwen 3.6 35B-A3B 5090 GGUF | `odytrice/qwen3.6-35b:5090` | 131072 | 128K |
+| Qwen 3.6 35B-A3B 5090 Q4 fallback | `odytrice/qwen3.6-35b:5090` | 190000 | 190K |
 | GLM-4.7-Flash | `glm-4.7-flash` | 204800 | 200K |
 | Qwen3-Coder 30B-A3B | `qwen3-coder:30b` | 225280 | 220K |
 | Gemma 4 31B Q4 | `gemma4:31b` | 131072 | 128K |
@@ -225,10 +225,10 @@ Gemma 4 is a major upgrade from Gemma 3 — it adds **native function calling** 
 
 ### Gemma 4 26B (MoE)
 - **25.2B total / 3.8B active**, 128 experts (8 active + 1 shared), 30 layers, 256K context
-- **Ollama Q4_K_M compatibility fallback** on 32GB fits with q4_0 KV cache at 128K context
+- **Ollama Q4_K_M compatibility fallback** on 32GB fits with q4_0 KV cache at 256K context
 - **Extremely fast:** ~150 tok/s due to only 3.8B active params
 - **Arena AI rank #6** (score 1441), LiveCodeBench v6 77.1%, Codeforces Elo 1718
-- On 32GB, this MoE profile targets a higher GGUF quant at 128K context - much better than the 32-48K limit on 24GB
+- On 32GB, this MoE profile targets the tuned Q4 fallback at 256K context - much better than the 32-48K limit on 24GB
 
 ---
 

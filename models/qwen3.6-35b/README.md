@@ -28,15 +28,14 @@ with useful context.
 
 | Tag | GPU | Quantization | KV cache | `num_ctx` |
 |---|---|---|---|---|
-| `odytrice/qwen3.6-35b:5090` | RTX 5090 (32 GB Blackwell) | Ollama Q4_K_M (~23 GB) | q4_0 | 131072 |
+| `odytrice/qwen3.6-35b:5090` | RTX 5090 (32 GB Blackwell) | Ollama Q4_K_M (~23 GB) | q4_0 | 190000 |
 
-### Why 128K (and why no 4090 tag)
+### Why 190K (and why no 4090 tag)
 
-- **5090 (131072):** uses the known-good Ollama Q4_K_M artifact instead
+- **5090 (190000):** uses the known-good Ollama Q4_K_M artifact instead
   of NVFP4 because only ~3B parameters are active per token. Below the
-  262K native window. Observed 190000 context uses around 30 GB, so
-  131072 should retain headroom. Verify with `ollama ps`; if CPU% appears,
-  drop to 98304 or 65536.
+  262K native window and aligned with the tuned OpenCode 5090 profile.
+  Verify with `ollama ps`; if CPU% appears, drop to 131072 or 98304.
 - **No 4090 tag:** At ~25 GB the weights do not fit on a 24 GB card,
   leaving no headroom for KV cache. The dense Qwen 3.6 27B or Gemma 4
   26B-A4B are the practical 24 GB options.

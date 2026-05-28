@@ -26,13 +26,13 @@ so both GPU profiles live under this one card.
 | Tag | GPU | Quantization | KV cache | `num_ctx` |
 |---|---|---|---|---|
 | `odytrice/gemma4-26b:4090` | RTX 4090 (24 GB Ada) | Q4_K_M (~17 GB) | q4_0 | 131072 |
-| `odytrice/gemma4-26b:5090` | RTX 5090 (32 GB Blackwell) | Ollama Q4_K_M (~17 GB) | q4_0 | 131072 |
+| `odytrice/gemma4-26b:5090` | RTX 5090 (32 GB Blackwell) | Ollama Q4_K_M (~17 GB) | q4_0 | 262144 |
 
 ### Why this context size
 
-The 5090 profile uses the same known-good Ollama Q4_K_M artifact as the
-4090 profile, with 131072 (128K) context and q4_0 KV cache. The direct HF
-UD-Q6_K import currently fails to load on the remote Ollama 0.23.x server.
+The 5090 profile uses the known-good Ollama Q4_K_M artifact with the tuned
+262144 (256K) OpenCode context and q4_0 KV cache. The direct HF UD-Q6_K
+import currently fails to load on the remote Ollama 0.23.x server.
 
 ## Environment
 
@@ -72,7 +72,7 @@ from your client (OpenCode, Aider, etc.). Not baked into the Modelfiles.
 
 - 4090: 131072 at q4_0 KV cache fits on 24 GB; verify with `ollama ps`;
   no FP4 tensor-core acceleration on Ada
-- 5090: Ollama Q4_K_M compatibility fallback with 131072 context; verify
+- 5090: Ollama Q4_K_M compatibility fallback with 262144 context; verify
   full GPU offload with `ollama ps`
 
 ## See also
