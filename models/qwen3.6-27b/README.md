@@ -2,9 +2,9 @@
 
 > Qwen 3.6 27B dense, multimodal (text + image + video), thinking + native tool calling, 262K native context.
 
-Model card for `odytrice/qwen3.6-27b:5090`. The dense 27B at Q4_K_M (~17 GB)
-does not leave usable KV cache headroom on a 24 GB 4090 at any practical
-context length, so only a 5090 profile is provided.
+Model card for `odytrice/qwen3.6-27b:5090`. The dense 27B profile does not
+leave usable KV cache headroom on a 24 GB 4090 at any practical context
+length, so only a 5090 profile is provided.
 
 ## Upstream
 
@@ -27,17 +27,18 @@ context length, so only a 5090 profile is provided.
 
 | Tag | GPU | Quantization | KV cache | `num_ctx` |
 |---|---|---|---|---|
-| `odytrice/qwen3.6-27b:5090` | RTX 5090 (32 GB Blackwell) | Q4_K_M (~17 GB), NVFP4 future | q8_0 | 190000 |
+| `odytrice/qwen3.6-27b:5090` | RTX 5090 (32 GB Blackwell) | Ollama Q4_K_M (~17 GB) | q4_0 | 190000 |
 
 ### Why this context size
 
-190000 matches the gateway config exactly. 32 GB comfortably fits the
-weights plus q8_0 KV cache for 190K context. Below the model's 262K
-native window - no YaRN scaling required.
+190000 matches the earlier 5090 gateway profile while using the known-good
+Ollama Q4_K_M artifact. It stays below the model's 262K native window - no
+YaRN scaling required. The direct HF NVFP4-GGUF import currently produces
+a malformed template artifact on the remote Ollama 0.23.x server.
 
 ## Environment
 
-Always set these before running Ollama:
+Always set these before running this dense profile:
 
 ```
 set OLLAMA_KV_CACHE_TYPE=q4_0    # Windows
@@ -88,12 +89,16 @@ To disable thinking: pass `enable_thinking=False` via
 
 ## Caveats
 
-- NVFP4 weights exist upstream but Ollama does not yet load them
+- Ollama Q4_K_M compatibility fallback; the direct HF NVFP4-GGUF import
+  currently produces a malformed template artifact on the remote Ollama
+  0.23.x server
 
 ## See also
 
 - Qwen 3.6 35B A3B MoE card - A3B MoE sibling (35B total / 3B active)
 - Hugging Face: https://huggingface.co/Qwen/Qwen3.6-27B
+- Hugging Face GGUF: https://huggingface.co/unsloth/Qwen3.6-27B-GGUF
+- Hugging Face NVFP4-GGUF: https://huggingface.co/s-batman/Qwen3.6-27B-NVFP4-MTP-GGUF
 - Hugging Face NVFP4: https://huggingface.co/unsloth/Qwen3.6-27B-NVFP4
 - Hugging Face FP8: https://huggingface.co/Qwen/Qwen3.6-27B-FP8
 - 32 GB tier guide at the repo root

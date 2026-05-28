@@ -7,8 +7,8 @@ Recommended models and configuration for GPUs with 32GB VRAM (RTX 5090, etc.).
 ## Target Hardware
 
 - **VRAM:** 32GB
-- **Quantization:** Q4_K_M
-- **KV Cache:** q8_0 (via `OLLAMA_KV_CACHE_TYPE`)
+- **Quantization:** Ollama Q4_K_M compatibility fallbacks for current 5090 profiles
+- **KV Cache:** q4_0 via `OLLAMA_KV_CACHE_TYPE`
 - **Inference:** Ollama
 
 ---
@@ -17,10 +17,10 @@ Recommended models and configuration for GPUs with 32GB VRAM (RTX 5090, etc.).
 
 ### Tier 1 — Best Choices
 
-| Model | Type | Total / Active Params | Context | VRAM (Q4) | Best For |
+| Model | Type | Total / Active Params | Context | 5090 Profile | Best For |
 |---|---|---|---|---|---|
-| **Gemma 4 31B** | Dense | 30.7B / 30.7B | 256K | ~20 GB | Best reasoning in class, vision, native function calling |
-| **Gemma 4 26B** | MoE | 25.2B / 3.8B | 256K | ~18 GB | Fast agentic coding, reasoning, vision, ~150 tok/s |
+| **Gemma 4 31B** | Dense | 30.7B / 30.7B | 256K | Ollama Q4_K_M fallback | Best reasoning in class, vision, native function calling |
+| **Gemma 4 26B** | MoE | 25.2B / 3.8B | 256K | Ollama Q4_K_M fallback | Fast agentic coding, reasoning, vision, ~150 tok/s |
 | **GLM-4.7-Flash** | MoE | 30B / 3B | 200K | ~18.3 GB | Best SWE-bench in class (59.2%), fast agentic coding |
 | **Qwen3-Coder 30B-A3B** | MoE | 30B / 3.3B | 256K | ~18.6 GB | Agentic coding, tool calling (OpenCode, Aider, Cline) |
 | **GLM-4-32B-0414** | Dense | 32B / 32B | 128K (YaRN) | ~20 GB | Best tool calling (BFCL 69.6), general coding |
@@ -99,17 +99,17 @@ ollama pull qwen3:14b
 
 ## VRAM Budget (32GB)
 
-### With q8_0 KV Cache (recommended)
+### Architecture-Split 5090 Profiles
 
 | Component | VRAM |
 |---|---|
 | OS / display compositor | ~1 GB |
-| Model weights (Q4_K_M, 32B) | ~19 GB |
-| KV cache (q8_0) at 48K ctx | ~7.5 GB |
+| Model weights | Ollama Q4_K_M compatibility fallbacks |
+| KV cache | q4_0 |
 | Compute buffers / overhead | ~0.5 GB |
-| **Total** | **~29 GB** |
+| **Total** | **verify with `ollama ps`** |
 
-### Max Context by Model (32GB, q8_0 KV cache)
+### Max Context by Model (32GB, architecture split)
 
 | Model | VRAM for Weights | Remaining for KV | Approx Max Context |
 |---|---|---|---|
@@ -117,12 +117,14 @@ ollama pull qwen3:14b
 | GPT-OSS 20B | ~13 GB | ~18 GB | ~128K (full) |
 | Devstral-Small-2 24B | ~15 GB | ~16 GB | ~128K+ |
 | Mistral Small 3.2 24B | ~15 GB | ~16 GB | ~128K (full) |
-| Gemma 4 26B (MoE) | ~18 GB | ~13 GB | ~64-128K |
+| Gemma 4 26B (MoE, Q4_K_M fallback) | ~17 GB | ~14 GB | 128K |
 | GLM-4.7-Flash (MoE) | ~18.3 GB | ~12.7 GB | ~96-128K |
 | Qwen3-Coder 30B (MoE) | ~18.6 GB | ~12.4 GB | ~96-128K |
 | DeepSeek R1 32B | ~19 GB | ~12 GB | ~64-96K |
 | Qwen 2.5 Coder 32B | ~19 GB | ~12 GB | ~64-96K |
-| Gemma 4 31B | ~20 GB | ~11 GB | ~64-96K |
+| Gemma 4 31B (Q4_K_M fallback) | ~19 GB | ~12 GB | 150K |
+| Qwen 3.6 27B (Q4_K_M fallback) | ~17 GB | ~14 GB | 190K |
+| Qwen 3.6 35B-A3B (Q4_K_M fallback) | ~23 GB | ~8 GB | 128K |
 | Granite 4.0 H-Small | ~19.5 GB | ~11.5 GB | ~64-96K |
 | GLM-4-32B-0414 | ~20 GB | ~11 GB | ~64-96K |
 | Qwen3 32B | ~20 GB | ~11 GB | ~64-96K |
@@ -137,16 +139,20 @@ Ollama defaults to 4096 tokens. Always increase this after pulling a model.
 
 | Model | Ollama Tag | num_ctx | Context |
 |---|---|---|---|
+| Gemma 4 26B 5090 GGUF | `odytrice/gemma4-26b:5090` | 131072 | 128K |
+| Gemma 4 31B 5090 Q4 fallback | `odytrice/gemma4-31b:5090` | 153600 | 150K |
+| Qwen 3.6 27B 5090 Q4 fallback | `odytrice/qwen3.6-27b:5090` | 190000 | 190K |
+| Qwen 3.6 35B-A3B 5090 GGUF | `odytrice/qwen3.6-35b:5090` | 131072 | 128K |
 | GLM-4.7-Flash | `glm-4.7-flash` | 204800 | 200K |
 | Qwen3-Coder 30B-A3B | `qwen3-coder:30b` | 225280 | 220K |
-| Gemma 4 31B | `gemma4:31b` | 131072 | 128K |
+| Gemma 4 31B Q4 | `gemma4:31b` | 131072 | 128K |
 | GLM-4-32B-0414 | `sammcj/glm-4-32b-0414` | 131072 | 128K |
 | Qwen3 32B | `qwen3:32b` | 32768 | 32K |
 | Qwen 2.5 Coder 32B | `qwen2.5-coder:32b` | 131072 | 128K |
 | DeepSeek R1 Distill 32B | `deepseek-r1:32b` | 51200 | 50K |
 | GPT-OSS 20B | `gpt-oss:20b` | 131072 | 128K |
 | Devstral-Small-2 24B | `devstral-small-2:24b` | 174080 | 170K |
-| Gemma 4 26B | `gemma4:26b` | 131072 | 128K |
+| Gemma 4 26B Q4 | `gemma4:26b` | 131072 | 128K |
 
 Run the model, set the context, and save back to the same tag to update in place:
 
@@ -210,7 +216,7 @@ Gemma 4 is a major upgrade from Gemma 3 — it adds **native function calling** 
 
 ### Gemma 4 31B (Dense)
 - **30.7B dense params**, 60 layers, 256K context, text+image+vision
-- **~20 GB Q4 weights** on 32GB leaves ~11 GB for KV cache → 64-96K context comfortably
+- **Ollama Q4_K_M compatibility fallback** on 32GB targets q4_0 KV cache at 150K context; direct HF NVFP4-GGUF failed to load on the remote Ollama 0.23.x server
 - **Best reasoning in class:** MMLU Pro 85.2%, AIME 2026 89.2%, Codeforces Elo 2150, LiveCodeBench v6 80.0%
 - **Arena AI rank #3** among all open models (score 1452)
 - **Native tool calling** with structured JSON, configurable thinking mode
@@ -219,10 +225,10 @@ Gemma 4 is a major upgrade from Gemma 3 — it adds **native function calling** 
 
 ### Gemma 4 26B (MoE)
 - **25.2B total / 3.8B active**, 128 experts (8 active + 1 shared), 30 layers, 256K context
-- **~18 GB Q4 weights** → fits easily on 32GB with 128K+ context headroom
+- **Ollama Q4_K_M compatibility fallback** on 32GB fits with q4_0 KV cache at 128K context
 - **Extremely fast:** ~150 tok/s due to only 3.8B active params
 - **Arena AI rank #6** (score 1441), LiveCodeBench v6 77.1%, Codeforces Elo 1718
-- On 32GB, this model gets full 128K context — much better than the 32-48K limit on 24GB
+- On 32GB, this MoE profile targets a higher GGUF quant at 128K context - much better than the 32-48K limit on 24GB
 
 ---
 

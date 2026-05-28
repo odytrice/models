@@ -3,8 +3,8 @@
 > Qwen 3.6 35B-A3B (MoE, 35B total / 3B active, 256 experts), vision + thinking + native tool calling, 262K native context.
 
 Model card for `odytrice/qwen3.6-35b:5090`. The 5090 is the only profile
-in this set - at ~23 GB of Q4 weights the model does not fit comfortably
-on a 24 GB 4090.
+in this set - the 35B MoE weights do not fit comfortably on a 24 GB 4090
+with useful context.
 
 ## Upstream
 
@@ -28,18 +28,18 @@ on a 24 GB 4090.
 
 | Tag | GPU | Quantization | KV cache | `num_ctx` |
 |---|---|---|---|---|
-| `odytrice/qwen3.6-35b:5090` | RTX 5090 (32 GB Blackwell) | Q4_K_M (~23 GB), NVFP4 future | q8_0 | 190000 |
+| `odytrice/qwen3.6-35b:5090` | RTX 5090 (32 GB Blackwell) | Ollama Q4_K_M (~23 GB) | q4_0 | 131072 |
 
-### Why 190K (and why no 4090 tag)
+### Why 128K (and why no 4090 tag)
 
-- **5090 (190000):** mirrors the gateway config. With ~23 GB Q4
-  weights and 32 GB VRAM, q8_0 KV cache for 190K context is feasible -
-  though it is the tightest fit among the four models in this set. Below
-  the 262K native window. Verify with `ollama ps`; if CPU% appears, drop
-  to 131072 or 153600 or switch KV cache to `q4_0`.
-- **No 4090 tag:** At ~23 GB the weights alone barely fit on a 24 GB
-  card, leaving no headroom for KV cache. The dense Qwen 3.6 27B or
-  Gemma 4 26B-A4B are the practical 24 GB options.
+- **5090 (131072):** uses the known-good Ollama Q4_K_M artifact instead
+  of NVFP4 because only ~3B parameters are active per token. Below the
+  262K native window. Observed 190000 context uses around 30 GB, so
+  131072 should retain headroom. Verify with `ollama ps`; if CPU% appears,
+  drop to 98304 or 65536.
+- **No 4090 tag:** At ~25 GB the weights do not fit on a 24 GB card,
+  leaving no headroom for KV cache. The dense Qwen 3.6 27B or Gemma 4
+  26B-A4B are the practical 24 GB options.
 
 ## Environment
 
@@ -99,18 +99,23 @@ To preserve thinking across turns: `chat_template_kwargs={"preserve_thinking": T
 - `preserve_thinking` for agent scenarios - retains reasoning across turns
 - 100+ languages
 - Apache 2.0 licensed
-- NVFP4 weights already published by both unsloth and Red Hat
+- Higher GGUF quant keeps MoE quality high without depending on NVFP4
+  runtime support
 
 ## Caveats
 
 - Tightest fit in the 5090 set - verify `ollama ps` before long runs
 - Does not fit on a 24 GB 4090 with any usable context
-- NVFP4 weights exist upstream but Ollama does not yet load them
+- Uses the Ollama Q4_K_M source as a compatibility fallback. The direct
+  HF GGUF UD-Q5_K_M import produced a malformed template/projector artifact
+  on Ollama 0.23.x.
+- Verify full GPU offload with `ollama ps`
 
 ## See also
 
 - Qwen 3.6 27B card - dense sibling, lower total params, 5090 only
 - Hugging Face: https://huggingface.co/Qwen/Qwen3.6-35B-A3B
+- Hugging Face GGUF: https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF
 - Hugging Face NVFP4 (unsloth): https://huggingface.co/unsloth/Qwen3.6-35B-A3B-NVFP4
 - Hugging Face NVFP4 (Red Hat): https://huggingface.co/RedHatAI/Qwen3.6-35B-A3B-NVFP4
 - 32 GB tier guide at the repo root

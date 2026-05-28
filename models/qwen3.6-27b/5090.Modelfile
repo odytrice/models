@@ -1,0 +1,17 @@
+# Qwen 3.6 27B - RTX 5090 (32 GB VRAM)
+# Known-good Ollama source. The direct HF NVFP4-GGUF import currently
+# produces a malformed template artifact on the remote Ollama 0.23.x server.
+#
+# Create:
+#   ollama create odytrice/qwen3.6-27b:5090 -f 5090.Modelfile
+#
+# Run:
+#   ollama run odytrice/qwen3.6-27b:5090
+#
+# Push:
+#   ollama push odytrice/qwen3.6-27b:5090
+
+FROM qwen3.6:27b
+
+PARAMETER num_ctx 190000
+PARAMETER num_gpu 999

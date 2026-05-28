@@ -37,11 +37,11 @@ $scriptRoot = $PSScriptRoot
 if (-not $scriptRoot) { $scriptRoot = Split-Path $MyInvocation.MyCommand.Path }
 
 $models = @(
-  @{ Folder = "gemma4-26b";  File = "4090";  Tag = "odytrice/gemma4-26b:4090"   },
-  @{ Folder = "gemma4-26b";  File = "5090";  Tag = "odytrice/gemma4-26b:5090"   },
-  @{ Folder = "gemma4-31b";  File = "5090";  Tag = "odytrice/gemma4-31b:5090"   },
-  @{ Folder = "qwen3.6-27b"; File = "5090";  Tag = "odytrice/qwen3.6-27b:5090"  },
-  @{ Folder = "qwen3.6-35b"; File = "5090";  Tag = "odytrice/qwen3.6-35b:5090"  }
+  @{ Folder = "gemma4-26b";  File = "4090.Modelfile";  Tag = "odytrice/gemma4-26b:4090"   },
+  @{ Folder = "gemma4-26b";  File = "5090.Modelfile";  Tag = "odytrice/gemma4-26b:5090"   },
+  @{ Folder = "gemma4-31b";  File = "5090.Modelfile";  Tag = "odytrice/gemma4-31b:5090"   },
+  @{ Folder = "qwen3.6-27b"; File = "5090.Modelfile";  Tag = "odytrice/qwen3.6-27b:5090"  },
+  @{ Folder = "qwen3.6-35b"; File = "5090.Modelfile";  Tag = "odytrice/qwen3.6-35b:5090"  }
 )
 
 function Invoke-Step([string]$Label, [string[]]$ArgList) {

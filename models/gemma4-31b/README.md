@@ -2,9 +2,9 @@
 
 > Gemma 4 31B dense, vision + native tool calling.
 
-Model card for `odytrice/gemma4-31b:5090`. The dense 31B at Q4_K_M (~19 GB)
-does not leave usable KV cache headroom on a 24 GB 4090, so only a 5090
-profile is provided.
+Model card for `odytrice/gemma4-31b:5090`. The dense 31B profile does not
+leave usable KV cache headroom on a 24 GB 4090, so only a 5090 profile is
+provided.
 
 ## Upstream
 
@@ -25,20 +25,21 @@ profile is provided.
 
 | Tag | GPU | Quantization | KV cache | `num_ctx` |
 |---|---|---|---|---|
-| `odytrice/gemma4-31b:5090` | RTX 5090 (32 GB Blackwell) | Q4_K_M (~19 GB), NVFP4 future | q8_0 | 153600 |
+| `odytrice/gemma4-31b:5090` | RTX 5090 (32 GB Blackwell) | Ollama Q4_K_M (~19 GB) | q4_0 | 153600 |
 
 ### Why this context size
 
-153600 mirrors the gateway config. 32 GB holds the ~19 GB weights plus
-q8_0 KV cache for ~150K context with overhead. Well within the model's
-native 256K window - no YaRN scaling needed.
+153600 mirrors the earlier 5090 gateway profile while using the known-good
+Ollama Q4_K_M artifact. It remains within the model's native 256K window -
+no YaRN scaling needed. The direct HF NVFP4-GGUF import currently fails to
+load on the remote Ollama 0.23.x server.
 
 If `ollama ps` shows CPU% on the 4090 tag: drop `num_ctx` to 32K or switch
 KV cache to `q4_0`.
 
 ## Environment
 
-Always set these before running Ollama:
+Always set these before running this dense profile:
 
 ```
 set OLLAMA_KV_CACHE_TYPE=q4_0    # Windows
@@ -68,11 +69,14 @@ Set via `/set parameter` or pass from your client.
 ## Caveats
 
 - Dense ~31B is slower per token than the A4B MoE 26B variant
-- NVFP4 weights exist upstream but Ollama does not yet load them
+- Ollama Q4_K_M compatibility fallback; the direct HF NVFP4-GGUF import
+  currently fails to load on the remote Ollama 0.23.x server
 
 ## See also
 
 - Gemma 4 26B A4B MoE card - faster A4B MoE sibling
 - Hugging Face: https://huggingface.co/google/gemma-4-31B-it
+- Hugging Face GGUF: https://huggingface.co/unsloth/gemma-4-31B-it-GGUF
+- Hugging Face NVFP4-GGUF: https://huggingface.co/LibertAIDAI/Gemma-4-31B-IT-NVFP4-GGUF
 - Hugging Face NVFP4: https://huggingface.co/nvidia/Gemma-4-31B-IT-NVFP4
 - 32 GB tier guide at the repo root
