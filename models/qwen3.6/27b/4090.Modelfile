@@ -1,0 +1,16 @@
+# Qwen 3.6 27B - RTX 4090 (24 GB VRAM)
+# Known-good Ollama source with full native context.
+#
+# Create:
+#   ollama create odytrice/qwen3.6:4090-27b -f 4090.Modelfile
+#
+# Run:
+#   ollama run odytrice/qwen3.6:4090-27b
+#
+# Push:
+#   ollama push odytrice/qwen3.6:4090-27b
+
+FROM qwen3.6:27b
+
+PARAMETER num_ctx 262144
+PARAMETER num_gpu 999

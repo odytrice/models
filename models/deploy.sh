@@ -43,6 +43,7 @@ MODELS=(
   "gemma4/26b|5090.Modelfile|odytrice/gemma4:5090-26b"
   "gemma4/26b|4090.Modelfile|odytrice/gemma4:4090-26b"
   "gemma4/31b|5090.Modelfile|odytrice/gemma4:5090-31b"
+  "qwen3.6/27b|4090.Modelfile|odytrice/qwen3.6:4090-27b"
   "qwen3.6/27b|5090.Modelfile|odytrice/qwen3.6:5090-27b"
   "qwen3.6/35b|5090.Modelfile|odytrice/qwen3.6:5090-35b"
 )

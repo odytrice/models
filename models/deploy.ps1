@@ -42,6 +42,7 @@ $models = @(
   @{ Folder = "gemma4\26b";  File = "4090.Modelfile";  Tag = "odytrice/gemma4:4090-26b"   },
   @{ Folder = "gemma4\26b";  File = "5090.Modelfile";  Tag = "odytrice/gemma4:5090-26b"   },
   @{ Folder = "gemma4\31b";  File = "5090.Modelfile";  Tag = "odytrice/gemma4:5090-31b"   },
+  @{ Folder = "qwen3.6\27b"; File = "4090.Modelfile";  Tag = "odytrice/qwen3.6:4090-27b"  },
   @{ Folder = "qwen3.6\27b"; File = "5090.Modelfile";  Tag = "odytrice/qwen3.6:5090-27b"  },
   @{ Folder = "qwen3.6\35b"; File = "5090.Modelfile";  Tag = "odytrice/qwen3.6:5090-35b"  }
 )
