@@ -37,6 +37,8 @@ $scriptRoot = $PSScriptRoot
 if (-not $scriptRoot) { $scriptRoot = Split-Path $MyInvocation.MyCommand.Path }
 
 $models = @(
+  @{ Folder = "gemma4-12b";  File = "4090.Modelfile";  Tag = "odytrice/gemma4-12b:4090"   },
+  @{ Folder = "gemma4-12b";  File = "5090.Modelfile";  Tag = "odytrice/gemma4-12b:5090"   },
   @{ Folder = "gemma4-26b";  File = "4090.Modelfile";  Tag = "odytrice/gemma4-26b:4090"   },
   @{ Folder = "gemma4-26b";  File = "5090.Modelfile";  Tag = "odytrice/gemma4-26b:5090"   },
   @{ Folder = "gemma4-31b";  File = "5090.Modelfile";  Tag = "odytrice/gemma4-31b:5090"   },

@@ -38,6 +38,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # folder | modelfile | tag
 MODELS=(
+  "gemma4-12b|5090.Modelfile|odytrice/gemma4-12b:5090"
+  "gemma4-12b|4090.Modelfile|odytrice/gemma4-12b:4090"
   "gemma4-26b|5090.Modelfile|odytrice/gemma4-26b:5090"
   "gemma4-26b|4090.Modelfile|odytrice/gemma4-26b:4090"
   "gemma4-31b|5090.Modelfile|odytrice/gemma4-31b:5090"
