@@ -20,6 +20,7 @@ models/
 ├── data/               # Generated training data (gitignored: raw/, verified/, formatted/)
 ├── Training/           # Distillation plan docs (00-overview.md through 05-resolved-questions.md)
 ├── Llama/              # llama.cpp management CLI (llama.sh, llama.ps1, install guide)
+├── models/             # Ollama publish profiles by card and size (gemma4/12b/4090.Modelfile)
 ├── cards/              # Model cards (Flash.md, Thinking.md)
 ├── OLLAMA-GUIDE.md     # Ollama setup and API reference
 ├── 24GB-GPU.md         # Model selection for 24GB GPUs
@@ -51,7 +52,8 @@ python pipeline/scripts/push_to_hub.py
 - **Python**: Follow PEP 8. Use `snake_case` for files and functions. The project uses `ruff` for linting (`.ruff_cache/` present).
 - **YAML configs**: Use `snake_case` keys. Organize prompt templates by domain (`fsharp_core.yaml`, `svelte_typescript.yaml`).
 - **Markdown docs**: Use numbered prefix for ordered docs (e.g., `00-overview.md`, `01-teacher-models.md`). Use `UPPERCASE-HYPHENATED.md` for top-level guides.
-- **Modelfiles**: Name as `Modelfile.<variant>-<vram>` (e.g., `Modelfile.kenichi-flash-24gb`).
+- **Legacy Modelfiles**: Name top-level config profiles as `Modelfile.<variant>-<vram>` (e.g., `Modelfile.kenichi-flash-24gb`).
+- **Ollama publish profiles**: Store under `models/<card>/<size>/<gpu>.Modelfile` with one README at `models/<card>/README.md`. Tags use `odytrice/<card>:<gpu>-<size>` (e.g., `odytrice/gemma4:4090-12b`).
 - **Cross-platform scripts**: Provide both `.sh` and `.ps1` for CLI tools (see `Llama/llama.sh` and `Llama/llama.ps1`).
 
 ## Testing Guidelines
