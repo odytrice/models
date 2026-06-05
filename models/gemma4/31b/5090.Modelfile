@@ -3,13 +3,13 @@
 # fails to load on the remote Ollama 0.23.x server.
 #
 # Create:
-#   ollama create odytrice/gemma4-31b:5090 -f 5090.Modelfile
+#   ollama create odytrice/gemma4:5090-31b -f 5090.Modelfile
 #
 # Run:
-#   ollama run odytrice/gemma4-31b:5090
+#   ollama run odytrice/gemma4:5090-31b
 #
 # Push:
-#   ollama push odytrice/gemma4-31b:5090
+#   ollama push odytrice/gemma4:5090-31b
 
 FROM gemma4:31b
 

@@ -2,13 +2,13 @@
 # Uses the local 12B instruction BF16 Ollama source for the Blackwell profile.
 #
 # Create:
-#   ollama create odytrice/gemma4-12b:5090 -f 5090.Modelfile
+#   ollama create odytrice/gemma4:5090-12b -f 5090.Modelfile
 #
 # Run:
-#   ollama run odytrice/gemma4-12b:5090
+#   ollama run odytrice/gemma4:5090-12b
 #
 # Push:
-#   ollama push odytrice/gemma4-12b:5090
+#   ollama push odytrice/gemma4:5090-12b
 
 FROM gemma4:12b-it-bf16
 

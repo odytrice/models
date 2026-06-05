@@ -139,10 +139,10 @@ Ollama defaults to 4096 tokens. Always increase this after pulling a model.
 
 | Model | Ollama Tag | num_ctx | Context |
 |---|---|---|---|
-| Gemma 4 26B 5090 Q4 fallback | `odytrice/gemma4-26b:5090` | 262144 | 256K |
-| Gemma 4 31B 5090 Q4 fallback | `odytrice/gemma4-31b:5090` | 153600 | 150K |
-| Qwen 3.6 27B 5090 Q4 fallback | `odytrice/qwen3.6-27b:5090` | 190000 | 190K |
-| Qwen 3.6 35B-A3B 5090 Q4 fallback | `odytrice/qwen3.6-35b:5090` | 190000 | 190K |
+| Gemma 4 26B 5090 Q4 fallback | `odytrice/gemma4:5090-26b` | 262144 | 256K |
+| Gemma 4 31B 5090 Q4 fallback | `odytrice/gemma4:5090-31b` | 153600 | 150K |
+| Qwen 3.6 27B 5090 Q4 fallback | `odytrice/qwen3.6:5090-27b` | 190000 | 190K |
+| Qwen 3.6 35B-A3B 5090 Q4 fallback | `odytrice/qwen3.6:5090-35b` | 190000 | 190K |
 | GLM-4.7-Flash | `glm-4.7-flash` | 204800 | 200K |
 | Qwen3-Coder 30B-A3B | `qwen3-coder:30b` | 225280 | 220K |
 | Gemma 4 31B Q4 | `gemma4:31b` | 131072 | 128K |

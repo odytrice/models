@@ -2,13 +2,13 @@
 # NVFP4 not used: Ada Lovelace tensor cores do not support FP4. Q4_K_M GGUF is the standard Ada path.
 #
 # Create:
-#   ollama create odytrice/gemma4-26b:4090 -f 4090.Modelfile
+#   ollama create odytrice/gemma4:4090-26b -f 4090.Modelfile
 #
 # Run:
-#   ollama run odytrice/gemma4-26b:4090
+#   ollama run odytrice/gemma4:4090-26b
 #
 # Push:
-#   ollama push odytrice/gemma4-26b:4090
+#   ollama push odytrice/gemma4:4090-26b
 
 FROM gemma4:26b
 

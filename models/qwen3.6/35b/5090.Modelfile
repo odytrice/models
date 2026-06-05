@@ -3,13 +3,13 @@
 # produces a malformed template/projector artifact on Ollama 0.23.x.
 #
 # Create:
-#   ollama create odytrice/qwen3.6-35b:5090 -f 5090.Modelfile
+#   ollama create odytrice/qwen3.6:5090-35b -f 5090.Modelfile
 #
 # Run:
-#   ollama run odytrice/qwen3.6-35b:5090
+#   ollama run odytrice/qwen3.6:5090-35b
 #
 # Push:
-#   ollama push odytrice/qwen3.6-35b:5090
+#   ollama push odytrice/qwen3.6:5090-35b
 
 FROM qwen3.6:35b
 
