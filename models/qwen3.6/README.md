@@ -7,9 +7,9 @@ name. Tags encode target GPU and parameter count as `<gpu>-<size>`.
 
 | Tag | GPU | Quantization | `num_ctx` |
 |---|---|---|---|
-| `odytrice/qwen3.6:4090-27b` | RTX 4090 (24 GB Ada) | Ollama Q4_K_M (~17 GB) | 262144 |
-| `odytrice/qwen3.6:5090-27b` | RTX 5090 (32 GB Blackwell) | Ollama Q4_K_M (~17 GB) | 190000 |
-| `odytrice/qwen3.6:5090-35b` | RTX 5090 (32 GB Blackwell) | Ollama Q4_K_M (~23 GB) | 190000 |
+| `odytrice/qwen3.6:4090-27b` | RTX 4090 (24 GB Ada) | Ollama Q4_K_M (~17 GB) | 131072 |
+| `odytrice/qwen3.6:5090-27b` | RTX 5090 (32 GB Blackwell) | Ollama Q4_K_M (~17 GB) | 262144 |
+| `odytrice/qwen3.6:5090-35b` | RTX 5090 (32 GB Blackwell) | Ollama Q4_K_M (~23 GB) | 262144 |
 
 The 35B-A3B MoE profile does not leave usable KV cache headroom on a 24 GB
 4090 at practical context lengths, so only a 5090 profile is provided for 35B.
@@ -35,10 +35,9 @@ export OLLAMA_FLASH_ATTENTION=1
 
 ## Context Size
 
-The 27B 4090 profile uses the full 262144 native context. The 5090 profiles use
-190000 context tokens, matching the tuned OpenCode 5090 profile while staying
-below Qwen 3.6's 262K native window, so no YaRN scaling is required. If
-`ollama ps` shows CPU offload on the 35B profile, drop to 131072 or 98304.
+The 27B 4090 profile uses 131072 context tokens to preserve KV cache headroom on
+24 GB VRAM. The 5090 profiles use the full 262144 native context. If `ollama ps`
+shows CPU offload on the 35B profile, drop to 131072 or 98304.
 
 ## Sampling
 

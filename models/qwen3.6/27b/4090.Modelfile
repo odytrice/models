@@ -12,5 +12,5 @@
 
 FROM qwen3.6:27b
 
-PARAMETER num_ctx 262144
+PARAMETER num_ctx 131072
 PARAMETER num_gpu 999
