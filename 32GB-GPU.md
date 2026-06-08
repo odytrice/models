@@ -8,7 +8,7 @@ Recommended models and configuration for GPUs with 32GB VRAM (RTX 5090, etc.).
 
 - **VRAM:** 32GB
 - **Quantization:** Ollama Q4_K_M compatibility fallbacks for current 5090 profiles
-- **KV Cache:** q4_0 via `OLLAMA_KV_CACHE_TYPE`
+- **KV Cache:** q8_0 via `OLLAMA_KV_CACHE_TYPE`
 - **Inference:** Ollama
 
 ---

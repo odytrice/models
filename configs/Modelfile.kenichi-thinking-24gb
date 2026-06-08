@@ -13,7 +13,7 @@
 #      hf download odytrice/kenichi-thinking-GGUF kenichi-thinking-lora-f16.gguf --local-dir ./kenichi-thinking
 #
 #   3. Set KV cache quantization (required — add to your shell profile):
-#      export OLLAMA_KV_CACHE_TYPE=q4_0
+#      export OLLAMA_KV_CACHE_TYPE=q8_0
 #
 #   4. Create and run:
 #      ollama create kenichi-thinking:24gb -f Modelfile.kenichi-thinking-24gb

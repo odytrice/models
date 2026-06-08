@@ -13,5 +13,5 @@
 
 FROM gemma4:31b
 
-PARAMETER num_ctx 153600
+PARAMETER num_ctx 262144
 PARAMETER num_gpu 999

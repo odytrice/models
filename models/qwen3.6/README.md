@@ -26,10 +26,10 @@ The 35B-A3B MoE profile does not leave usable KV cache headroom on a 24 GB
 Always set these before running Ollama:
 
 ```
-set OLLAMA_KV_CACHE_TYPE=q4_0
+set OLLAMA_KV_CACHE_TYPE=q8_0
 set OLLAMA_FLASH_ATTENTION=1
 
-export OLLAMA_KV_CACHE_TYPE=q4_0
+export OLLAMA_KV_CACHE_TYPE=q8_0
 export OLLAMA_FLASH_ATTENTION=1
 ```
 

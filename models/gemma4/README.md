@@ -26,10 +26,10 @@ Tags encode target GPU and parameter count as `<gpu>-<size>`.
 For the 26B and 31B Q4 profiles, set KV cache quantization before running Ollama:
 
 ```
-set OLLAMA_KV_CACHE_TYPE=q4_0
+set OLLAMA_KV_CACHE_TYPE=q8_0
 set OLLAMA_FLASH_ATTENTION=1
 
-export OLLAMA_KV_CACHE_TYPE=q4_0
+export OLLAMA_KV_CACHE_TYPE=q8_0
 export OLLAMA_FLASH_ATTENTION=1
 ```
 
