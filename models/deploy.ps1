@@ -44,7 +44,9 @@ $models = @(
   @{ Folder = "gemma4\31b";  File = "5090.Modelfile";  Tag = "odytrice/gemma4:5090-31b"   },
   @{ Folder = "qwen3.6\27b"; File = "4090.Modelfile";  Tag = "odytrice/qwen3.6:4090-27b"  },
   @{ Folder = "qwen3.6\27b"; File = "5090.Modelfile";  Tag = "odytrice/qwen3.6:5090-27b"  },
-  @{ Folder = "qwen3.6\35b"; File = "5090.Modelfile";  Tag = "odytrice/qwen3.6:5090-35b"  }
+  @{ Folder = "qwen3.6\35b"; File = "5090.Modelfile";  Tag = "odytrice/qwen3.6:5090-35b"  },
+  @{ Folder = "qwen3.8\27b"; File = "4090.Modelfile";  Tag = "odytrice/qwen3.8:4090-27b"  },
+  @{ Folder = "qwen3.8\27b"; File = "5090.Modelfile";  Tag = "odytrice/qwen3.8:5090-27b"  }
 )
 
 function Invoke-Step([string]$Label, [string[]]$ArgList) {

@@ -1,0 +1,18 @@
+# Qwen 3.8 27B - RTX 5090 (32 GB VRAM)
+# Known-good Ollama source (default tag resolves to Q4_K_M, ~18 GB).
+# Full 262144 native context. The q8_0 source is 30 GB and leaves no
+# usable KV cache headroom on 32 GB, so Q4_K_M is used on both GPUs.
+#
+# Create:
+#   ollama create odytrice/qwen3.8:5090-27b -f 5090.Modelfile
+#
+# Run:
+#   ollama run odytrice/qwen3.8:5090-27b
+#
+# Push:
+#   ollama push odytrice/qwen3.8:5090-27b
+
+FROM qwen3.8:27b
+
+PARAMETER num_ctx 262144
+PARAMETER num_gpu 999

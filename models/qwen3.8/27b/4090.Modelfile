@@ -1,0 +1,17 @@
+# Qwen 3.8 27B - RTX 4090 (24 GB VRAM)
+# Known-good Ollama source (default tag resolves to Q4_K_M, ~18 GB).
+# Context is held at 131072 to preserve KV cache headroom on 24 GB.
+#
+# Create:
+#   ollama create odytrice/qwen3.8:4090-27b -f 4090.Modelfile
+#
+# Run:
+#   ollama run odytrice/qwen3.8:4090-27b
+#
+# Push:
+#   ollama push odytrice/qwen3.8:4090-27b
+
+FROM qwen3.8:27b
+
+PARAMETER num_ctx 131072
+PARAMETER num_gpu 999
