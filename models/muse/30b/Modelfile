@@ -1,0 +1,28 @@
+# Muse Glimmer 30B
+# Known-good Ollama source (default tag resolves to ~18 GB 4-bit).
+#
+# One profile serves both 24 GB and 32 GB cards. There is no per-GPU split
+# because context is capped by the source, not by VRAM: the packaged GGUF is
+# built at context_length 131072 and Ollama silently clamps num_ctx to it.
+# Meta documents the architecture as supporting up to 262144, but that needs
+# RoPE scaling this GGUF does not carry.
+#
+# 32:2 GQA keeps the KV cache near 26 KB/token, so ~3.5 GB of cache at full
+# context fits alongside ~18 GB of weights even on a 24 GB card.
+# Verified on a 5090: 16 GB resident, 100% GPU, no CPU offload.
+#
+# Create:
+#   ollama create odytrice/muse:30b -f Modelfile
+#   ollama create odytrice/muse:latest -f Modelfile
+#
+# Run:
+#   ollama run odytrice/muse
+#
+# Push:
+#   ollama push odytrice/muse:30b
+#   ollama push odytrice/muse:latest
+
+FROM muse-glimmer:30b
+
+PARAMETER num_ctx 131072
+PARAMETER num_gpu 999

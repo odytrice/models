@@ -48,6 +48,8 @@ MODELS=(
   "qwen3.6/35b|5090.Modelfile|odytrice/qwen3.6:5090-35b"
   "qwen3.8/27b|4090.Modelfile|odytrice/qwen3.8:4090-27b"
   "qwen3.8/27b|5090.Modelfile|odytrice/qwen3.8:5090-27b"
+  "muse/30b|Modelfile|odytrice/muse:30b"
+  "muse/30b|Modelfile|odytrice/muse:latest"
 )
 
 run_step() {
